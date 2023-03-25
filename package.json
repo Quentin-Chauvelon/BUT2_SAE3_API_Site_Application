@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@hapi/hapi": "^21.3.0",
+    "ical-js-parser": "^0.7.4",
+    "node-fetch": "^3.3.1",
+    "nodemon": "^2.0.22"
+  },
+  "devDependencies": {
+    "prisma": "^4.11.0"
+  }
+}
