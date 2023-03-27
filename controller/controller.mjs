@@ -1,10 +1,96 @@
 "use strict"
 
 import {teacherDao} from "../dao/teacherDao.mjs";
-import {scheduleDao} from "../dao/scheduleDao.mjs";
+import {scheduleDao2} from "../dao/scheduleDao2.mjs";
 import {roomDao} from "../dao/roomDao.mjs";
 
+import {Schedule} from "../model/schedule.mjs"
+import {Cours} from "../model/cours.mjs"
+import {Room} from "../model/room.mjs"
+import { ScheduleType } from "../model/scheduleType.mjs";
+
+let lastUpdate = null;
+
+const hasUpdatedToday = async () => {
+    const today = new Date();
+    if (
+        lastUpdate == null ||
+        lastUpdate.getFullYear() != today.getFullYear() ||
+        lastUpdate.getMonth() != today.getMonth() ||
+        lastUpdate.getDate() != today.getDate()
+    ) {
+        try {
+            scheduleDao.deleteAll();
+            lastUpdate = new Date()
+        } catch (e) {}
+    }
+}
+
 export const controller = {
+    findByDay : async(id, date, scheduleType) => {
+        try {
+            await scheduleDao2.deleteAll()
+            
+            const classes = await scheduleDao2.find(scheduleType.getUrl(id));
+            if (classes == null) {
+                return null;
+            }
+
+            let room = new Room({
+                id: 10,
+                name: "",
+                computerRoom: false
+            });
+
+            let cours = new Cours({
+                id: 20,
+                start: "",
+                end: "",
+                summary: "fklsdqjfmlkjf",
+                location: room,
+                roomId: 0
+            });
+
+            let schedule = new Schedule({
+                id: id,
+                classes: [cours],
+                type: scheduleType.getType(),
+            })
+
+            // schedule.classes[0].location.Cours = []
+            // schedule.classes[0].Schedule = schedule
+
+            const test = await scheduleDao2.save(schedule)
+            console.log(test);
+
+            console.log(await scheduleDao2.findAll());
+            // const classesOfDate = await scheduleDao.findByDay(schedule, date)
+            // return classesOfDate
+
+        } catch (e) {
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    populate : async(fileName) => {
+        try {
+            let file = "";
+            switch (fileName) {
+                case "rooms":
+                    return await roomDao.populate("./data/rooms.csv")
+                
+                default:
+                    return h.response({message: 'not found'}).code(404);
+            }
+
+        } catch (e) {
+            return Promise.reject({message : "error"})
+        }
+    },
+
+
+
+
     findTeacher : async (teacherName, date) => {
         try {
             const teacher = await teacherDao.findByName(teacherName);

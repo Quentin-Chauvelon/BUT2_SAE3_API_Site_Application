@@ -1,3 +1,5 @@
+import {Room, DEFAULT_ROOM} from "./room.mjs"
+
 function formatStringToDate(stringDate) {
     const [date, time] = stringDate.split("T")
 
@@ -13,20 +15,28 @@ function formatStringToDate(stringDate) {
 
 
 class Cours {
+    id
     start
     end
     summary
     location
+    roomId
+    Schedule
+    scheduleId
 
-    constructor(obj) {
-        const cours = {
-            start: formatStringToDate(obj.dtstart.value),
-            end: formatStringToDate(obj.dtend.value),
+    constructor(obj, room) {
+        let cours = {
+            id: 0,
+            start: obj.start,
+            end: obj.end,
             summary: obj.summary,
-            location: obj.location.substring(2)
+            location: (room) ? new Room(room) : DEFAULT_ROOM,
+            roomId: (room) ? room.id : DEFAULT_ROOM.id,
+            Schedule: null,
+            scheduleId: null
         };
 
-        const test = Object.assign(this, cours)
+        Object.assign(this, cours)
     }
 
     isSameDay(date) {
@@ -46,3 +56,6 @@ class Cours {
 }
 
 export {Cours}
+
+// start: formatStringToDate(obj.dtstart.value),
+// end: formatStringToDate(obj.dtend.value),

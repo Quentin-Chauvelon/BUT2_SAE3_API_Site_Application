@@ -12,31 +12,39 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model Teacher {
-  id            Int       @id
-  name          String
+  id   Int    @id
+  name String
 }
-
 
 model Room {
-  id            Int       @id
-  name          String
-  computerRoom  Boolean
+  id           Int     @id
+  name         String
+  computerRoom Boolean
+  Cours        Cours[]
 }
-
 
 model Cours {
-  start         String
-  end           String
-  summary       String
-  location      Room
+  id         Int       @id @default(autoincrement())
+  start      String
+  end        String
+  summary    String
+  location   Room      @relation(fields: [roomId], references: [id])
+  roomId     Int
+  Schedule   Schedule? @relation(fields: [scheduleId], references: [id])
+  scheduleId String?
 }
-
 
 model Schedule {
-  id            String    @id
-  classes       Cours[]
+  id             String       @id
+  classes        Cours[]
+  type           String
 }
+
+// model ScheduleType {
+//   id       Int        @id @default(autoincrement())
+//   Schedule Schedule[]
+// }
