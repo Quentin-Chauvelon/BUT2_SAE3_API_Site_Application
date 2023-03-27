@@ -16,18 +16,26 @@ export const scheduleDao2 = {
     
     findAll : async() => {
         try {
-            const schedule = await prisma.schedule.findMany({
+            const schedules = await prisma.schedule.findMany({
                 include: {
                     classes: true
                 }
             });
 
+            if (schedules == null) {
+                return null
+            }
+
+            // TODO map
             for (const index of schedule[0].classes.keys()) {
                 schedule[0].classes[index] = new Cours(schedule[0].classes[index])
             }
-            // schedule[0].classes.map((cours) => {
-            //     return new Cours(cours)
-            // })
+
+            schedules.forEach(schedule => {
+                schedule.classes = schedule.classes.map((cours) => {
+                    return new Cours(cours)
+                })
+            });
 
             return schedule
 
@@ -38,26 +46,28 @@ export const scheduleDao2 = {
     
     find : async(id) => {
         try {
-            let classes = await prisma.schedule.findUnique({
+            const schedule = await prisma.schedule.findUnique({
                 where: {
                     id: id
+                },
+
+                include: {
+                    classes: true
                 }
             })
             
-            if (classes == null) {
-                classes = await fetch(baseURL + id + ".ics")
-                .then(ics => ics.text());
-                
-                classes = await toJSON.default(classes).events;
-                
-                for (const [index, cours] of classes.entries()) {
-                    // const room = await roomDao.findByName(cours.location.substring(2));
-                    const room = cours.location.substring(2);
-                    classes[index] = new Cours(cours, room);
-                }
+            if (schedule == null) {
+                return null
             }
-            
-            return classes
+
+            // for (const index of schedule.classes.keys()) {
+            //     schedule.classes[index] = new Cours(schedule.classes[index])
+            // }
+            schedule.classes = schedule.classes.map((cours) => {
+                return new Cours(cours)
+            })
+
+            return schedule
             
         } catch(e){
             return Promise.reject(e)
@@ -89,9 +99,24 @@ export const scheduleDao2 = {
         }
     },
     
-    save : async(schedule) => {
+    save : async(id, scheduleType) => {
         
         try {
+            let classes = await fetch(baseURL + scheduleType.getUrl(id) + ".ics")
+            .then(ics => ics.text());
+            
+            classes = await toJSON.default(classes).events;
+
+            classes = classes.map((cours) => {
+                const room = cours.location.substring(2);
+                return new Cours(cours, room)
+            })
+
+            let schedule = new Schedule({
+                id: id,
+                classes: classes,
+                type: scheduleType.getType(),
+            })
 
             const param = {...schedule}
             delete param.classes
@@ -99,10 +124,6 @@ export const scheduleDao2 = {
             await prisma.schedule.create({
                 data: param
             })
-
-            // for (const i of schedule.classes.keys()) {
-            //     schedule.classes[i] = schedule.classes[i].getPrismaObject();
-            // }
 
             await prisma.schedule.update({
                 data : {
@@ -114,6 +135,8 @@ export const scheduleDao2 = {
                     id : schedule.id
                 }
             })
+
+            return await scheduleDao2.find(id)
             
         } catch(e){
             console.log(e);

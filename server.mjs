@@ -40,13 +40,35 @@ const routes =[
     
     {
         method: 'GET',
-        path: '/schedule/{id}/{date?}',
+        path: '/schedule/day/{id}/{date?}',
         handler: async (request, h) => {
             try {
                 const id = request.params.id
                 const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
                 
                 const schedule = await controller.findByDay(id, date, ScheduleType.Schedule)
+                
+                if (schedule != null) {
+                    return h.response(schedule).code(200)
+                } else {
+                    return h.response({message: 'not found'}).code(404)
+                }
+                
+            } catch (e) {
+                return h.response(e).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/schedule/week/{id}/{date?}',
+        handler: async (request, h) => {
+            try {
+                const id = request.params.id
+                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                
+                const schedule = await controller.findByWeek(id, date, ScheduleType.Schedule)
                 
                 if (schedule != null) {
                     return h.response(schedule).code(200)

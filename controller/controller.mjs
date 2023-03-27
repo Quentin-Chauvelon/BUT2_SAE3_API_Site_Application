@@ -11,8 +11,9 @@ import { ScheduleType } from "../model/scheduleType.mjs";
 
 let lastUpdate = null;
 
-const hasUpdatedToday = async () => {
+const clearDatabaseIfNotUpdatedToday = async () => {
     const today = new Date();
+    
     if (
         lastUpdate == null ||
         lastUpdate.getFullYear() != today.getFullYear() ||
@@ -21,7 +22,7 @@ const hasUpdatedToday = async () => {
     ) {
         try {
             await roomDao.deleteAll();
-            await scheduleDao.deleteAll();
+            await scheduleDao2.deleteAll();
             lastUpdate = new Date()
         } catch (e) {}
     }
@@ -30,26 +31,59 @@ const hasUpdatedToday = async () => {
 export const controller = {
     findByDay : async(id, date, scheduleType) => {
         try {
-            await roomDao.deleteAll();
-            await scheduleDao2.deleteAll()
 
-            const classes = await scheduleDao2.find(scheduleType.getUrl(id));
-            if (classes == null) {
-                return null;
+            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            clearDatabaseIfNotUpdatedToday()
+
+            let schedule = await scheduleDao2.find(id);
+            if (schedule == null) {
+                schedule = await scheduleDao2.save(id, scheduleType)
             }
 
-            let schedule = new Schedule({
-                id: id,
-                classes: classes,
-                type: scheduleType.getType(),
-            })
+            if (schedule == null) {
+                return null
+            }
 
-            await scheduleDao2.save(schedule)
+            return await scheduleDao2.findByDay(schedule, date)
 
-            const tout = await scheduleDao2.findAll();
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
 
-            const classesOfDate = await scheduleDao2.findByDay(schedule, date)
-            return classesOfDate
+    findByWeek : async(id, date, scheduleType) => {
+        try {
+
+            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            clearDatabaseIfNotUpdatedToday()
+
+            const week= []; 
+            date.setDate((date.getDate() - date.getDay() ));
+
+            for (let i = 0; i < 7; i++) {
+                week.push(
+                    new Date(date)
+                ); 
+                date.setDate(date.getDate() + 1);
+            }
+
+            const schedules = [];
+
+            let schedule = await scheduleDao2.find(id);
+            if (schedule == null) {
+                schedule = await scheduleDao2.save(id, scheduleType)
+            }
+                
+            if (schedule == null) {
+                return null
+            }
+            
+            for (const day of week) {
+                schedules.push(await scheduleDao2.findByDay(schedule, day))
+            }
+
+            return schedules
 
         } catch (e) {
             console.log(e);
