@@ -20,7 +20,8 @@ const hasUpdatedToday = async () => {
         lastUpdate.getDate() != today.getDate()
     ) {
         try {
-            scheduleDao.deleteAll();
+            await roomDao.deleteAll();
+            await scheduleDao.deleteAll();
             lastUpdate = new Date()
         } catch (e) {}
     }
@@ -29,45 +30,29 @@ const hasUpdatedToday = async () => {
 export const controller = {
     findByDay : async(id, date, scheduleType) => {
         try {
+            await roomDao.deleteAll();
             await scheduleDao2.deleteAll()
-            
+
             const classes = await scheduleDao2.find(scheduleType.getUrl(id));
             if (classes == null) {
                 return null;
             }
 
-            let room = new Room({
-                id: 10,
-                name: "",
-                computerRoom: false
-            });
-
-            let cours = new Cours({
-                id: 20,
-                start: "",
-                end: "",
-                summary: "fklsdqjfmlkjf",
-                location: room,
-                roomId: 0
-            });
-
             let schedule = new Schedule({
                 id: id,
-                classes: [cours],
+                classes: classes,
                 type: scheduleType.getType(),
             })
 
-            // schedule.classes[0].location.Cours = []
-            // schedule.classes[0].Schedule = schedule
+            await scheduleDao2.save(schedule)
 
-            const test = await scheduleDao2.save(schedule)
-            console.log(test);
+            const tout = await scheduleDao2.findAll();
 
-            console.log(await scheduleDao2.findAll());
-            // const classesOfDate = await scheduleDao.findByDay(schedule, date)
-            // return classesOfDate
+            const classesOfDate = await scheduleDao2.findByDay(schedule, date)
+            return classesOfDate
 
         } catch (e) {
+            console.log(e);
             return Promise.reject({message : "error"})
         }
     },

@@ -24,18 +24,20 @@ model Room {
   id           Int     @id
   name         String
   computerRoom Boolean
-  Cours        Cours[]
+  // Cours        Cours[]
 }
 
 model Cours {
   id         Int       @id @default(autoincrement())
-  start      String
-  end        String
+  start      DateTime
+  end        DateTime
   summary    String
-  location   Room      @relation(fields: [roomId], references: [id])
+  location   String
+  // location   Room      @relation(fields: [roomId], references: [id])
   roomId     Int
-  Schedule   Schedule? @relation(fields: [scheduleId], references: [id])
-  scheduleId String?
+  // Schedule   Schedule? @relation(fields: [scheduleId], references: [id])
+  // scheduleId String?
+  Schedule   Schedule[]
 }
 
 model Schedule {

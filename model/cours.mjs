@@ -21,19 +21,17 @@ class Cours {
     summary
     location
     roomId
-    Schedule
-    scheduleId
 
     constructor(obj, room) {
         let cours = {
-            id: 0,
-            start: obj.start,
-            end: obj.end,
+            id: undefined,
+            start: (obj.dtstart) ? formatStringToDate(obj.dtstart.value) : new Date(obj.start),
+            end: (obj.dtend) ? formatStringToDate(obj.dtend.value) : new Date(obj.end),
             summary: obj.summary,
-            location: (room) ? new Room(room) : DEFAULT_ROOM,
-            roomId: (room) ? room.id : DEFAULT_ROOM.id,
-            Schedule: null,
-            scheduleId: null
+            // location: (room) ? new Room(room) : DEFAULT_ROOM,
+            location: obj.location,
+            roomId: 0
+            // roomId: (room) ? room.id : DEFAULT_ROOM.id,
         };
 
         Object.assign(this, cours)
@@ -53,6 +51,17 @@ class Cours {
             time.getTime() <= this.end.getTime()
         )
     }
+
+    // getPrismaObject() {
+    //     return {
+    //         id: this.id,
+    //         start: this.start.getTime(),
+    //         end: this.end.getTime(),
+    //         summary: this.summary,
+    //         location: this.location,
+    //         roomId: this.roomId
+    //     }
+    // }
 }
 
 export {Cours}

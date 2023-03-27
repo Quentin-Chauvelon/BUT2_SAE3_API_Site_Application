@@ -5,6 +5,7 @@ import toJSON from "ical-js-parser/toJSON/index.js";
 import {roomDao} from "../dao/roomDao.mjs"
 import {Schedule} from "../model/schedule.mjs";
 import {Cours} from "../model/cours.mjs"
+import { Room } from "../model/room.mjs";
 
 const prisma = new PrismaClient()
 
@@ -12,15 +13,29 @@ let lastUpdate = null;
 const baseURL = "https://edt.univ-nantes.fr/iut_nantes";
 
 export const scheduleDao2 = {
-
+    
     findAll : async() => {
         try {
-            return await prisma.schedule.findMany({});
+            const schedule = await prisma.schedule.findMany({
+                include: {
+                    classes: true
+                }
+            });
+
+            for (const index of schedule[0].classes.keys()) {
+                schedule[0].classes[index] = new Cours(schedule[0].classes[index])
+            }
+            // schedule[0].classes.map((cours) => {
+            //     return new Cours(cours)
+            // })
+
+            return schedule
+
         } catch(e){
             return Promise.reject(e)
         }
     },
-
+    
     find : async(id) => {
         try {
             let classes = await prisma.schedule.findUnique({
@@ -36,16 +51,13 @@ export const scheduleDao2 = {
                 classes = await toJSON.default(classes).events;
                 
                 for (const [index, cours] of classes.entries()) {
-                    const room = await roomDao.findByName(cours.location.substring(2));
+                    // const room = await roomDao.findByName(cours.location.substring(2));
+                    const room = cours.location.substring(2);
                     classes[index] = new Cours(cours, room);
                 }
             }
             
-            return [
-                classes[0],
-                classes[1],
-                classes[2]
-            ]
+            return classes
             
         } catch(e){
             return Promise.reject(e)
@@ -63,6 +75,7 @@ export const scheduleDao2 = {
             });
             
             return classesOfDate;
+
         } catch(e){
             return Promise.reject(e)
         }
@@ -77,11 +90,31 @@ export const scheduleDao2 = {
     },
     
     save : async(schedule) => {
+        
         try {
-            return await prisma.schedule.create({
-                data: schedule
+
+            const param = {...schedule}
+            delete param.classes
+            
+            await prisma.schedule.create({
+                data: param
             })
 
+            // for (const i of schedule.classes.keys()) {
+            //     schedule.classes[i] = schedule.classes[i].getPrismaObject();
+            // }
+
+            await prisma.schedule.update({
+                data : {
+                    classes: {
+                        create: schedule.classes
+                    }
+                },
+                where : {
+                    id : schedule.id
+                }
+            })
+            
         } catch(e){
             console.log(e);
             return Promise.reject(e)

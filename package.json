@@ -3,7 +3,7 @@
     "@hapi/hapi": "^21.3.0",
     "@prisma/client": "^4.11.0",
     "csv-parser": "^3.0.0",
-    "ical-js-parser": "^0.7.4",
+    "ical-js-parser": "^0.6.12",
     "node-fetch": "^3.3.1",
     "nodemon": "^2.0.22"
   },

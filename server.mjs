@@ -26,7 +26,7 @@ const routes =[
         method: '*',
         path: '/',
         handler: function (_, h) {
-            return h.response({message: 'Accueil API RESTful du Clubs des 5'}).code(404)
+            return h.response({message: 'Accueil API RESTful du Club des 5'}).code(404)
         }
     },
     
