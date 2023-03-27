@@ -21,7 +21,7 @@ const clearDatabaseIfNotUpdatedToday = async () => {
         lastUpdate.getDate() != today.getDate()
     ) {
         try {
-            await roomDao.deleteAll();
+            // await roomDao.deleteAll();
             await scheduleDao2.deleteAll();
             lastUpdate = new Date()
         } catch (e) {}
@@ -48,6 +48,33 @@ export const controller = {
 
         } catch (e) {
             console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    findByTime : async(id, time, scheduleType) => {
+        try {
+
+            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            clearDatabaseIfNotUpdatedToday()
+
+            const room = await roomDao.find(id);
+            if (room == null) {
+                return null;
+            }
+
+            let schedule = await scheduleDao2.find(room.id);
+            if (schedule == null) {
+                schedule = await scheduleDao2.save(room.id, scheduleType)
+            }
+
+            if (schedule == null) {
+                return null
+            }
+
+            return await scheduleDao2.findByTime(schedule, time)
+
+        } catch (e) {
             return Promise.reject({message : "error"})
         }
     },
@@ -125,9 +152,9 @@ export const controller = {
         }
     },
 
-    findRoom : async (roomName, time) => {
+    findRoom : async (id, time) => {
         try {
-            const room = await roomDao.findByName(roomName);
+            const room = await roomDao.find(id);
             if (room == null) {
                 return null;
             }
@@ -141,7 +168,7 @@ export const controller = {
         }
     },
 
-    findRooms : async(computerRoomsOnly, time) => {
+    findRooms : async(computerRoomsOnly, time, scheduleType) => {
         try {
             const rooms = await roomDao.findAll();
             const freeRooms = [];
@@ -150,10 +177,11 @@ export const controller = {
 
                 // filter computer rooms only if needed
                 if (computerRoomsOnly == "false" || room.computerRoom) {
-                    const roomSchedule = await controller.findRoom(room.name, time);
+                    const roomSchedule = await controller.findByTime(room.id, time, scheduleType);
+                    console.log(roomSchedule);
 
                     // if the room is free, add it to the table of free rooms
-                    if (roomSchedule.free) {
+                    if (roomSchedule.length == 0) {
                         freeRooms.push(room);
                     }
                 }
@@ -165,32 +193,4 @@ export const controller = {
             return Promise.reject({message : "error"})
         }
     }
-
-    // findByLogin : async (login) => {
-    // try {
-    //     return await userDao.findByLogin(login)
-    // } catch(e) { return Promise.reject({message: "error"})}
-    // },
-
-    // deleteByLogin: async (login) =>{
-    //     try {
-    //         return await userDao.deleteByLogin(login)
-    //     } catch(e)
-    //     { return Promise.reject({message: "error"})}
-    // },
-
-    // add:async (user) => {
-    //     try {
-    //         return  await userDao.add(user)
-    //     } catch(e) {
-    //         return Promise.reject({message: "error"})}
-    // },
-
-    // update: async (login, user) => {
-    //     try {
-    //         return await userDao.update(login, user)
-    //     } catch (e) {
-    //         return Promise.reject({message: "error"})
-    //     }
-    // }
 }

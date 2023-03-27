@@ -14,7 +14,7 @@ function formatStringToDate(stringDate) {
     const month = parseInt(date.substring(4,6))
     const day = parseInt(date.substring(6,8))
     
-    const hour = parseInt(time.substring(0,2)) + 1
+    const hour = parseInt(time.substring(0,2)) + 2
     const minute = parseInt(time.substring(2,4))
     
     return new Date(year, month - 1, day, hour, minute, 0)
@@ -43,13 +43,13 @@ const routes =[
         path: '/schedule/day/{id}/{date?}',
         handler: async (request, h) => {
             try {
-                const id = request.params.id
+                const id = parseInt(request.params.id)
                 const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
                 
-                const schedule = await controller.findByDay(id, date, ScheduleType.Schedule)
+                const classes = await controller.findByDay(id, date, ScheduleType.Schedule)
                 
-                if (schedule != null) {
-                    return h.response(schedule).code(200)
+                if (classes != null) {
+                    return h.response(classes).code(200)
                 } else {
                     return h.response({message: 'not found'}).code(404)
                 }
@@ -65,13 +65,35 @@ const routes =[
         path: '/schedule/week/{id}/{date?}',
         handler: async (request, h) => {
             try {
-                const id = request.params.id
+                const id = parseInt(request.params.id)
                 const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
                 
-                const schedule = await controller.findByWeek(id, date, ScheduleType.Schedule)
+                const classes = await controller.findByWeek(id, date, ScheduleType.Schedule)
                 
-                if (schedule != null) {
-                    return h.response(schedule).code(200)
+                if (classes != null) {
+                    return h.response(classes).code(200)
+                } else {
+                    return h.response({message: 'not found'}).code(404)
+                }
+                
+            } catch (e) {
+                return h.response(e).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/teacher/{id}/{date?}',
+        handler: async (request, h) => {
+            try {
+                const id = parseInt(request.params.id)
+                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                
+                const classes = await controller.findByDay(id, date, ScheduleType.Teacher)
+                
+                if (classes != null) {
+                    return h.response(classes).code(200)
                 } else {
                     return h.response({message: 'not found'}).code(404)
                 }
@@ -84,55 +106,16 @@ const routes =[
     
     {
         method: 'GET',
-        path: '/populate/{type}',
+        path: '/room/{id}/{time?}',
         handler: async (request, h) => {
             try {
-                const classes = await controller.populate(request.params.type)
-                
-                return h.response(classes).code(200)
-            } catch (e) {
-                return h.response(e).code(400)
-            }
-        }
-    },
-    
-    
-    
-    
-    {
-        method: 'GET',
-        path: '/teacher/{name}/{date?}',
-        handler: async (request, h) => {
-            try {
-                const name = request.params.name
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
-                
-                const schedule = await controller.findTeacher(name, date)
-                
-                if (schedule != null) {
-                    return h.response(schedule).code(200)
-                } else {
-                    return h.response({message: 'not found'}).code(404)
-                }
-                
-            } catch (e) {
-                return h.response(e).code(400)
-            }
-        }
-    },
-    
-    {
-        method: 'GET',
-        path: '/room/{name}/{time?}',
-        handler: async (request, h) => {
-            try {
-                const name = request.params.name
+                const id = parseInt(request.params.id)
                 const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
                 
-                const free = await controller.findRoom(name, time)
+                const classes = await controller.findByTime(id, time, ScheduleType.Room)
                 
-                if (free != null) {
-                    return h.response(free).code(200)
+                if (classes != null) {
+                    return h.response(classes).code(200)
                 } else {
                     return h.response({message: 'not found'}).code(404)
                 }
@@ -151,7 +134,7 @@ const routes =[
                 const computerRoomsOnly = request.params.computerRoomsOnly
                 const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
                 
-                const freeRooms = await controller.findRooms(computerRoomsOnly, time)
+                const freeRooms = await controller.findRooms(computerRoomsOnly, time, ScheduleType.Room)
                 
                 return h.response(freeRooms).code(200)
                 
@@ -159,7 +142,21 @@ const routes =[
                 return h.response(e).code(400)
             }
         }
-    }
+    },
+
+    {
+        method: 'GET',
+        path: '/populate/{type}',
+        handler: async (request, h) => {
+            try {
+                const classes = await controller.populate(request.params.type)
+                
+                return h.response(classes).code(200)
+            } catch (e) {
+                return h.response(e).code(400)
+            }
+        }
+    },   
 ]
 
 const server = Hapi.server({

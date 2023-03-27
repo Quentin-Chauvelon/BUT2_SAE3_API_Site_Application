@@ -26,10 +26,9 @@ export const scheduleDao2 = {
                 return null
             }
 
-            // TODO map
-            for (const index of schedule[0].classes.keys()) {
-                schedule[0].classes[index] = new Cours(schedule[0].classes[index])
-            }
+            // for (const index of schedule[0].classes.keys()) {
+            //     schedule[0].classes[index] = new Cours(schedule[0].classes[index])
+            // }
 
             schedules.forEach(schedule => {
                 schedule.classes = schedule.classes.map((cours) => {
@@ -90,6 +89,23 @@ export const scheduleDao2 = {
             return Promise.reject(e)
         }
     },
+
+    findByTime : async(schedule, time) => {
+        try {
+            const classesOfDate = [];
+            
+            schedule.classes.forEach(cours => {
+                if (cours.isSameDay(time) && cours.isTimeDuringClass(time)) {
+                    classesOfDate.push(cours);
+                }
+            });
+            
+            return classesOfDate;
+
+        } catch(e){
+            return Promise.reject(e)
+        }
+    },
     
     deleteAll : async() => {
         try {
@@ -100,7 +116,6 @@ export const scheduleDao2 = {
     },
     
     save : async(id, scheduleType) => {
-        
         try {
             let classes = await fetch(baseURL + scheduleType.getUrl(id) + ".ics")
             .then(ics => ics.text());

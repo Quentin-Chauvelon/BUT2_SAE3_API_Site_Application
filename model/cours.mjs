@@ -7,7 +7,7 @@ function formatStringToDate(stringDate) {
     const month = parseInt(date.substring(4,6))
     const day = parseInt(date.substring(6,8))
 
-    const hour = parseInt(time.substring(0,2)) + 2
+    const hour = parseInt(time.substring(0,2)) + 4
     const minute = parseInt(time.substring(2,4))
 
     return new Date(year, month - 1, day, hour, minute, 0)
@@ -51,20 +51,6 @@ class Cours {
             time.getTime() <= this.end.getTime()
         )
     }
-
-    // getPrismaObject() {
-    //     return {
-    //         id: this.id,
-    //         start: this.start.getTime(),
-    //         end: this.end.getTime(),
-    //         summary: this.summary,
-    //         location: this.location,
-    //         roomId: this.roomId
-    //     }
-    // }
 }
 
 export {Cours}
-
-// start: formatStringToDate(obj.dtstart.value),
-// end: formatStringToDate(obj.dtend.value),

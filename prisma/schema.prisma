@@ -41,7 +41,7 @@ model Cours {
 }
 
 model Schedule {
-  id             String       @id
+  id             Int       @id
   classes        Cours[]
   type           String
 }
