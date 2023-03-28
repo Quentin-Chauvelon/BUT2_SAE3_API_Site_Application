@@ -43,6 +43,27 @@ export const userDao = {
         }
     },
 
+    findByToken : async (token) => {
+        try {
+            let userFound = await prisma.user.findFirst({
+                where: {
+                    token: token
+                }
+            })
+
+            if (userFound == null) {
+                return null
+            }
+
+            userFound = new User(userFound)
+            return userFound;
+
+        } catch(e){
+            return Promise.reject(e)
+        }
+    },
+
+
     add : async (user) => {
         try {
 

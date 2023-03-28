@@ -236,7 +236,7 @@ export const controller = {
             })
 
             const userAdded = await userDao.add(userToAdd);
-            return userAdded
+            return userAdded.token
 
 
         } catch (e) {
@@ -264,8 +264,8 @@ export const controller = {
             userFound.token = token
 
             const userUpdated = await userDao.update(userFound)
-            delete userUpdated.password
-            return userUpdated
+            // delete userUpdated.password
+            return userUpdated.token
 
         } catch (e) {
             console.log(e);
@@ -273,9 +273,9 @@ export const controller = {
         }
     },
 
-    setFavorite : async(login, favoriteSchedule) => {
+    setFavorite : async(token, favoriteSchedule) => {
         try {
-            const user = await userDao.find(login)
+            const user = await userDao.findByToken(token)
             if (user == null) {
                 return null
             }
@@ -297,14 +297,14 @@ export const controller = {
         }
     },
 
-    getFavorite : async (login) => {
+    getFavorite : async (token) => {
         try {
-            const user = await userDao.find(login)
+            const user = await userDao.findByToken(token)
             if (user == null) {
                 return null
             }
 
-            const validToken = verifyToken(user.token)
+            const validToken = verifyToken(token)
             // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return validToken

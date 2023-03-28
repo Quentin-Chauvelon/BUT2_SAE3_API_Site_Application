@@ -204,10 +204,10 @@ const routes =[
         path: '/user/favoriteSchedule',
         handler: async (request, h) => {
             try {
-                const login = request.payload.login
+                const token = request.payload.token
                 const favoriteSchedule = request.payload.favoriteSchedule
 
-                const user = await controller.setFavorite(login, favoriteSchedule)
+                const user = await controller.setFavorite(token, favoriteSchedule)
                 
                 if (user != null) {
                     return h.response(user).code(201)
@@ -223,10 +223,10 @@ const routes =[
 
     {
         method: 'GET',
-        path: '/user/favoriteSchedule/{login}',
+        path: '/user/favoriteSchedule/{token}',
         handler: async (request, h) => {
             try {
-                const favoriteSchedule = await controller.getFavorite(request.params.login)
+                const favoriteSchedule = await controller.getFavorite(request.params.token)
 
                 return h.response(favoriteSchedule).code(200)
             } catch (e) {
