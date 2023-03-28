@@ -3,13 +3,19 @@
 import {teacherDao} from "../dao/teacherDao.mjs";
 import {scheduleDao2} from "../dao/scheduleDao2.mjs";
 import {roomDao} from "../dao/roomDao.mjs";
+import {userDao} from "../dao/userDao.mjs";
 
 import {Schedule} from "../model/schedule.mjs"
 import {Cours} from "../model/cours.mjs"
 import {Room} from "../model/room.mjs"
+import {User} from "../model/user.mjs"
 import { ScheduleType } from "../model/scheduleType.mjs";
 
+import jwt from "jsonwebtoken"
+import bcrypt from "bcryptjs";
+
 let lastUpdate = null;
+const PRIVATE_KEY = "OnDevraitTrouverMieux"
 
 const clearDatabaseIfNotUpdatedToday = async () => {
     const today = new Date();
@@ -27,6 +33,19 @@ const clearDatabaseIfNotUpdatedToday = async () => {
         } catch (e) {}
     }
 }
+
+const verifyToken = (token) => {
+    if (!token) {
+      return {message: "A token is required for authentification"};
+    }
+
+    try {
+      return jwt.verify(token, PRIVATE_KEY);
+    } catch (err) {
+      return {message: "Invalid token"};
+    }
+  };
+  
 
 export const controller = {
     findByDay : async(id, date, scheduleType) => {
@@ -192,5 +211,110 @@ export const controller = {
         } catch (e) {
             return Promise.reject({message : "error"})
         }
-    }
+    },
+
+    register : async (user) => {
+        try {
+            const userAlreadyExists = await userDao.find(user.login)
+            if (userAlreadyExists) {
+                return {message: "user already exists"}
+            }
+
+            const token = jwt.sign(
+                { login: user.login },
+                PRIVATE_KEY,
+                {
+                    expiresIn: "1h",
+                }
+            );
+
+            const userToAdd = new User({
+                login: user.login,
+                password: bcrypt.hashSync(user.password, 8),
+                favoriteSchedule: 0,
+                token: token
+            })
+
+            const userAdded = await userDao.add(userToAdd);
+            return userAdded
+
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    login : async (user) => {
+        try {
+            const userFound = await userDao.find(user.login)
+            if (!userFound || !bcrypt.compareSync(user.password, userFound.password)) {
+                console.log("wrong");
+                return {message: "user not found"}
+            }
+
+            const token = jwt.sign(
+                { login: user.login },
+                PRIVATE_KEY,
+                {
+                    expiresIn: "1h",
+                }
+            );
+
+            userFound.token = token
+
+            const userUpdated = await userDao.update(userFound)
+            delete userUpdated.password
+            return userUpdated
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    setFavorite : async(login, favoriteSchedule) => {
+        try {
+            const user = await userDao.find(login)
+            if (user == null) {
+                return null
+            }
+
+            const validToken = verifyToken(user.token)
+            // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return validToken
+            }
+
+            user.favoriteSchedule = favoriteSchedule
+            const userUpdated = await userDao.update(user)
+            delete userUpdated.password
+            return userUpdated
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    getFavorite : async (login) => {
+        try {
+            const user = await userDao.find(login)
+            if (user == null) {
+                return null
+            }
+
+            const validToken = verifyToken(user.token)
+            // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return validToken
+            }
+
+            return user.favoriteSchedule
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
 }

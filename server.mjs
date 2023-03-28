@@ -6,6 +6,7 @@ import {controller} from "./controller/controller.mjs";
 
 import {ScheduleType} from "./model/scheduleType.mjs"
 
+// TODO: joi, swagger, chai, secure routes (schedule/day/fgdfqgfg3184fsgd...)
 
 function formatStringToDate(stringDate) {
     const [date, time] = stringDate.split("T")
@@ -156,7 +157,84 @@ const routes =[
                 return h.response(e).code(400)
             }
         }
-    },   
+    },
+
+    {
+        method: 'POST',
+        path: '/user/register',
+        handler: async (request, h) => {
+            try {
+                const userToAdd = request.payload
+                const user = await controller.register(userToAdd)
+                
+                if (user != null) {
+                    return h.response(user).code(201)
+                } else {
+                    return h.response(user).code(403)
+                }
+
+            } catch (e) {
+                return h.response({message: 'error'}).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'POST',
+        path: '/user/login',
+        handler: async (request, h) => {
+            try {
+                const userToAdd = request.payload
+                const user = await controller.login(userToAdd)
+                
+                if (user != null) {
+                    return h.response(user).code(201)
+                } else {
+                    return h.response(user).code(403)
+                }
+
+            } catch (e) {
+                return h.response({message: 'error'}).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'POST',
+        path: '/user/favoriteSchedule',
+        handler: async (request, h) => {
+            try {
+                const login = request.payload.login
+                const favoriteSchedule = request.payload.favoriteSchedule
+
+                const user = await controller.setFavorite(login, favoriteSchedule)
+                
+                if (user != null) {
+                    return h.response(user).code(201)
+                } else {
+                    return h.response(user).code(403)
+                }
+
+            } catch (e) {
+                return h.response({message: 'error'}).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/user/favoriteSchedule/{login}',
+        handler: async (request, h) => {
+            try {
+                const favoriteSchedule = await controller.getFavorite(request.params.login)
+
+                return h.response(favoriteSchedule).code(200)
+            } catch (e) {
+                console.log(e);
+                return h.response(e).code(400)
+            }
+        }
+    },
 ]
 
 const server = Hapi.server({
