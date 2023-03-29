@@ -1,6 +1,17 @@
 'use strict';
 
 import Hapi from '@hapi/hapi';
+import Joi from 'joi';
+
+/*
+import * as JoiImport from 'joi';
+import DateExtension from '@joi/date';
+const Joi = JoiImport.extend(DateExtension);
+*/
+
+import Inert from '@hapi/inert'
+import Vision from '@hapi/vision';
+import HapiSwagger from 'hapi-swagger';
 
 import {controller} from "./controller/controller.mjs";
 
@@ -8,6 +19,91 @@ import {ScheduleType} from "./model/scheduleType.mjs"
 
 // TODO: joi, swagger, chai, secure routes (schedule/day/fgdfqgfg3184fsgd...)
 // token header, authorization bering?
+
+// Partie JOI - Définitions des objets joi
+
+const joiCours = Joi.object(
+    {
+        id : Joi.number().integer().required().description("L'id d'une salle doit être unique"),
+        start : Joi.string().required().description("Date de début du cours"),
+        end : Joi.string().required().description("Date de fin du cours"),
+        /*
+        start : Joi.date().format('YYYY-MM-DD').required().description("Date de début du cours"),
+        end : Joi.date().format('YYYY-MM-DD').required().description("Date de fin du cours"),
+        */
+        summary : Joi.string().allow(null).required().description("Corps du cours (quel cours, etc)"),
+        location : Joi.string().allow(null).required().description("identifiant de la salle ( EX-XX )"),
+        roomId :  Joi.number().integer().required().description("L'id d'une salle"),
+        Schedule : Joi.array(), 
+    }
+).description('Cours')
+
+const joiCoursTab = Joi.array().items(joiCours).description("A collection of Cours")
+
+
+const joiSchedule = Joi.object(
+    {
+        id : Joi.number().integer().required().description("L'identifiant d'un emploi du temps doit être unique"),
+        classes : joiCoursTab,
+        type : Joi.string().required().description("Le type d'emploi du temps ('prof/etudiant/ ')"),
+    }
+).description('Schedule')
+
+const joiScheduleTab = Joi.array().items(joiSchedule).description("A collection of Schedule")
+
+
+const joiTeacher = Joi.object(
+    {
+        id : Joi.number().integer().required().description("L'id d'un professeur doit être unique"),
+        name : Joi.string().required().description("Le nom du professeur"),
+
+    }
+).description('Teacher')
+
+
+
+const joiRoom = Joi.object(
+    {
+        id : Joi.number().integer().required().description("L'id d'une salle doit être unique"),
+        name : Joi.string().allow(null).required().description("Le nom de la salle"),
+        computerRoom : Joi.boolean().required().description("Vaut vrai quand la salle est équipée de matériel informatique")
+
+    }
+).description('Room')
+
+const joiRoomsTab = Joi.array().items(joiRoom).description("A collection of Rooms")
+
+
+
+const joiUser = Joi.object(
+    {
+        login : Joi.number().integer().required().description("Le login d'un utilisateur doit être unique"),
+        password : Joi.string().required().description("Le mot de passe de l'utilisateur"),
+        favoriteSchedule : Joi.number().integer().required().description("L'identifiant de l'emploi du temps favori de l'utilisateur"),
+        token : Joi.string().allow(null).required().description("Dernier web token connu de l'utilisateur"),
+
+    }
+).description('User')
+
+
+
+const notFound = Joi.object({
+    message: "not found"
+})
+
+const errorMessage = Joi.object({
+    message: "error"
+})
+
+
+// Partie Swagger
+const swaggerOptions = {
+    info: {
+        title: "L'API des utilisateurs",
+        version: '1.0.0',
+    }
+};
+
 
 function formatStringToDate(stringDate) {
     const [date, time] = stringDate.split("T")
@@ -23,15 +119,7 @@ function formatStringToDate(stringDate) {
 }
 
 
-const routes =[
-    {
-        method: '*',
-        path: '/',
-        handler: function (_, h) {
-            return h.response({message: 'Accueil API RESTful du Club des 5'}).code(404)
-        }
-    },
-    
+const routes =[    
     {
         method: '*',
         path: '/{any*}',
@@ -43,6 +131,23 @@ const routes =[
     {
         method: 'GET',
         path: '/schedule/day/{id}/{date?}',
+        options : {
+            description : 'get classes for a day from an id, the date can be expressed, by default its the current day',
+            notes : 'get classes for a day from an id, the date can be expressed, by default its the current day',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    id : Joi.number(),
+                    date : Joi.string(),
+                }),
+            },
+            response: {
+                status: {
+                    200 : joiCoursTab,
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
@@ -64,6 +169,23 @@ const routes =[
     {
         method: 'GET',
         path: '/schedule/week/{id}/{date?}',
+        options : {
+            description : 'get classes for a week from an id, the date can be expressed, by default its the current day',
+            notes : 'get classes for a week from an id, the date can be expressed, by default its the current day',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    id : Joi.number(),
+                    date : Joi.string(),
+                })
+            },
+            response: {
+                status: {
+                    200 : joiCoursTab,
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
@@ -86,6 +208,23 @@ const routes =[
     {
         method: 'GET',
         path: '/teacher/{id}/{date?}',
+        options : {
+            description : 'get classes for a given day for a teacher from an id, the date can be expressed, by default its the current day',
+            notes : 'get classes for a given day for a teacher from an id, the date can be expressed, by default its the current day',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    id : Joi.number(),
+                    date : Joi.string(),
+                })
+            },
+            response: {
+                status: {
+                    200 : joiCoursTab,
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
@@ -108,6 +247,23 @@ const routes =[
     {
         method: 'GET',
         path: '/room/{id}/{time?}',
+        options : {
+            description : 'get classes for a given day for a room from an id, the date can be expressed, by default its the current day',
+            notes : 'can be a tab containing a single class or no class',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    id : Joi.number(),
+                    time : Joi.string(),
+                })
+            },
+            response: {
+                status: {
+                    200 : joiCoursTab,
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
@@ -130,6 +286,23 @@ const routes =[
     {
         method: 'GET',
         path: '/rooms/{computerRoomsOnly}/{time?}',
+        options : {
+            description : 'get empty rooms for a given daytime, computerRoomsOnly can be set to true to get rooms equipped with it equipment the date can be expressed, by default its the current day and time',
+            notes : 'a tab containing empty rooms, computerRoom or computerRoom and !computerRoom',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    computerRoomsOnly : Joi.boolean(),
+                    time : Joi.string(),
+                })
+            },
+            response: {
+                status: {
+                    200 : joiRoomsTab,
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const computerRoomsOnly = request.params.computerRoomsOnly
@@ -150,6 +323,22 @@ const routes =[
     {
         method: 'GET',
         path: '/populate/{type}',
+        options : {
+            description : 'read the csv corresponding to the type and populates the database',
+            notes : 'read the csv corresponding to the type and populates the database',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    type : Joi.string(),
+                }),
+            },
+            response: {
+                status: {
+                    200 : joiRoomsTab,
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const classes = await controller.populate(request.params.type)
@@ -164,6 +353,17 @@ const routes =[
     {
         method: 'POST',
         path: '/user/register',
+        options : {
+            description : 'allow users to register',
+            notes : 'allow users to register',
+            tags : ['api'],
+            validate: {
+                payload: Joi.object({
+                    token : Joi.string(),
+                    favoriteSchedule : Joi.number() 
+                    })
+            },
+        },
         handler: async (request, h) => {
             try {
                 const userToAdd = request.payload
@@ -184,6 +384,17 @@ const routes =[
     {
         method: 'POST',
         path: '/user/login',
+        options : {
+            description : 'allow users to log in',
+            notes : 'allow users to log in',
+            tags : ['api'],
+            validate: {
+                payload: Joi.object({
+                    login : Joi.string(),
+                    password : Joi.string() 
+                    })
+            },
+        },
         handler: async (request, h) => {
             try {
                 const userToAdd = request.payload
@@ -205,6 +416,17 @@ const routes =[
     {
         method: 'POST',
         path: '/user/favoriteSchedule',
+        options : {
+            description : 'allow users to get their favorite schedule',
+            notes : 'allow users to log in',
+            tags : ['api'],
+            validate: {
+                payload: Joi.object({
+                    login : Joi.string(),
+                    password : Joi.string() 
+                    })
+            },
+        },
         handler: async (request, h) => {
             try {
                 const token = request.payload.token
@@ -227,6 +449,22 @@ const routes =[
     {
         method: 'GET',
         path: '/user/favoriteSchedule/{token}',
+        options : {
+            description : 'read the csv corresponding to the type and populates the database',
+            notes : 'read the csv corresponding to the type and populates the database',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    token : Joi.string(),
+                })
+            },
+            response: {
+                status: {
+                    200 : Joi.number().integer(),
+                    404 : notFound
+                    }
+                }
+        },
         handler: async (request, h) => {
             try {
                 const favoriteSchedule = await controller.getFavorite(request.params.token)
@@ -263,6 +501,14 @@ export const init = async () => {
 };
 
 export const start = async () => {
+    await server.register([
+        Inert,
+        Vision,
+        {
+            plugin : HapiSwagger,
+            options : swaggerOptions
+        }
+    ])
     await server.start();
     console.log(`Server running at: ${server.info.uri}`);
     return server;
