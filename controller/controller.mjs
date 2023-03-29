@@ -235,7 +235,7 @@ export const controller = {
             })
 
             const userAdded = await userDao.add(userToAdd);
-            return userAdded.token
+            return {token: userAdded.token}
 
 
         } catch (e) {

@@ -7,6 +7,7 @@ import {controller} from "./controller/controller.mjs";
 import {ScheduleType} from "./model/scheduleType.mjs"
 
 // TODO: joi, swagger, chai, secure routes (schedule/day/fgdfqgfg3184fsgd...)
+// token header, authorization bering?
 
 function formatStringToDate(stringDate) {
     const [date, time] = stringDate.split("T")
