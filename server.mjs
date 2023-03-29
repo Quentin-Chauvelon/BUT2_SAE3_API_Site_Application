@@ -153,7 +153,6 @@ const routes =[
                 const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Schedule)
-                
                 if (classes != null) {
                     return h.response(classes).code(200)
                 } else {
@@ -307,6 +306,8 @@ const routes =[
             try {
                 const computerRoomsOnly = request.params.computerRoomsOnly
                 const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
+                console.log(time);
                 
                 const freeRooms = await controller.findRooms(computerRoomsOnly, time, ScheduleType.Room)
                 
@@ -396,6 +397,7 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const userToAdd = request.payload
+                console.log(userToAdd);
                 const user = await controller.login(userToAdd)
                 
                 if (user != null) {
@@ -476,11 +478,16 @@ const routes =[
 ]
 
 const server = Hapi.server({
-    port: 3000,
-    host: 'localhost',
+    port: 443,
+    host: '172.26.82.56',
     routes: {
         json: {
             space: 4
+        },
+        "cors": {
+            "origin": ["*"],
+            "headers": ["Accept", "Content-Type"],
+            "additionalHeaders": ["X-Requested-With"]
         }
     }
 });

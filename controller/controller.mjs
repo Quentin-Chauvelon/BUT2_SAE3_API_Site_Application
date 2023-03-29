@@ -1,7 +1,7 @@
 "use strict"
 
 import {teacherDao} from "../dao/teacherDao.mjs";
-import {scheduleDao2} from "../dao/scheduleDao2.mjs";
+import {scheduleDao} from "../dao/scheduleDao.mjs";
 import {roomDao} from "../dao/roomDao.mjs";
 import {userDao} from "../dao/userDao.mjs";
 
@@ -28,7 +28,7 @@ const clearDatabaseIfNotUpdatedToday = async () => {
     ) {
         try {
             // await roomDao.deleteAll();
-            await scheduleDao2.deleteAll();
+            await scheduleDao.deleteAll();
             lastUpdate = new Date()
         } catch (e) {}
     }
@@ -54,16 +54,16 @@ export const controller = {
             // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
             clearDatabaseIfNotUpdatedToday()
 
-            let schedule = await scheduleDao2.find(id);
+            let schedule = await scheduleDao.find(id);
             if (schedule == null) {
-                schedule = await scheduleDao2.save(id, scheduleType)
+                schedule = await scheduleDao.save(id, scheduleType)
             }
 
             if (schedule == null) {
                 return null
             }
 
-            return await scheduleDao2.findByDay(schedule, date)
+            return await scheduleDao.findByDay(schedule, date)
 
         } catch (e) {
             console.log(e);
@@ -82,16 +82,16 @@ export const controller = {
                 return null;
             }
 
-            let schedule = await scheduleDao2.find(room.id);
+            let schedule = await scheduleDao.find(room.id);
             if (schedule == null) {
-                schedule = await scheduleDao2.save(room.id, scheduleType)
+                schedule = await scheduleDao.save(room.id, scheduleType)
             }
 
             if (schedule == null) {
                 return null
             }
 
-            return await scheduleDao2.findByTime(schedule, time)
+            return await scheduleDao.findByTime(schedule, time)
 
         } catch (e) {
             return Promise.reject({message : "error"})
@@ -116,9 +116,9 @@ export const controller = {
 
             const schedules = [];
 
-            let schedule = await scheduleDao2.find(id);
+            let schedule = await scheduleDao.find(id);
             if (schedule == null) {
-                schedule = await scheduleDao2.save(id, scheduleType)
+                schedule = await scheduleDao.save(id, scheduleType)
             }
                 
             if (schedule == null) {
@@ -126,7 +126,7 @@ export const controller = {
             }
             
             for (const day of week) {
-                schedules.push(await scheduleDao2.findByDay(schedule, day))
+                schedules.push(await scheduleDao.findByDay(schedule, day))
             }
 
             return schedules
@@ -197,7 +197,6 @@ export const controller = {
                 // filter computer rooms only if needed
                 if (computerRoomsOnly == "false" || room.computerRoom) {
                     const roomSchedule = await controller.findByTime(room.id, time, scheduleType);
-                    console.log(roomSchedule);
 
                     // if the room is free, add it to the table of free rooms
                     if (roomSchedule.length == 0) {
@@ -265,7 +264,7 @@ export const controller = {
 
             const userUpdated = await userDao.update(userFound)
             // delete userUpdated.password
-            return userUpdated.token
+            return {token: userUpdated.token}
 
         } catch (e) {
             console.log(e);
