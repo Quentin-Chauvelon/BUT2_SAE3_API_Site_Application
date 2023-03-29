@@ -1,0 +1,47 @@
+import {Link, useFetcher} from "react-router-dom"
+
+
+export async function action({ request, params }) {
+    let formData = await request.formData();
+    const login = formData.get("login");
+    const password = formData.get("password");
+    console.log(login, password);
+
+    return null
+    // return updateContact(params.contactId, {
+    //   favorite: formData.get("favorite") === "true",
+    // });
+} 
+
+
+export default function Register() {
+    const fetcher = useFetcher();
+
+    return (
+        <>
+            <div className="homeConnexion">
+                <div className="connexion">
+                    <div className="Sc">Connexion</div>
+                    <div className="barre-h1"></div>
+
+                    <fetcher.Form method="post">
+                        <input name="login" className="bodyInput" placeholder="Login"/><br/>
+                        <input name="password" className="bodyInput" placeholder="Password" type="password"/><br/>
+                        <button name="register" className="bodyButton Sc">Entrer</button><br/>
+                    </fetcher.Form>
+                    
+                    <Link to={"login"} className="petit Sc">Créez un compte ?</Link>
+                </div>
+
+                <div className="barre-v"></div>
+                <div className="barre-h3"></div>
+                <div className="visiteur">
+                    <div className="Sc">Visiteur</div>
+                    <div className="barre-h2"></div>
+                    <p className="Sc">“Je jure solennellement que mes intentions sont mauvaises”</p>
+                    <Link to={"home"} className="bodyButton Sc">Entrer</Link>
+                </div>
+            </div>
+        </>
+    );
+}

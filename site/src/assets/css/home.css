@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant&family=Cormorant+SC&display=swap');
+
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    color: rgba(226, 226, 226)
+}
+
+.selectSchedule {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.selectSchedule h2 {
+    font-size: 25px;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    height: 100%;
+}
+
+table thead tr th {
+    border: 1px solid black;
+}
+
+table thead tr:first-child th {
+    border: none;
+}
+
+table tbody tr th:first-child {
+    border: 1px solid black;
+}
+
+table .cours {
+    color: black;
+    height: 100%;
+    background-color: lightblue;
+    text-align: center;
+    /* padding: 10px; */
+    font-size: 20px;
+}
+
+table tbody div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 10px;
+}
+
+table div p {
+    margin: 0 10px;
+}
+
+table div p:first-child {
+    margin-top: 10px;
+}
+
+table div p:last-child {
+    margin-bottom: 10px;
+}
+
+table th {
+    font-size: 22px;
+    font-weight: bold;
+}
