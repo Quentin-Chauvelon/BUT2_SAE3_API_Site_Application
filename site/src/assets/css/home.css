@@ -4,7 +4,16 @@ html, body {
     margin: 0;
     width: 100%;
     min-height: 100%;
-    color: rgba(226, 226, 226)
+}
+
+.home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    margin-top: 50px;
 }
 
 .selectSchedule {
@@ -21,7 +30,9 @@ html, body {
 table {
     border: 1px solid black;
     border-collapse: collapse;
+    width: 90%;
     height: 100%;
+    background-color: rgba(230,230,230);
 }
 
 table thead tr th {
@@ -32,6 +43,10 @@ table thead tr:first-child th {
     border: none;
 }
 
+table tbody > tr {
+    border: 1px solid black;
+}
+
 table tbody tr th:first-child {
     border: 1px solid black;
 }
@@ -39,10 +54,29 @@ table tbody tr th:first-child {
 table .cours {
     color: black;
     height: 100%;
-    background-color: lightblue;
     text-align: center;
     /* padding: 10px; */
     font-size: 20px;
+}
+
+.cours.td {
+    background-color: #8FC1FD;
+}
+
+.cours.tp {
+    background-color: #FF9EFF;
+}
+
+.cours.ds {
+    background-color: #BF7F7F;
+}
+
+.cours.amphi {
+    background-color: #FF7F7F;
+}
+
+.cours.reunion {
+    background-color: #BFFFFF;
 }
 
 table tbody div {
@@ -66,6 +100,6 @@ table div p:last-child {
 }
 
 table th {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
 }

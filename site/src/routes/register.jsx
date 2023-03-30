@@ -42,12 +42,11 @@ export default function Register() {
                 <div className="barre-h1"></div>
 
                 <fetcher.Form method="post" className="registerForm">
-                    <input name="login" className="bodyInput" placeholder="Login"/>
-                    <input name="password" className="bodyInput" placeholder="Password" type="password"/>
+                    <input name="login" className="bodyInput" placeholder="Login" required/>
+                    <input name="password" className="bodyInput" placeholder="Password" type="password" required/>
                     <button name="log in" className="bodyButton Sc">Entrer</button>
                 </fetcher.Form>
-
-                <Link to={"/"} className="Sc petit">Annuler ?</Link>
+                <Link to={"/login"} className="Sc petit a br">Annuler ?</Link>
             </div>
         </>
     );

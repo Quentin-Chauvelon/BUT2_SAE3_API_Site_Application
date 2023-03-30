@@ -13,7 +13,7 @@ export default function Root() {
             <div>
                 <p className="Sc titre">ScheduleTrack Nantes</p>
                 <div className="barre-h"></div>
-                <Outlet />
+                <Outlet/>
             </div>
 
             <div className="homeFooter">

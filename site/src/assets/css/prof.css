@@ -1,0 +1,23 @@
+/* RechercheProf */
+
+.rechercheProf {
+    text-align: center;
+}
+
+.rechercheProf input {
+    width: 700px;
+    height: 90px;
+    border-radius: 30px;
+    padding-left: 1%;
+    font-size: 40px;
+    margin-top: 40px;
+}
+
+.rechercheProf input:focus {
+    box-shadow: 0px 0px 20px 1px #000000;
+}
+
+.rechercheProf p {
+    color : #FFFFFF;
+    text-decoration: underline;
+}

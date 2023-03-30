@@ -1,5 +1,6 @@
 
 import {Link, useFetcher, redirect} from "react-router-dom"
+import {setToken} from "../main.jsx"
 
 
 export async function action({ request, params }) {
@@ -18,10 +19,12 @@ export async function action({ request, params }) {
     });
     
     const json = await response.json();
-    console.log(json.token);
     
     if (json.token) {
+        setToken(json.token);
         return redirect("/home/");
+    } else {
+        console.log("login ou mot de passe incorrect");
     }
 
     return null
@@ -42,12 +45,12 @@ export default function Login() {
                     <div className="barre-h1"></div>
 
                     <fetcher.Form method="post">
-                        <input name="login" className="bodyInput" placeholder="Login"/><br/>
-                        <input name="password" className="bodyInput" placeholder="Password" type="password"/><br/>
+                        <input name="login" className="bodyInput" placeholder="Login" required/><br/>
+                        <input name="password" className="bodyInput" placeholder="Password" type="password" required/><br/>
                         <button name="register" className="bodyButton Sc">Entrer</button><br/>
                     </fetcher.Form>
                     
-                    <Link to={"/register"} className="petit Sc">Créez un compte ?</Link>
+                    <Link to={"/register"} className="petit Sc a">Créez un compte ?</Link>
                 </div>
 
                 <div className="barre-v"></div>
@@ -56,7 +59,7 @@ export default function Login() {
                     <div className="Sc">Visiteur</div>
                     <div className="barre-h2"></div>
                     <p className="Sc">“Je jure solennellement que mes intentions sont mauvaises”</p>
-                    <Link to={"/home"} className="bodyButton Sc">Entrer</Link>
+                    <Link to={"/home"}><button name="register" className="bodyButton Sc">Entrer</button></Link> 
                 </div>
             </div>
         </>
