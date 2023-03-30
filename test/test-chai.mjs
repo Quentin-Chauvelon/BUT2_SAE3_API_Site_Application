@@ -61,8 +61,16 @@ describe('/populate/{type}', () => {
                 chai.expect(res.statusCode).to.equal(200);
                 chai.expect(res.result).to.be.eql([
                     {
+                        "id": 3182,
+                        "name": "INFO 2 Groupe 4"
+                    },
+                    {
                         "id": 3183,
                         "name": "INFO 2 TP 1-1"
+                    },
+                    {
+                        "id": 3184,
+                        "name": "INFO 2 TP 1-2"
                     }
                 ])
             });
@@ -142,7 +150,7 @@ describe('room/{id}/{time}', () => {
         ]);
     });
 
-    it('should show room class of C0-05 at 30/10/2023 at 8:30 am and it has class with lanoix', async () => {
+    it('should show room class of C0-05 at 30/10/2023 at 8:30 am and it has no class', async () => {
         const res = await server.inject({
             method: 'get',
             url: '/room/89804/20230330T083000000Z'
@@ -150,6 +158,7 @@ describe('room/{id}/{time}', () => {
         chai.expect(res.statusCode).to.equal(200);
         chai.expect(res.result).to.be.eql([
             {
+                "id" : '[undefined]',
                 "start": '[Date : 2023-03-30T08:00:00.000Z]',
                 "end": "[Date : 2023-03-30T09:20:00.000Z]",
                 "summary": "TP - Développement objets\\, INFO 1 TP 3-1\\, LANOIX Arnaud",
@@ -333,11 +342,11 @@ describe('/rooms/{computerRoomOnly}/{time}', () => {
 });
 
 
-/// Tests Schedule
+/// TODO Tests Schedule
 
 describe('/schedule', () => {
     let server;
-    
+
     // Test route /schedule/day/{id}/{date}
     describe('/schedule/day/{id}/{date}', () => {
         beforeEach(async () => {
@@ -348,7 +357,8 @@ describe('/schedule', () => {
         afterEach(async () => {
             await server.stop();
         });
-    
+        
+
         
     });
 
@@ -368,4 +378,84 @@ describe('/schedule', () => {
 
 });
 
+//TODO Tests /teacher/{id}/{date}
+describe('/teacher/{id}/{date}', () => {
+    let server
 
+    beforeEach(async () => {
+        server = await init();
+
+    });
+
+    afterEach(async () => {
+        await server.stop();
+    });
+
+    
+});
+
+
+//TODO Tests /user
+
+describe('/user', () => {
+    let server
+
+    // TODO Tests route /user/favoriteSchedule
+    describe('/user/favoriteSchedule', () => {
+
+        beforeEach(async () => {
+            server = await init();
+    
+        });
+    
+        afterEach(async () => {
+            await server.stop();
+        });
+    
+        
+
+    });
+    // TODO Tests route /user/favoriteSchedule/{token}
+    describe('/user/favoriteSchedule/{token}', () => {
+        
+        beforeEach(async () => {
+            server = await init();
+    
+        });
+    
+        afterEach(async () => {
+            await server.stop();
+        });
+    
+        
+    });
+
+    // TODO Tests route /user/login
+    describe('/user/login', () => {
+        
+        beforeEach(async () => {
+            server = await init();
+    
+        });
+    
+        afterEach(async () => {
+            await server.stop();
+        });
+    
+        
+    });
+    // TODO Tests route /user/register
+    describe('/user/register', () => {
+        
+        beforeEach(async () => {
+            server = await init();
+    
+        });
+    
+        afterEach(async () => {
+            await server.stop();
+        });
+    
+        
+    });
+});

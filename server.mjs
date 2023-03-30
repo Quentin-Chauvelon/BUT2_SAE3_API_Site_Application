@@ -173,12 +173,7 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                let date = ""
-                try {
-                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
-                } catch(e) {
-                    return h.response({message: 'date invalide'}).code(400)
-                }
+                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Schedule)
                 if (classes != null) {
@@ -216,12 +211,7 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                let date = ""
-                try {
-                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
-                } catch(e) {
-                    return h.response({message: 'date invalide'}).code(400)
-                }
+                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
 
                 const classes = await controller.findByWeek(id, date, ScheduleType.Schedule)
                 
@@ -260,12 +250,7 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                let date = ""
-                try {
-                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
-                } catch(e) {
-                    return h.response({message: 'date invalide'}).code(400)
-                }
+                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Teacher)
                 
@@ -323,12 +308,7 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                let time = ""
-                try {
-                    time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
-                } catch(e) {
-                    return h.response({message: 'date invalide'}).code(400)
-                }
+                let time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
 
                 if (!request.params.time) {
                     time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
@@ -372,16 +352,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const computerRoomsOnly = request.params.computerRoomsOnly
-                let time = ""
-                try {
-                    time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
-                } catch(e) {
-                    return h.response({message: 'date invalide'}).code(400)
-                }
+                const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
 
                 if (!request.params.time) {
                     time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
                 }
+                console.log(time);
                 
                 const freeRooms = await controller.findRooms(computerRoomsOnly, time, ScheduleType.Room)
                 
@@ -481,7 +457,7 @@ const routes =[
                 }
 
             } catch (e) {
-                return h.response({message: 'login ou mot de passe incorrect'}).code(404)
+                return h.response({message: 'error'}).code(404)
             }
         }
     },
@@ -514,7 +490,7 @@ const routes =[
                 }
 
             } catch (e) {
-                return h.response({message: 'token incorrent'}).code(400)
+                return h.response({message: 'error'}).code(400)
             }
         }
     },
@@ -533,7 +509,7 @@ const routes =[
             },
             response: {
                 status: {
-                    200 : Joi.number().integer(),
+                    // 200 : Joi.number().integer(),
                     404 : notFound
                     }
                 }

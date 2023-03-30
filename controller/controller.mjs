@@ -309,13 +309,13 @@ export const controller = {
             const validToken = verifyToken(user.token)
             // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
             if (!validToken.login) {
-                return validToken
+                return {message: validToken}
             }
 
             user.favoriteSchedule = favoriteSchedule
             const userUpdated = await userDao.update(user)
             delete userUpdated.password
-            return userUpdated
+            return {favoriteSchedule: userUpdated}
 
         } catch (e) {
             console.log(e);
@@ -331,12 +331,12 @@ export const controller = {
             }
 
             const validToken = verifyToken(token)
-            // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
+            // if the token is invalid (a valid token is a dictionary with 3 keys : login, iat, exp)
             if (!validToken.login) {
-                return validToken
+                return {message: validToken}
             }
 
-            return user.favoriteSchedule
+            return {favoriteSchedule: user.favoriteSchedule}
 
         } catch (e) {
             console.log(e);
