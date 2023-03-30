@@ -17,17 +17,37 @@ html, body {
 }
 
 .selectSchedule {
+    font-family: 'Cormorant SC', serif;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
+.selectSchedule select {
+    font-family: 'Cormorant SC', serif;
+    width: 450px;
+    height: 50px;
+    border-radius: 30px;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: #FEFEFE;
+    text-align: center;
+}
+
+.selectSchedule select option {
+    font-family: 'Cormorant SC', serif;
+    font-weight: bold;
+}
+
 .selectSchedule h2 {
-    font-size: 25px;
+    font-size: 35px;
+    color: white;
+    text-decoration: underline;
 }
 
 table {
+    font-family: 'Cormorant SC', serif;
     border: 1px solid black;
     border-collapse: collapse;
     width: 90%;
@@ -43,6 +63,12 @@ table thead tr:first-child th {
     border: none;
 }
 
+table thead tr:first-child div {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+}
+
 table tbody > tr {
     border: 1px solid black;
 }
@@ -51,12 +77,20 @@ table tbody tr th:first-child {
     border: 1px solid black;
 }
 
+.star {
+    width: 50px;
+    height: 50px;
+    margin: 3px;
+}
+
 table .cours {
     color: black;
     height: 100%;
     text-align: center;
     /* padding: 10px; */
     font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .cours.td {
@@ -100,6 +134,6 @@ table div p:last-child {
 }
 
 table th {
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
 }

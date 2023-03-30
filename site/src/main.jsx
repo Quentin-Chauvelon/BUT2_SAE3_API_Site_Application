@@ -50,14 +50,14 @@ const router = createBrowserRouter([
       ],
     },
     {
-      path: "home",
+      path: "app",
       element: <Navbar />,
       children : [
         {
-          path: "",
+          path: "home",
           element:<Home/>,
+          action: homeAction,
           loader: homeLoader,
-          action: homeAction
         },
         {
           path: "salle",

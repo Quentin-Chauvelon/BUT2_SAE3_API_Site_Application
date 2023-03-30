@@ -4,25 +4,25 @@ export default function Navbar(){
     return (
         <>
         <div className="Sc navBar">
-                <Link to={"/home"}>
+                <Link to={"/app/home"}>
                 <div>
                     <img src="../src/assets/img/homeIcon.png"/>
                     <p>Accueil</p>
                 </div>
                 </Link>
-                <Link to={"/home/salle"}>
+                <Link to={"/app/salle"}>
                 <div>
                     <img src="../src/assets/img/salleIcon.png"/>
                     <p>Salles</p>
                 </div>
                 </Link>
-                <Link to={"/home/prof"}>
+                <Link to={"/app/prof"}>
                 <div>
                     <img src="../src/assets/img/profIcon.png"/>
                     <p>Professeurs</p>
                 </div>
                 </Link>
-                <Link to={"/home/iteneraire"}>
+                <Link to={"/app/iteneraire"}>
                 <div>
                     <img src="../src/assets/img/locationIcon.png"/>
                     <p>Itinéraire</p>

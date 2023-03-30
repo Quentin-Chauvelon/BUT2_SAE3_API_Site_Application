@@ -22,7 +22,7 @@ export async function action({ request, params }) {
     
     if (json.token) {
         setToken(json.token);
-        return redirect("/home/");
+        return redirect("/app/home");
     } else {
         console.log("login ou mot de passe incorrect");
     }
@@ -59,7 +59,7 @@ export default function Login() {
                     <div className="Sc">Visiteur</div>
                     <div className="barre-h2"></div>
                     <p className="Sc">“Je jure solennellement que mes intentions sont mauvaises”</p>
-                    <Link to={"/home"}><button name="register" className="bodyButton Sc">Entrer</button></Link> 
+                    <Link to={"/app/home"}><button name="register" className="bodyButton Sc">Entrer</button></Link> 
                 </div>
             </div>
         </>

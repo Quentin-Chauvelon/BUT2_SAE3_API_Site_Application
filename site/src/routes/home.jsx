@@ -1,10 +1,10 @@
-import {useLoaderData, useSubmit, Form} from "react-router-dom";
+import {useLoaderData, useSubmit, Form, useFetcher} from "react-router-dom";
 import {token} from "../main.jsx"
 import '../assets/css/root.css'
 
 
 function formatDateToString(date) {
-    const month = date.getMonth() + 1; // getMonth() is zero-based
+    const month = date.getMonth() + 1;
     const day = date.getDate();
     
     return date.getFullYear().toString().concat(
@@ -16,7 +16,25 @@ function formatDateToString(date) {
 }
 
 
-export async function action({ request, params }) {}
+export async function action({ request, params }) {
+    const formData = await request.formData();
+
+    const scheduleId = formData.get("favorite");
+
+    const response = await fetch("http://172.26.82.56:443/user/favoriteSchedule", {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            token: token,
+            favoriteSchedule: scheduleId
+        })
+    });
+
+    return null;
+}
 
 
 export async function loader({ request }) {
@@ -26,14 +44,16 @@ export async function loader({ request }) {
     const dateParam = url.searchParams.get("date")
     const date = (dateParam && dateParam != "") ? new Date(parseInt(dateParam)) : new Date();
 
-    if (scheduleId == "" && token != "") {
-        console.log(token);
+    let favoriteScheduleString = "";
+    if (token != "") {
         const favoriteScheduleResponse = await fetch("http://172.26.82.56:443/user/favoriteSchedule/".concat(token))
         const favoriteSchedule = await favoriteScheduleResponse.json()
-        console.log(favoriteSchedule);
-
+        
         if (favoriteSchedule.favoriteSchedule) {
-            scheduleId = favoriteSchedule.favoriteSchedule.toString()
+            favoriteScheduleString = favoriteSchedule.favoriteSchedule.toString();
+
+            if (scheduleId == "")
+            scheduleId = favoriteScheduleString;
         }
     }
     
@@ -62,13 +82,15 @@ export async function loader({ request }) {
         schedule = [];
     }
     
-    return {schedule, schedules, scheduleId, date};
+    return {schedule, schedules, scheduleId, date, favoriteScheduleString};
 }
 
 
 export default function Home() {    
-    const {schedule, schedules, scheduleId, date} = useLoaderData()
+    const {schedule, schedules, scheduleId, date, favoriteScheduleString} = useLoaderData()
+    console.log(scheduleId, favoriteScheduleString);
     const submit = useSubmit()
+    const fetcher = useFetcher()
     const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     
     return (
@@ -85,7 +107,7 @@ export default function Home() {
                 }}
                 >
                 
-                <option value="">Veuillez choisir un emploi du temps</option>
+                <option value="">Veuillez choisir un groupe</option>
                 {
                     schedules.map((scheduleObject, i) => {
                         return <option key={i} value={scheduleObject.id}>{scheduleObject.name}</option>
@@ -98,9 +120,9 @@ export default function Home() {
         <table>
         <thead>
             <tr>
-                <th colSpan="30"></th>
+                <th colSpan="60"></th>
 
-                <th colSpan="32">
+                <th colSpan="12">
                     <Form id="previousWeek" role="search">
                         <div
                             name="previousWeek"
@@ -115,9 +137,9 @@ export default function Home() {
                     </Form>
                 </th>
 
-                <th colSpan="31"></th>
+                <th colSpan="21"></th>
 
-                <th colSpan="32">
+                <th colSpan="12">
                 <Form id="nextWeek" role="search">
                         <div
                             name="nextWeek"
@@ -132,7 +154,7 @@ export default function Home() {
                     </Form>
                 </th>
 
-                <th colSpan="30"></th>
+                <th colSpan="50"></th>
             </tr>
 
             <tr>
@@ -144,7 +166,13 @@ export default function Home() {
             </tr>
 
             <tr>
-            <th colSpan="25"></th>
+            <th colSpan="25">
+                <div>
+                    <fetcher.Form method="post">
+                        <input type="image" value={scheduleId} name="favorite" className="star" id="favorite" alt="favorite" src={(favoriteScheduleString == scheduleId) ? "../src/assets/img/star.png" : "../src/assets/img/emptyStar.png"}/>
+                    </fetcher.Form>
+                </div>
+            </th>
             
             {
                 Array.from({ length: 10 }).map((_, i) => {

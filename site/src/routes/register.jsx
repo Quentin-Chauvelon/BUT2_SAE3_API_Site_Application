@@ -19,7 +19,7 @@ export async function action({ request, params }) {
     console.log(json.token);
     
     if (json.token) {
-        return redirect("/home/");
+        return redirect("/app/home");
     }
         
         // const response = await fetch("http://172.26.82.56:443/user/login")
