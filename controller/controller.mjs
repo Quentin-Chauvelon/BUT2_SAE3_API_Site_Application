@@ -48,6 +48,20 @@ const verifyToken = (token) => {
   
 
 export const controller = {
+    findSchedules : async() => {
+        try {
+
+            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            clearDatabaseIfNotUpdatedToday()
+
+            return await scheduleDao.findSchedules();
+            
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
     findByDay : async(id, date, scheduleType) => {
         try {
 
@@ -141,8 +155,14 @@ export const controller = {
         try {
             let file = "";
             switch (fileName) {
+                case "schedules":
+                    return await scheduleDao.populate("./data/schedules.csv")
+
                 case "rooms":
                     return await roomDao.populate("./data/rooms.csv")
+
+                case "teachers":
+                return await teacherDao.populate("./data/teachers.csv")
                 
                 default:
                     return h.response({message: 'not found'}).code(404);
@@ -153,9 +173,6 @@ export const controller = {
         }
     },
 
-
-
-
     findTeacher : async (teacherName, date) => {
         try {
             const teacher = await teacherDao.findByName(teacherName);
@@ -165,6 +182,15 @@ export const controller = {
 
             const classes = await scheduleDao.findByDay(teacher.getScheduleURL(), date)
             return classes
+
+        } catch (e) {
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    findTeachers : async () => {
+        try {
+            return await teacherDao.findAll();
 
         } catch (e) {
             return Promise.reject({message : "error"})
@@ -195,8 +221,9 @@ export const controller = {
             for (const room of rooms) {
 
                 // filter computer rooms only if needed
-                if (computerRoomsOnly == "false" || room.computerRoom) {
+                if (computerRoomsOnly == false || room.computerRoom) {
                     const roomSchedule = await controller.findByTime(room.id, time, scheduleType);
+                    console.log(roomSchedule);
 
                     // if the room is free, add it to the table of free rooms
                     if (roomSchedule.length == 0) {

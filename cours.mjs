@@ -87,5 +87,4 @@ const Rooms = [
     new Room(89804, "C0/05", false)
 ]
 
-
 export {Cours, Teachers, Rooms, allSchedules}

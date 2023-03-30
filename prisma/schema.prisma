@@ -53,6 +53,11 @@ model Schedule {
   type           String
 }
 
+model Schedules {
+  id   Int @id
+  name String
+}
+
 // model ScheduleType {
 //   id       Int        @id @default(autoincrement())
 //   Schedule Schedule[]

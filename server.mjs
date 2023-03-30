@@ -1,13 +1,12 @@
 'use strict';
 
 import Hapi from '@hapi/hapi';
-import Joi from 'joi';
+import Jois from 'joi';
 
-/*
-import * as JoiImport from 'joi';
-import DateExtension from '@joi/date';
-const Joi = JoiImport.extend(DateExtension);
-*/
+import JoiDate from '@hapi/joi-date'
+const Joi = Jois.extend(JoiDate)
+// const Joi = require('joi').extend(require('@joi/date'));
+
 
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision';
@@ -18,19 +17,23 @@ import {controller} from "./controller/controller.mjs";
 import {ScheduleType} from "./model/scheduleType.mjs"
 
 // TODO: joi, swagger, chai, secure routes (schedule/day/fgdfqgfg3184fsgd...)
+// TODO séparer schedule et schedules parce que là c'est affreux
+// TODO populate ligne ~354, j'ai viré le status 200 du swagger car maintenant ça peut être un joiRoomsTab ou un objet de la forme {id : number, name : string} (voir model schedules)
 // token header, authorization bering?
 
 // Partie JOI - Définitions des objets joi
-
 const joiCours = Joi.object(
     {
-        id : Joi.number().integer().required().description("L'id d'une salle doit être unique"),
-        start : Joi.string().required().description("Date de début du cours"),
-        end : Joi.string().required().description("Date de fin du cours"),
-        /*
-        start : Joi.date().format('YYYY-MM-DD').required().description("Date de début du cours"),
-        end : Joi.date().format('YYYY-MM-DD').required().description("Date de fin du cours"),
-        */
+        id : Joi.number().integer().description("L'id d'une salle doit être unique"),
+        // start : Joi.string().required().description("Date de début du cours"),
+        // end : Joi.string().required().description("Date de fin du cours"),
+        start : Joi.date().description("Date de début du cours"),
+        end : Joi.date().description("Date de début du cours"),
+        // .format('YYYYMMDDTHHmmSSSSS').utc()
+        
+        // start : Joi.date().format('YYYY-MM-DD').required().description("Date de début du cours"),
+        // end : Joi.date().format('YYYY-MM-DD').required().description("Date de fin du cours"),
+        
         summary : Joi.string().allow(null).required().description("Corps du cours (quel cours, etc)"),
         location : Joi.string().allow(null).required().description("identifiant de la salle ( EX-XX )"),
         roomId :  Joi.number().integer().required().description("L'id d'une salle"),
@@ -112,11 +115,11 @@ function formatStringToDate(stringDate) {
     const month = parseInt(date.substring(4,6))
     const day = parseInt(date.substring(6,8))
     
-    const hour = parseInt(time.substring(0,2)) + 2
+    const hour = parseInt(time.substring(0,2))
     const minute = parseInt(time.substring(2,4))
     
-    return new Date(year, month - 1, day, hour, minute, 0)
-}
+    return new Date(year, month - 1, day, hour + 2, minute, 0)
+}   
 
 
 const routes =[    
@@ -125,6 +128,25 @@ const routes =[
         path: '/{any*}',
         handler: function (_, h) {
             return h.response({message: 'not found'}).code(404)
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/schedules',
+        handler: async (request, h) => {
+            try {
+                const schedules = await controller.findSchedules();
+                
+                if (schedules != null) {
+                    return h.response(schedules).code(200)
+                } else {
+                    return h.response({message: 'not found'}).code(404)
+                }
+                
+            } catch (e) {
+                return h.response(e).code(400)
+            }
         }
     },
     
@@ -137,13 +159,13 @@ const routes =[
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.number(),
-                    date : Joi.string(),
+                    id : Joi.string(),
+                    date : Joi.string().allow(null),
                 }),
             },
             response: {
                 status: {
-                    200 : joiCoursTab,
+                    // 200 : joiCoursTab,
                     404 : notFound
                     }
                 }
@@ -151,7 +173,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                let date = ""
+                try {
+                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Schedule)
                 if (classes != null) {
@@ -175,13 +202,13 @@ const routes =[
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.number(),
-                    date : Joi.string(),
+                    id : Joi.string(),
+                    date : Joi.string().allow(null),
                 })
             },
             response: {
                 status: {
-                    200 : joiCoursTab,
+                    200 : Joi.array().items(joiCoursTab),
                     404 : notFound
                     }
                 }
@@ -189,8 +216,13 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
-                
+                let date = ""
+                try {
+                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
+
                 const classes = await controller.findByWeek(id, date, ScheduleType.Schedule)
                 
                 if (classes != null) {
@@ -214,8 +246,8 @@ const routes =[
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.number(),
-                    date : Joi.string(),
+                    id : Joi.string(),
+                    date : Joi.string().allow(null),
                 })
             },
             response: {
@@ -228,12 +260,36 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                let date = ""
+                try {
+                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Teacher)
                 
                 if (classes != null) {
                     return h.response(classes).code(200)
+                } else {
+                    return h.response({message: 'not found'}).code(404)
+                }
+                
+            } catch (e) {
+                return h.response(e).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'GET',
+        path: '/teachers',
+        handler: async (request, h) => {
+            try {
+                const teachers = await controller.findTeachers()
+                
+                if (teachers != null) {
+                    return h.response(teachers).code(200)
                 } else {
                     return h.response({message: 'not found'}).code(404)
                 }
@@ -253,13 +309,13 @@ const routes =[
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.number(),
-                    time : Joi.string(),
+                    id : Joi.string(),
+                    time : Joi.string().allow(null),
                 })
             },
             response: {
                 status: {
-                    200 : joiCoursTab,
+                    // 200 : joiCoursTab,
                     404 : notFound
                     }
                 }
@@ -267,7 +323,16 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                let time = ""
+                try {
+                    time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
+
+                if (!request.params.time) {
+                    time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
+                }
                 
                 const classes = await controller.findByTime(id, time, ScheduleType.Room)
                 
@@ -278,6 +343,7 @@ const routes =[
                 }
                 
             } catch (e) {
+                console.log(e);
                 return h.response(e).code(400)
             }
         }
@@ -293,7 +359,7 @@ const routes =[
             validate: {
                 params: Joi.object({
                     computerRoomsOnly : Joi.boolean(),
-                    time : Joi.string(),
+                    time : Joi.string().allow(null),
                 })
             },
             response: {
@@ -306,9 +372,16 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const computerRoomsOnly = request.params.computerRoomsOnly
-                const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
-                time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
-                console.log(time);
+                let time = ""
+                try {
+                    time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
+
+                if (!request.params.time) {
+                    time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
+                }
                 
                 const freeRooms = await controller.findRooms(computerRoomsOnly, time, ScheduleType.Room)
                 
@@ -334,7 +407,7 @@ const routes =[
             },
             response: {
                 status: {
-                    200 : joiRoomsTab,
+                    // 200 : joiRoomsTab,
                     404 : notFound
                     }
                 }
@@ -359,9 +432,9 @@ const routes =[
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    token : Joi.string(),
-                    favoriteSchedule : Joi.number() 
-                    })
+                    login : Joi.string(),
+                    password : Joi.string() 
+                })
             },
         },
         handler: async (request, h) => {
@@ -392,7 +465,7 @@ const routes =[
                 payload: Joi.object({
                     login : Joi.string(),
                     password : Joi.string() 
-                    })
+                })
             },
         },
         handler: async (request, h) => {
@@ -408,7 +481,7 @@ const routes =[
                 }
 
             } catch (e) {
-                return h.response({message: 'error'}).code(400)
+                return h.response({message: 'login ou mot de passe incorrect'}).code(404)
             }
         }
     },
@@ -422,9 +495,9 @@ const routes =[
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    login : Joi.string(),
-                    password : Joi.string() 
-                    })
+                    token : Joi.string(),
+                    favoriteSchedule : Joi.number() 
+                })
             },
         },
         handler: async (request, h) => {
@@ -441,7 +514,7 @@ const routes =[
                 }
 
             } catch (e) {
-                return h.response({message: 'error'}).code(400)
+                return h.response({message: 'token incorrent'}).code(400)
             }
         }
     },

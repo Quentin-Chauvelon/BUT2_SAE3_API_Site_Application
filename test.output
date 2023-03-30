@@ -1,0 +1,146 @@
+
+> test
+> node_modules/.bin/c8 node_modules/.bin/nyc  node_modules/.bin/mocha --timeout 10000 --cahe off
+
+
+
+  populate
+    ✔ must show rooms (288ms)
+    1) must show schedules
+    ✔ must show 400 - error
+    ✔ must show 404 - not found
+    default route
+      ✔ expected default route 
+    room
+      2) should show room schedule of C0-05
+      3) should show room class of C0-05 at 30/10/2023 at 8:30 am and it has class with lanoix
+      ✔ should show room class of C0-05 at 30/10/2023 at 8:30 am and it has no class at this time
+      ✔ should show room class of C0-04 at 30/10/2023 at  15:20 and it has no class at this time (374ms)
+      ✔ should show error because the date is not well formated
+      ✔ should show not found because the id does not exist 
+      4) should show error because the date is negative 
+      5) should show empty because the date is well formated but is recognized as 0230/03/30 
+
+
+  8 passing (2s)
+  5 failing
+
+  1) populate
+       must show schedules:
+
+      AssertionError: expected [ { id: 3182, …(1) }, …(2) ] to deeply equal [ { id: 3183, …(1) } ]
+      + expected - actual
+
+       [
+         {
+      -    "id": 3182
+      -    "name": "INFO 2 Groupe 4"
+      -  }
+      -  {
+           "id": 3183
+      -    "name": "INFO 2 TP 1-1"
+      +    "name": "INFO 2 TP 1-1  "
+         }
+      -  {
+      -    "id": 3184
+      -    "name": "INFO 2 TP 1-2"
+      -  }
+       ]
+      
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:62:47)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  2) populate
+       room
+         should show room schedule of C0-05:
+
+      AssertionError: expected [ Cours{ id: undefined, …(5) } ] to deeply equal [ { …(5) } ]
+      + expected - actual
+
+       [
+         {
+      -    "end": [Date: 2023-03-30T12:30:00.000Z]
+      -    "id": [undefined]
+      +    "end": "Thu Mar 30 2023 11:13:59 GMT+0200 (heure d’été d’Europe centrale)"
+           "location": "J-Amphi 1\\, J-C0/05\\, J-D0/02\\, J-D1/12\\, J-D2/23\\, J-E0/01\\, J-E1/12\\, J-E1/16\\, J-Salle du Conseil"
+           "roomId": 0
+      -    "start": [Date: 2023-03-30T09:35:00.000Z]
+      +    "start": "Thu Mar 30 2023 11:13:59 GMT+0200 (heure d’été d’Europe centrale)"
+           "summary": "TD - PROJET PERSONNEL ET PROFESSIONNEL\\, GEA1 Promo\\, GODARD Claudio"
+         }
+       ]
+      
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:127:43)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  3) populate
+       room
+         should show room class of C0-05 at 30/10/2023 at 8:30 am and it has class with lanoix:
+
+      AssertionError: expected [] to deeply equal [ { …(5) } ]
+      + expected - actual
+
+      -[]
+      +[
+      +  {
+      +    "end": "Thu Mar 30 2023 11:13:59 GMT+0200 (heure d’été d’Europe centrale)"
+      +    "location": "J-C0/04"
+      +    "roomId": 0
+      +    "start": "Thu Mar 30 2023 11:13:59 GMT+0200 (heure d’été d’Europe centrale)"
+      +    "summary": "TP - Développement objets\\, INFO 1 TP 3-1\\, LANOIX Arnaud"
+      +  }
+      +]
+      
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:145:43)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  4) populate
+       room
+         should show error because the date is negative :
+     AssertionError: expected [] to deeply equal { message: 'error' }
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:204:43)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+  5) populate
+       room
+         should show empty because the date is well formated but is recognized as 0230/03/30 :
+
+      AssertionError: expected 200 to equal 400
+      + expected - actual
+
+      -200
+      +400
+      
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:214:44)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+
+
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |       0 |        0 |       0 |       0 |                   
+----------|---------|----------|---------|---------|-------------------
+-------------------|---------|----------|---------|---------|---------------------------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                     
+-------------------|---------|----------|---------|---------|---------------------------------------
+All files          |   60.49 |    78.86 |   44.04 |   60.49 |                                       
+ API               |    69.1 |       95 |   29.16 |    69.1 |                                       
+  cours.mjs        |   64.44 |      100 |      25 |   64.44 | 11-12,25-26,36-47,52-56,59-64,67-71   
+  server.mjs       |   69.81 |    94.11 |   31.25 |   69.81 | ...86,504-519,542-550,577-587,591-592 
+ API/controller    |    34.1 |    80.95 |      20 |    34.1 |                                       
+  controller.mjs   |    34.1 |    80.95 |      20 |    34.1 | ...39,243-271,275-299,303-323,327-344 
+ API/dao           |   60.44 |    68.75 |   46.42 |   60.44 |                                       
+  roomDao.mjs      |   77.41 |     64.7 |   83.33 |   77.41 | ...8-29,33-41,50-51,72-73,82-83,90-91 
+  scheduleDao.mjs  |   71.73 |    68.96 |   72.72 |   71.73 | ...79,188-189,196-197,217-218,227-228 
+  teacherDao.mjs   |   62.23 |      100 |       0 |   62.23 | 17-21,25-31,35-63,67-73,77-82         
+  userDao.mjs      |   22.88 |      100 |       0 |   22.88 | 11-23,27-43,47-63,68-85,89-93,97-117  
+ API/model         |   81.13 |    82.35 |   82.35 |   81.13 |                                       
+  cours.mjs        |     100 |      100 |     100 |     100 |                                       
+  room.mjs         |    91.3 |      100 |   66.66 |    91.3 | 12-13                                 
+  schedule.mjs     |     100 |      100 |     100 |     100 |                                       
+  scheduleType.mjs |   81.25 |       50 |     100 |   81.25 | 13,17-18,23,27-28                     
+  schedules.mjs    |     100 |      100 |     100 |     100 |                                       
+  teacher.mjs      |   14.28 |       50 |       0 |   14.28 | 1-12                                  
+  user.mjs         |   16.66 |       50 |       0 |   16.66 | 1-10                                  
+-------------------|---------|----------|---------|---------|---------------------------------------
