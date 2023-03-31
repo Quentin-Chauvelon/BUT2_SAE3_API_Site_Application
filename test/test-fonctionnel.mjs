@@ -1,6 +1,6 @@
 "use strict"
 
-import { assert } from "joi";
+import assert from "joi";
 import { Room } from "../model/room.mjs";
 
 

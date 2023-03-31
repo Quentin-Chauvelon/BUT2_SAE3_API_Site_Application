@@ -173,7 +173,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                let date = ""
+                try {
+                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Schedule)
                 if (classes != null) {
@@ -211,7 +216,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                let date = ""
+                try {
+                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
 
                 const classes = await controller.findByWeek(id, date, ScheduleType.Schedule)
                 
@@ -250,7 +260,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                const date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                let date = ""
+                try {
+                    date = (request.params.date) ? formatStringToDate(request.params.date) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Teacher)
                 
@@ -308,7 +323,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const id = parseInt(request.params.id)
-                let time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                let time = ""
+                try {
+                    time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
 
                 if (!request.params.time) {
                     time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
@@ -352,7 +372,12 @@ const routes =[
         handler: async (request, h) => {
             try {
                 const computerRoomsOnly = request.params.computerRoomsOnly
-                const time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                let time = ""
+                try {
+                    time = (request.params.time) ? formatStringToDate(request.params.time) : new Date()
+                } catch(e) {
+                    return h.response({message: 'date invalide'}).code(400)
+                }
 
                 if (!request.params.time) {
                     time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
