@@ -1,19 +1,7 @@
 import {useLoaderData, useSubmit, Form, useFetcher} from "react-router-dom";
-import {token} from "../main.jsx"
+import {token, formatDateToString} from "../main.jsx"
 import '../assets/css/root.css'
 
-
-function formatDateToString(date) {
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    
-    return date.getFullYear().toString().concat(
-        (month > 9 ? '' : '0') + month,
-        (day > 9 ? '' : '0') + day,
-        "T000000000Z",
-    )
-    
-}
 
 
 export async function action({ request, params }) {
@@ -21,7 +9,7 @@ export async function action({ request, params }) {
 
     const scheduleId = formData.get("favorite");
 
-    const response = await fetch("http://172.26.82.56:443/user/favoriteSchedule", {
+    await fetch("http://172.26.82.56:443/user/favoriteSchedule", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -88,10 +76,17 @@ export async function loader({ request }) {
 
 export default function Home() {    
     const {schedule, schedules, scheduleId, date, favoriteScheduleString} = useLoaderData()
-    console.log(scheduleId, favoriteScheduleString);
     const submit = useSubmit()
     const fetcher = useFetcher()
     const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+
+    let decalageHeure = 2;
+    schedule.forEach(coursDay => {
+        (coursDay.length > 0) ? console.log(coursDay[0].start.substring(11,16)) : "";
+        if (coursDay.length > 0 && coursDay[0].start.substring(11,16) == "10:00") {
+            decalageHeure = 3;
+        }
+    });
     
     return (
         <div className="home">
@@ -117,9 +112,37 @@ export default function Home() {
             </Form>
         </div>
         
+        <div className="changeWeek">
+            <Form id="previousWeek" role="search">
+                <div
+                    name="previousWeek"
+                    id="previousWeek"
+                    onClick={(event) => {
+                        let formData = new FormData();
+                        formData.append("scheduleId", scheduleId);
+                        formData.append("date", date.setDate(date.getDate() - 7));
+                        submit(formData);
+                    }}
+                >{"<<<"}</div>
+            </Form>
+
+            <Form id="nextWeek" role="search">
+                <div
+                    name="nextWeek"
+                    id="nextWeek"
+                    onClick={(event) => {
+                        let formData = new FormData();
+                        formData.append("scheduleId", scheduleId);
+                        formData.append("date", date.setDate(date.getDate() + 7));
+                        submit(formData);
+                    }}
+                >{">>>"}</div>
+            </Form>  
+        </div>
+
         <table>
         <thead>
-            <tr>
+            {/* <tr>
                 <th colSpan="60"></th>
 
                 <th colSpan="12">
@@ -155,7 +178,7 @@ export default function Home() {
                 </th>
 
                 <th colSpan="50"></th>
-            </tr>
+            </tr> */}
 
             <tr>
             {
@@ -194,7 +217,7 @@ export default function Home() {
     
     <tbody>
     {
-        schedule.map((cours, j) => {
+        schedule.map((coursDay, j) => {
             if (j == 0 || j == schedule.length - 1) {
                 return null
             }
@@ -210,59 +233,69 @@ export default function Home() {
                     schedule[j].map((cours, i) => {
                         const start = new Date(Date.parse(cours.start))
                         const end = new Date(Date.parse(cours.end))
-                        start.setTime(start.getTime() - 2 * 60 * 60 * 1000)
-                        end.setTime(end.getTime() - 2 * 60 * 60 * 1000)
+                        start.setTime(start.getTime() - decalageHeure * 60 * 60 * 1000)
+                        end.setTime(end.getTime() - decalageHeure * 60 * 60 * 1000)
                         
                         const previousCours = (i > 0) ? schedule[j][i - 1] : null
                         
-                        if (previousCours == null) {
-                            return <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
-                            <div className={
-                                "cours"
-                                .concat(cours.summary.includes("TD") ? " td" : "")
-                                .concat(cours.summary.includes("TP") ? " tp" : "")
-                                .concat(cours.summary.includes("DS") ? " ds" : "")
-                                .concat(cours.summary.includes("Cours") ? " amphi" : "")
-                                .concat(cours.summary.includes("Reunion") ? " reunion" : "")
-                            }>
+                        // if (previousCours == null) {
                             
-                            <p>{
-                                ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
-                                ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
-                                ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
-                                ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
-                            }</p>
-                            <p>{cours.summary.replaceAll('\\', '\n')}</p>
-                            <p>{cours.location}</p>
-                            </div>
-                            </td>
+                        //     return <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
+                        //     <div className={
+                        //         "cours"
+                        //         .concat(cours.summary.includes("TD") ? " td" : "")
+                        //         .concat(cours.summary.includes("TP") ? " tp" : "")
+                        //         .concat(cours.summary.includes("DS") ? " ds" : "")
+                        //         .concat(cours.summary.includes("Cours") ? " amphi" : "")
+                        //         .concat(cours.summary.includes("Reunion") ? " reunion" : "")
+                        //     }>
+                            
+                        //     <p>{
+                        //         ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
+                        //         ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
+                        //         ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
+                        //         ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
+                        //     }</p>
+                        //     <p>{cours.summary.replaceAll('\\', '\n')}</p>
+                        //     <p>{cours.location}</p>
+                        //     </div>
+                        //     </td>
+                        // }
+                        
+                        let previousCoursEnd
+                        if (previousCours != null) {
+                            previousCoursEnd = new Date(Date.parse(previousCours.end))
+                            previousCoursEnd.setTime(previousCoursEnd.getTime() - decalageHeure * 60 * 60 * 1000)
+                        } else {
+                            const year = start.getFullYear()
+                            const month = start.getMonth()
+                            const day = start.getDate()
+                            previousCoursEnd = new Date(year, month, day)
+                            previousCoursEnd.setTime(previousCoursEnd.getTime() + 8 * 60 * 60 * 1000)
                         }
                         
-                        const previousCoursEnd = new Date(Date.parse(previousCours.end))
-                        previousCoursEnd.setTime(previousCoursEnd.getTime() - 2 * 60 * 60 * 1000)
-                        
                         return ([
-                            <td colSpan={(start - previousCoursEnd) / 60 / 1000 / 5} key={i + j + previousCoursEnd}></td>,
-                            <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
-                            <div className={
-                                "cours"
-                                .concat(cours.summary.includes("TD") ? " td" : "")
-                                .concat(cours.summary.includes("TP") ? " tp" : "")
-                                .concat(cours.summary.includes("DS") ? " ds" : "")
-                                .concat(cours.summary.includes("Cours") ? " amphi" : "")
-                                .concat(cours.summary.includes("Reunion") ? " reunion" : "")
-                            }>
-                            
-                            <p>{
-                                ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
-                                ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
-                                ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
-                                ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
-                            }</p>
-                            <p>{cours.summary.replaceAll('\\', '\n')}</p>
-                            <p>{cours.location}</p>
-                            </div>
-                            </td>
+                            (start - previousCoursEnd) > 0 ? <td colSpan={(start - previousCoursEnd) / 60 / 1000 / 5} key={i + j + previousCoursEnd}></td> : null,
+                            (end - start) ? <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
+                                <div className={
+                                    "cours"
+                                    .concat(cours.summary.includes("TD") ? " td" : "")
+                                    .concat(cours.summary.includes("TP") ? " tp" : "")
+                                    .concat(cours.summary.includes("DS") ? " ds" : "")
+                                    .concat(cours.summary.includes("Cours") ? " amphi" : "")
+                                    .concat(cours.summary.includes("Reunion") ? " reunion" : "")
+                                }>
+                                
+                                <p>{
+                                    ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
+                                    ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
+                                    ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
+                                    ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
+                                }</p>
+                                <p>{cours.summary.replaceAll('\\', '\n')}</p>
+                                <p>{cours.location}</p>
+                                </div>
+                                </td> : null
                         ])
                     })
                 }

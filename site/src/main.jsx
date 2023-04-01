@@ -11,7 +11,7 @@ import Register, {action as registerAction} from "./routes/register"
 import Login, {action as loginAction} from "./routes/login"
 import Home, {loader as homeLoader, action as homeAction} from "./routes/home";
 import Navbar from './routes/navbar';
-import Salle from './routes/salle';
+import Salle, {action as salleAction} from './routes/salle';
 import Prof , {loader as profLoader} from './routes/prof';
 
 import './assets/css/root.css'
@@ -25,6 +25,24 @@ function setToken(tokenToSet) {
   token = tokenToSet
 }
 export {token, setToken}
+
+
+function formatDateToString(date) {
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  
+  return date.getFullYear().toString().concat(
+      (month > 9 ? '' : '0') + month,
+      (day > 9 ? '' : '0') + day,
+      "T",
+      (hours > 9 ? '' : '0') + hours,
+      (minutes > 9 ? '' : '0') + minutes,
+      "00000Z"
+  )  
+}
+export {formatDateToString}
 
 
 const router = createBrowserRouter([
@@ -62,6 +80,7 @@ const router = createBrowserRouter([
         {
           path: "salle",
           element:<Salle/>,
+          action: salleAction
         },
         {
           path: "prof",

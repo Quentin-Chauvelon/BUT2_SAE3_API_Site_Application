@@ -11,7 +11,7 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 50px;
+    /* gap: 50px; */
 
     margin-top: 50px;
 }
@@ -44,6 +44,29 @@ html, body {
     font-size: 35px;
     color: white;
     text-decoration: underline;
+}
+
+.changeWeek {
+    margin-top: 50px;
+    width: calc(90% - 2px);
+    background-color: rgba(230,230,230);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Cormorant SC', serif;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+    border: 1px solid black;
+    border-bottom: none;
+}
+
+.changeWeek form:first-child {
+    margin-right: 100px;
+}
+
+.changeWeek form:last-child {
+    margin-left: 100px;
 }
 
 table {
