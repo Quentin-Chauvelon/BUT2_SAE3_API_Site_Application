@@ -1,4 +1,4 @@
-import {useLoaderData, useSubmit, Form, useFetcher} from "react-router-dom";
+import {useLoaderData, useSubmit, Form, useFetcher, redirect} from "react-router-dom";
 import {token, formatDateToString} from "../main.jsx"
 import '../assets/css/root.css'
 
@@ -8,6 +8,10 @@ export async function action({ request, params }) {
     const formData = await request.formData();
 
     const scheduleId = formData.get("favorite");
+
+    if (token == "") {
+        return redirect("/login");
+    }
 
     await fetch("http://172.26.82.56:443/user/favoriteSchedule", {
         method: 'POST',

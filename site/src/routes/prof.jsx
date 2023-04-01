@@ -52,7 +52,7 @@ export default function Prof() {
             </Form>
             <datalist id="professeurs"> 
                 {professeurs.map(prof=>{
-                    return <option key={prof.id} id={prof.id} value={prof.id}>{prof.name}</option>
+                    return <option key={prof.id} id={prof.id} value={prof.name}/>
                 })}
             </datalist>
             <p className="Sc" id="None">Vous pourrez le trouvez :</p>

@@ -22,7 +22,7 @@ export default function Navbar(){
                     <p>Professeurs</p>
                 </div>
                 </Link>
-                <Link to={"/app/iteneraire"}>
+                <Link to={"/app/directions"}>
                 <div>
                     <img src="../src/assets/img/locationIcon.png"/>
                     <p>Itinéraire</p>
