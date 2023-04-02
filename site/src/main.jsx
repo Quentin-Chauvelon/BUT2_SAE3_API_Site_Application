@@ -13,7 +13,7 @@ import Home, {loader as homeLoader, action as homeAction} from "./routes/home";
 import Navbar from './routes/navbar';
 import Salle, {action as salleAction} from './routes/salle';
 import Prof , {loader as profLoader} from './routes/prof';
-import Directions, {loader as directionsLoader, action as directionsAction} from "./routes/directions";
+import Directions, {loader as directionsLoader} from "./routes/directions";
 
 import './assets/css/root.css'
 import "./assets/css/home.css"
@@ -26,6 +26,12 @@ function setToken(tokenToSet) {
   token = tokenToSet
 }
 export {token, setToken}
+
+let nextCours = {}
+function setNextCours(cours) {
+  nextCours = cours
+}
+export {nextCours, setNextCours}
 
 
 function formatDateToString(date) {
@@ -44,6 +50,15 @@ function formatDateToString(date) {
   )  
 }
 export {formatDateToString}
+
+function formatStringToDate(stringDate) {
+  const [date, time] = stringDate.split("T")
+  const [year, month, day] = date.split("-")
+  const [hour, minute] = time.split(":")
+  
+  return new Date(year, month - 1, day, hour, minute, 0)
+}
+export {formatStringToDate}
 
 
 const router = createBrowserRouter([
@@ -92,7 +107,6 @@ const router = createBrowserRouter([
           path:"directions",
           element: <Directions/>,
           loader: directionsLoader,
-          action: directionsAction
         }
       ],
     },

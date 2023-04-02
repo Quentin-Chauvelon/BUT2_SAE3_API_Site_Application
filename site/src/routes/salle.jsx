@@ -1,18 +1,5 @@
 import {Form, useFetcher, useActionData} from "react-router-dom";
-import {formatDateToString} from "../main.jsx"
-
-
-function formatStringToDate(stringDate) {
-    const [date, time] = stringDate.split("T")
-    const [year, month, day] = date.split("-")
-    const [hour, minute] = time.split(":")
-
-    console.log(date, time);
-    console.log(year, month, day);
-    console.log(hour, minute);
-    
-    return new Date(year, month - 1, day, hour, minute, 0)
-}
+import {formatDateToString, formatStringToDate} from "../main.jsx"
 
 
 export async function action({ request, params }) {
@@ -25,7 +12,6 @@ export async function action({ request, params }) {
     const dateParam = formData.get("roomsDate")
     const date = (dateParam && dateParam != "") ? new Date(formatStringToDate(dateParam)) : new Date();
     
-    console.log("http://172.26.82.56:443/rooms/".concat(computerRoomsOnly, "/", formatDateToString(date)));
     const roomsResponse = await fetch("http://172.26.82.56:443/rooms/".concat(computerRoomsOnly, "/", formatDateToString(date)));
     const rooms = await roomsResponse.json()
     

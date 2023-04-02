@@ -1,29 +1,29 @@
-import {Form, useLoaderData, useActionData, useSubmit} from "react-router-dom"
-import {token} from "../main.jsx"
+import {Form, useLoaderData, useSubmit} from "react-router-dom"
+import {token, nextCours} from "../main.jsx"
 import '../assets/css/directions.css'
 
 
-export async function action({ request, params }) {
-    const formData = await request.formData();
+// export async function action({ request, params }) {
+//     const formData = await request.formData();
 
-    const departureAddress = formData.get("departure");
+//     const departureAddress = formData.get("departure");
 
-    if (token != "" && departureAddress != "") {
-        await fetch("http://172.26.82.56:443/user/favoriteAddress", {
-            method: 'POST',
-            headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                token: token,
-                favoriteAddress: departureAddress
-            })
-        });
-    }
+//     if (token != "" && departureAddress != "") {
+//         await fetch("http://172.26.82.56:443/user/favoriteAddress", {
+//             method: 'POST',
+//             headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 token: token,
+//                 favoriteAddress: departureAddress
+//             })
+//         });
+//     }
 
-    return departureAddress;
-}
+//     return departureAddress;
+// }
 
 
 export async function loader({ request }) {
@@ -54,31 +54,46 @@ export async function loader({ request }) {
         }
     }
 
-    console.log("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + "tard" + "/" + selectedTransitMode);
+    let response = null;
+    const cours = nextCours;
+    if (cours.start && loaderFavoriteAddress != "" && selectedTransitMode != "") {
+        console.log("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode);
+        const responseJson = await fetch("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + (cours.start.getTime() - 5 * 60 * 1000) + "/" + selectedTransitMode)
+        response = await responseJson.json()
+    }
+    console.log(response);
 
-    return {loaderFavoriteAddress, selectedTransitMode}
+    return {loaderFavoriteAddress, selectedTransitMode, cours, response}
 }
 
 
 export default function Directions() {
-    const {loaderFavoriteAddress, selectedTransitMode} = useLoaderData();
-    let departureAddress = useActionData();
-    const favoriteAddress = departureAddress || loaderFavoriteAddress
+    const {loaderFavoriteAddress, selectedTransitMode, cours, response} = useLoaderData();
+    // let departureAddress = useActionData();
+    // const favoriteAddress = departureAddress || loaderFavoriteAddress
+    let coursStart = "";
+    let coursEnd = "";
+    
+    if (cours.start && cours.end) {
+        coursStart = ((cours.start.getHours() > 9) ? "" : "0") + cours.start.getHours() + ":" + ((cours.start.getMinutes() > 9) ? "" : "0") + cours.start.getMinutes()
+        coursEnd = ((cours.end.getHours() > 9) ? "" : "0") + cours.end.getHours() + ":" + ((cours.end.getMinutes() > 9) ? "" : "0") + cours.end.getMinutes()
+    }
+
+    const favoriteAddress = loaderFavoriteAddress
     
     const submit = useSubmit()
 
-    const cours = {
-        start: new Date()
-    }
-
-    // TODO: replace bus/tram by div with the color of the line and the line name (ex : C1)
-    // change dot and line icons color to match the bus line color
-    // replace duration on the left with time if not done already
-   
-    const response = null;
+    // const parser = new DOMParser()
+    // const text = parser.parseFromString("<h1>" + response.routes[0].legs[0].steps[0].html_instructions + "</h1>", "text/html")
+    // console.log(text.querySelector("body"));
+    // console.log(text.querySelector("body").children);
+    // // console.log(text.querySelector("body").children.map(element => {return element}));
+    // console.log(Array.from(text.querySelector("body").children).map(element => {return element}));
+    // console.log(text);
 
     return (
-        <div className="directions">
+        (cours.start)
+        ? <div className="directions">
             <div className="directions_details">
                 <Form method="post">
                     <div className="origin_container">
@@ -87,13 +102,24 @@ export default function Directions() {
                     </div>
                     
                     <div className="arrival_time">
-                        <p>Arrivée à : {cours.start.getHours() + ":" + cours.start.getMinutes()}</p>
+                        <p>Arrivée à : {coursStart}</p>
                     </div>
 
                     <div className="search">
-                        <button type="submit">Rechercher</button>
+                        <div className="button" onClick={(event) => {
+                                    let formData = new FormData();
+                                    formData.append("favoriteAddress", (event.target.parentElement.parentElement.querySelector("#departure").value != "")
+                                                                        ? event.target.parentElement.parentElement.querySelector("#departure").value
+                                                                        : favoriteAddress);
+                                    formData.append("transitMode", selectedTransitMode);
+                                    submit(formData);
+                                }}
+                            >Rechercher
+                        </div>
                     </div>
                 </Form>
+
+                <p className="cours_detail">{"Itinéraire pour le cours de " + cours.summary + " du " + cours.start.getDate() + "/" + (cours.start.getMonth() + 1) + " de " + coursStart + " à " + coursEnd + " en " + cours.location}</p>
             </div>
 
             <div className="directions_container">
@@ -111,7 +137,7 @@ export default function Directions() {
                             </div>
 
                             <div className={(selectedTransitMode == "bicycling") ? "transit_mode_selected" : ""}>
-                                <img src="../src/assets/img/bike.png" alt="vélo" onClick={(event) => {
+                                <img src="../src/assets/img/bike.png" alt="velo" onClick={(event) => {
                                     let formData = new FormData();
                                     formData.append("favoriteAddress", favoriteAddress);
                                     formData.append("transitMode", "bicycling");
@@ -140,12 +166,14 @@ export default function Directions() {
                     </div>
 
                     <div className="steps_container">
-                        <p className="duration">{(response != null && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0) ? "Durée totale : " + response.routes[0].legs[0].duration.text : "Veuillez choisir une adresse de départ"}</p>
+                        <p className="duration">{(response != null && response.status && response.status == "OK" && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0) ? "Durée totale : " + response.routes[0].legs[0].duration.text : "Veuillez choisir une adresse de départ"}</p>
 
                             {
-                              (response != null && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0)
+                              (response != null && response.status && response.status == "OK" && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0)
                               
-                              ? response.routes[0].legs[0].steps.map((step, i) => {
+                              ? (selectedTransitMode == "transit")
+                            
+                                ? response.routes[0].legs[0].steps.map((step, i) => {
 
                                     const departureDate = new Date(response.routes[0].legs[0].departure_time.value * 1000)
                                     const arrivalDate = new Date(response.routes[0].legs[0].arrival_time.value * 1000)
@@ -161,14 +189,14 @@ export default function Directions() {
                                     if (step.travel_mode == "WALKING") {
                                         return ([
                                             (i == 0)
-                                                ? <div className="departure_details">
+                                                ? <div key={i + "1"} className="departure_details">
                                                       <p className="departure_time">{departureTime}</p>
                                                       <div className="stop_icon"></div>
                                                       <p className="departure_position">{response.routes[0].legs[0].start_address}</p>
                                                 </div>
                                                 : null,
 
-                                            <div className="step_details">
+                                            <div key={i + "2"} className="step_details">
                                                 <div className="icon_container">
                                                     <img src="../src/assets/img/pedestrian.png" alt=""/>
                                                 </div>
@@ -183,7 +211,7 @@ export default function Directions() {
                                             </div>,
 
                                             (i == response.routes[0].legs[0].steps.length - 1)
-                                                ? <div className="departure_details">
+                                                ? <div key={i + "3"} className="departure_details">
                                                       <p className="departure_time">{arrivalTime}</p>
                                                    <div className="stop_icon"></div>
                                                    <p className="departure_position">{response.routes[0].legs[0].end_address}</p>
@@ -195,14 +223,14 @@ export default function Directions() {
                                     else if (step.travel_mode == "BICYCLING") {
                                         return ([
                                             (i == 0)
-                                                ? <div className="departure_details">
+                                                ? <div key={i + "1"} className="departure_details">
                                                       <p className="departure_time">{departureTime}</p>
                                                       <div className="stop_icon"></div>
                                                       <p className="departure_position">{response.routes[0].legs[0].start_adress}</p>
                                                 </div>
                                                 : null,
 
-                                            <div className="step_details">
+                                            <div key={i + "2"} className="step_details">
                                                 <div className="icon_container">
                                                     <img src="../src/assets/img/pedestrian.png" alt=""/>
                                                 </div>
@@ -217,7 +245,7 @@ export default function Directions() {
                                             </div>,
 
                                             (i == response.routes[0].legs[0].steps.length - 1)
-                                                ? <div className="departure_details">
+                                                ? <div key={i + "3"} className="departure_details">
                                                       <p className="departure_time">{arrivalTime}</p>
                                                       <div className="stop_icon"></div>
                                                       <p className="departure_position">{response.routes[0].legs[0].end_address}</p>
@@ -233,18 +261,18 @@ export default function Directions() {
                                        const stepArrivalTime = ((stepArrivalDate.getHours() > 9) ? "" : "0") + stepArrivalDate.getHours() + ":" + ((stepArrivalDate.getMinutes() > 9) ? "" : "0") + stepArrivalDate.getMinutes()
 
                                        return ([
-                                          <div className="departure_details">
+                                          <div key={i + "1"} className="departure_details">
                                              <p className="departure_time">{stepDepartureTime}</p>
                                              <div className="stop_icon" style={{border: "5px solid " + step.transit_details.line.color}}></div>
                                              <p className="departure_position">{step.transit_details.departure_stop.name}</p>
                                           </div>,
 
-                                          <div className="step_details">
+                                          <div key={i + "2"} className="step_details">
                                              <div className="icon_container">
                                                 <img src="../src/assets/img/bus.png" alt=""/>
                                              </div>
                
-                                             <div className="stop_line" style={{borderRight: "5px solid " + step.transit_details.line.color}}></div>
+                                             <div className="stop_line" style={{borderRight: "5px solid " + ((step.transit_details.line.color) ? step.transit_details.line.color : "#AAA")}}></div>
                
                                              <div className="transit_details">
                                                 <div className="line_name" style={{backgroundColor: step.transit_details.line.color, color: step.transit_details.line.text_color}}>{step.transit_details.line.short_name}</div>
@@ -253,7 +281,7 @@ export default function Directions() {
                                              </div>
                                           </div>,
 
-                                          <div className="departure_details">
+                                          <div key={i + "3"} className="departure_details">
                                              <p className="departure_time">{stepArrivalTime}</p>
                                              <div className="stop_icon" style={{border: "5px solid " + step.transit_details.line.color}}></div>
                                              <p className="departure_position">{step.transit_details.arrival_stop.name}</p>
@@ -261,6 +289,24 @@ export default function Directions() {
                                        ])
                                     }
                                 })
+
+                                // if transit mode is not transit (walking, bicycling or driving)
+                                : response.routes[0].legs[0].steps.map((step, i) => {
+                                    return (
+                                        <div key={i} className="step_not_transit_details">
+                                                <div className="step_direction_container">
+                                                    <div className="step_direction_icon_container">
+                                                        <img className="step_direction_icon" src={"../src/assets/img/Directions_Icons/" + ((step.maneuver) ? step.maneuver : "straight") + ".png"} alt="" />
+                                                    </div>
+
+                                                    <p dangerouslySetInnerHTML={{__html: step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "")}} className="step_direction"/>
+                                                </div>
+                                                {/* <p className="step_direction">{step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "").substring(0, ((step.html_instructions.indexOf("<div") >= 0) ? step.html_instructions.indexOf("<div>") : step.html_instructions.length + 1))}</p> */}
+                                                <p className="step_distance_time">{step.duration.text + " (" + step.distance.text + ")"}</p>
+                                        </div>
+                                    )
+                                })
+
                               : null
                             // <div className="departure_details">
                             //     <p className="departure_time">08:14</p>
@@ -293,5 +339,7 @@ export default function Directions() {
                 </div>
             </div>
         </div>
+        
+        : <p className="invalid_cours">Veuillez sélectionner un emploi du temps dans l'onglet "Accueil" ou connectez-vous et mettez un emploi du temps en favori afin de synchroniser automatiquement vos cours</p>
     )
 }
