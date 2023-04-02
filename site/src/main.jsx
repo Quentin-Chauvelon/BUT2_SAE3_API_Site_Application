@@ -14,6 +14,7 @@ import Navbar from './routes/navbar';
 import Salle, {action as salleAction} from './routes/salle';
 import Prof , {loader as profLoader} from './routes/prof';
 import Directions, {loader as directionsLoader} from "./routes/directions";
+import Cours from "./routes/cours";
 
 import './assets/css/root.css'
 import "./assets/css/home.css"
@@ -92,6 +93,12 @@ const router = createBrowserRouter([
           element:<Home/>,
           action: homeAction,
           loader: homeLoader,
+          // children: [
+          //   {
+          //     path: "cours",
+          //     element: <Cours/>
+          //   }
+          // ]
         },
         {
           path: "salle",

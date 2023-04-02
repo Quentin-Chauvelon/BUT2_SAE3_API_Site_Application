@@ -114,6 +114,7 @@ table .cours {
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
+    background-color: white;
 }
 
 .cours.td {

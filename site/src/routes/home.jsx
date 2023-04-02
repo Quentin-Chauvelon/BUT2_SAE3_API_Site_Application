@@ -80,10 +80,10 @@ export async function loader({ request }) {
 
 
 export default function Home() {    
-    const {schedule, schedules, scheduleId, date, favoriteScheduleString} = useLoaderData()
-    const submit = useSubmit()
-    const fetcher = useFetcher()
-    const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+    const {schedule, schedules, scheduleId, date, favoriteScheduleString} = useLoaderData();
+    const submit = useSubmit();
+    const fetcher = useFetcher();
+    const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
     const now = new Date(2023, 2, 30, 10);
     let foundNextCours = false;
@@ -121,210 +121,222 @@ export default function Home() {
             
             {
             (scheduleId != 0)
-                ? <div className="changeWeek">
-                    <Form id="previousWeek" role="search">
-                        <div
-                            name="previousWeek"
-                            id="previousWeek"
-                            onClick={(event) => {
-                                let formData = new FormData();
-                                formData.append("scheduleId", scheduleId);
-                                formData.append("date", date.setDate(date.getDate() - 7));
-                                submit(formData);
-                            }}
-                        >{"<<<"}</div>
-                    </Form>
+                ? <>
+                    <div className="changeWeek">
+                        <Form id="previousWeek" role="search">
+                            <div
+                                name="previousWeek"
+                                id="previousWeek"
+                                onClick={(event) => {
+                                    let formData = new FormData();
+                                    formData.append("scheduleId", scheduleId);
+                                    formData.append("date", date.setDate(date.getDate() - 7));
+                                    submit(formData);
+                                }}
+                            >{"<<<"}</div>
+                        </Form>
 
-                    <Form id="nextWeek" role="search">
-                        <div
-                            name="nextWeek"
-                            id="nextWeek"
-                            onClick={(event) => {
-                                let formData = new FormData();
-                                formData.append("scheduleId", scheduleId);
-                                formData.append("date", date.setDate(date.getDate() + 7));
-                                submit(formData);
-                            }}
-                        >{">>>"}</div>
-                    </Form>  
-                </div>
+                        <Form id="nextWeek" role="search">
+                            <div
+                                name="nextWeek"
+                                id="nextWeek"
+                                onClick={(event) => {
+                                    let formData = new FormData();
+                                    formData.append("scheduleId", scheduleId);
+                                    formData.append("date", date.setDate(date.getDate() + 7));
+                                    submit(formData);
+                                }}
+                            >{">>>"}</div>
+                        </Form>  
+                    </div>
 
-                <table>
-                    <thead>
-                        {/* <tr>
-                            <th colSpan="60"></th>
+                    <table>
+                        <thead>
+                            {/* <tr>
+                                <th colSpan="60"></th>
 
-                            <th colSpan="12">
-                                <Form id="previousWeek" role="search">
-                                    <div
-                                        name="previousWeek"
-                                        id="previousWeek"
-                                        onClick={(event) => {
-                                            let formData = new FormData();
-                                            formData.append("scheduleId", scheduleId);
-                                            formData.append("date", date.setDate(date.getDate() - 7));
-                                            submit(formData);
-                                        }}
-                                    >{"<<<"}</div>
-                                </Form>
-                            </th>
+                                <th colSpan="12">
+                                    <Form id="previousWeek" role="search">
+                                        <div
+                                            name="previousWeek"
+                                            id="previousWeek"
+                                            onClick={(event) => {
+                                                let formData = new FormData();
+                                                formData.append("scheduleId", scheduleId);
+                                                formData.append("date", date.setDate(date.getDate() - 7));
+                                                submit(formData);
+                                            }}
+                                        >{"<<<"}</div>
+                                    </Form>
+                                </th>
 
-                            <th colSpan="21"></th>
+                                <th colSpan="21"></th>
 
-                            <th colSpan="12">
-                            <Form id="nextWeek" role="search">
-                                    <div
-                                        name="nextWeek"
-                                        id="nextWeek"
-                                        onClick={(event) => {
-                                            let formData = new FormData();
-                                            formData.append("scheduleId", scheduleId);
-                                            formData.append("date", date.setDate(date.getDate() + 7));
-                                            submit(formData);
-                                        }}
-                                    >{">>>"}</div>
-                                </Form>
-                            </th>
+                                <th colSpan="12">
+                                <Form id="nextWeek" role="search">
+                                        <div
+                                            name="nextWeek"
+                                            id="nextWeek"
+                                            onClick={(event) => {
+                                                let formData = new FormData();
+                                                formData.append("scheduleId", scheduleId);
+                                                formData.append("date", date.setDate(date.getDate() + 7));
+                                                submit(formData);
+                                            }}
+                                        >{">>>"}</div>
+                                    </Form>
+                                </th>
 
-                            <th colSpan="50"></th>
-                        </tr> */}
+                                <th colSpan="50"></th>
+                            </tr> */}
 
-                        <tr>
-                        {
-                            Array.from({ length: 145 }).map((_, i) => {
-                                return <th key={i}></th>
-                            })
-                        }
-                        </tr>
-
-                        <tr>
-                        <th colSpan="25">
-                            <div>
-                                <fetcher.Form method="post">
-                                    <input type="image" value={scheduleId} name="favorite" className="star" id="favorite" alt="favorite" src={(favoriteScheduleString == scheduleId) ? "../src/assets/img/star.png" : "../src/assets/img/emptyStar.png"}/>
-                                </fetcher.Form>
-                            </div>
-                        </th>
-                        
-                        {
-                            Array.from({ length: 10 }).map((_, i) => {
-                                return <th key={i} colSpan="12">{(i + 8).toString().concat(":00 - ", i + 9, ":00")}</th>
-                            })
-                        }
-                        {/* <th colSpan="12">08:00 - 09:00</th>
-                        <th colSpan="12">09:00 - 10:00</th>
-                        <th colSpan="12">10:00 - 11:00</th>
-                        <th colSpan="12">11:00 - 12:00</th>
-                        <th colSpan="12">12:00 - 13:00</th>
-                        <th colSpan="12">13:00 - 14:00</th>
-                        <th colSpan="12">14:00 - 15:00</th>
-                        <th colSpan="12">15:00 - 16:00</th>
-                        <th colSpan="12">16:00 - 17:00</th>
-                    <th colSpan="12">17:00 - 18:00</th> */}
-                        </tr>
-                    </thead>
-            
-                    <tbody>
-                    {
-                    schedule.map((coursDay, j) => {
-                        if (j == 0 || j == schedule.length - 1) {
-                            return null
-                        }
-                        
-                        return (
-                            <tr key={j}>
-                            <th colSpan="25">{weekdays[j].concat((schedule[j][0] && schedule[j][0].start)
-                                ? "\n" + new Date(Date.parse(schedule[j][0].start)).getDate() + "/" + (new Date(Date.parse(schedule[j][0].start)).getMonth() + 1) + "/" + new Date(Date.parse(schedule[j][0].start)).getFullYear()
-                                : "")
-                            }</th>
-
+                            <tr>
                             {
-                                schedule[j].map((cours, i) => {
-                                    const start = new Date(Date.parse(cours.start))
-                                    const end = new Date(Date.parse(cours.end))
-                                    start.setTime(start.getTime() - decalageHeure * 60 * 60 * 1000)
-                                    end.setTime(end.getTime() - decalageHeure * 60 * 60 * 1000)
-
-                                    if (!foundNextCours && now < start) {
-                                        foundNextCours = true
-
-                                        const coursCopy = {...cours}
-                                        coursCopy.start = formatStringToDate(coursCopy.start)
-                                        coursCopy.end = formatStringToDate(coursCopy.end)
-
-                                        setNextCours(coursCopy)
-                                    }
-                                    
-                                    const previousCours = (i > 0) ? schedule[j][i - 1] : null
-                                    
-                                    // if (previousCours == null) {
-                                        
-                                    //     return <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
-                                    //     <div className={
-                                    //         "cours"
-                                    //         .concat(cours.summary.includes("TD") ? " td" : "")
-                                    //         .concat(cours.summary.includes("TP") ? " tp" : "")
-                                    //         .concat(cours.summary.includes("DS") ? " ds" : "")
-                                    //         .concat(cours.summary.includes("Cours") ? " amphi" : "")
-                                    //         .concat(cours.summary.includes("Reunion") ? " reunion" : "")
-                                    //     }>
-                                        
-                                    //     <p>{
-                                    //         ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
-                                    //         ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
-                                    //         ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
-                                    //         ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
-                                    //     }</p>
-                                    //     <p>{cours.summary.replaceAll('\\', '\n')}</p>
-                                    //     <p>{cours.location}</p>
-                                    //     </div>
-                                    //     </td>
-                                    // }
-                                    
-                                    let previousCoursEnd
-                                    if (previousCours != null) {
-                                        previousCoursEnd = new Date(Date.parse(previousCours.end))
-                                        previousCoursEnd.setTime(previousCoursEnd.getTime() - decalageHeure * 60 * 60 * 1000)
-                                    } else {
-                                        const year = start.getFullYear()
-                                        const month = start.getMonth()
-                                        const day = start.getDate()
-                                        previousCoursEnd = new Date(year, month, day)
-                                        previousCoursEnd.setTime(previousCoursEnd.getTime() + 8 * 60 * 60 * 1000)
-                                    }
-                                    
-                                    return ([
-                                        (start - previousCoursEnd) > 0 ? <td colSpan={(start - previousCoursEnd) / 60 / 1000 / 5} key={i + j + previousCoursEnd}></td> : null,
-                                        (end - start) ? <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
-                                            <div className={
-                                                "cours"
-                                                .concat(cours.summary.includes("TD") ? " td" : "")
-                                                .concat(cours.summary.includes("TP") ? " tp" : "")
-                                                .concat(cours.summary.includes("DS") ? " ds" : "")
-                                                .concat(cours.summary.includes("Cours") ? " amphi" : "")
-                                                .concat(cours.summary.includes("Reunion") ? " reunion" : "")
-                                            }>
-                                            
-                                            <p>{
-                                                ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
-                                                ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
-                                                ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
-                                                ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
-                                            }</p>
-                                            <p>{cours.summary.replaceAll('\\', '\n')}</p>
-                                            <p>{cours.location}</p>
-                                            </div>
-                                            </td> : null
-                                    ])
+                                Array.from({ length: 145 }).map((_, i) => {
+                                    return <th key={i}></th>
                                 })
                             }
-                            
                             </tr>
-                            )
-                        })
-                    }
-                    </tbody>
-                </table>
+
+                            <tr>
+                            <th colSpan="25">
+                                <div>
+                                    <fetcher.Form method="post">
+                                        <input type="image" value={scheduleId} name="favorite" className="star" id="favorite" alt="favorite" src={(favoriteScheduleString == scheduleId) ? "../src/assets/img/star.png" : "../src/assets/img/emptyStar.png"}/>
+                                    </fetcher.Form>
+                                </div>
+                            </th>
+                            
+                            {
+                                Array.from({ length: 10 }).map((_, i) => {
+                                    return <th key={i} colSpan="12">{(i + 8).toString().concat(":00 - ", i + 9, ":00")}</th>
+                                })
+                            }
+                            {/* <th colSpan="12">08:00 - 09:00</th>
+                            <th colSpan="12">09:00 - 10:00</th>
+                            <th colSpan="12">10:00 - 11:00</th>
+                            <th colSpan="12">11:00 - 12:00</th>
+                            <th colSpan="12">12:00 - 13:00</th>
+                            <th colSpan="12">13:00 - 14:00</th>
+                            <th colSpan="12">14:00 - 15:00</th>
+                            <th colSpan="12">15:00 - 16:00</th>
+                            <th colSpan="12">16:00 - 17:00</th>
+                        <th colSpan="12">17:00 - 18:00</th> */}
+                            </tr>
+                        </thead>
+                
+                        <tbody>
+                        {
+                        schedule.map((coursDay, j) => {
+                            if (j == 0 || j == schedule.length - 1) {
+                                return null
+                            }
+                            
+                            return (
+                                <tr key={j}>
+                                <th colSpan="25">{weekdays[j].concat((schedule[j][0] && schedule[j][0].start)
+                                    ? "\n" + new Date(Date.parse(schedule[j][0].start)).getDate() + "/" + (new Date(Date.parse(schedule[j][0].start)).getMonth() + 1) + "/" + new Date(Date.parse(schedule[j][0].start)).getFullYear()
+                                    : "")
+                                }</th>
+
+                                {
+                                    schedule[j].map((cours, i) => {
+                                        const start = new Date(Date.parse(cours.start))
+                                        const end = new Date(Date.parse(cours.end))
+                                        start.setTime(start.getTime() - decalageHeure * 60 * 60 * 1000)
+                                        end.setTime(end.getTime() - decalageHeure * 60 * 60 * 1000)
+
+                                        if (!foundNextCours && now < start) {
+                                            foundNextCours = true
+
+                                            const coursCopy = {...cours}
+                                            coursCopy.start = formatStringToDate(coursCopy.start)
+                                            coursCopy.end = formatStringToDate(coursCopy.end)
+
+                                            setNextCours(coursCopy)
+                                        }
+                                        
+                                        const previousCours = (i > 0) ? schedule[j][i - 1] : null
+                                        
+                                        // if (previousCours == null) {
+                                            
+                                        //     return <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
+                                        //     <div className={
+                                        //         "cours"
+                                        //         .concat(cours.summary.includes("TD") ? " td" : "")
+                                        //         .concat(cours.summary.includes("TP") ? " tp" : "")
+                                        //         .concat(cours.summary.includes("DS") ? " ds" : "")
+                                        //         .concat(cours.summary.includes("Cours") ? " amphi" : "")
+                                        //         .concat(cours.summary.includes("Reunion") ? " reunion" : "")
+                                        //     }>
+                                            
+                                        //     <p>{
+                                        //         ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
+                                        //         ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
+                                        //         ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
+                                        //         ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
+                                        //     }</p>
+                                        //     <p>{cours.summary.replaceAll('\\', '\n')}</p>
+                                        //     <p>{cours.location}</p>
+                                        //     </div>
+                                        //     </td>
+                                        // }
+                                        
+                                        let previousCoursEnd
+                                        if (previousCours != null) {
+                                            previousCoursEnd = new Date(Date.parse(previousCours.end))
+                                            previousCoursEnd.setTime(previousCoursEnd.getTime() - decalageHeure * 60 * 60 * 1000)
+                                        } else {
+                                            const year = start.getFullYear()
+                                            const month = start.getMonth()
+                                            const day = start.getDate()
+                                            previousCoursEnd = new Date(year, month, day)
+                                            previousCoursEnd.setTime(previousCoursEnd.getTime() + 8 * 60 * 60 * 1000)
+                                        }
+                                        
+                                        return ([
+                                            (start - previousCoursEnd) > 0 ? <td colSpan={(start - previousCoursEnd) / 60 / 1000 / 5} key={i + j + previousCoursEnd}></td> : null,
+                                            (end - start)
+                                                ? <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
+                                                    <div className={
+                                                        "cours"
+                                                        .concat(cours.summary.includes("TD") ? " td" : "")
+                                                        .concat(cours.summary.includes("TP") ? " tp" : "")
+                                                        .concat(cours.summary.includes("DS") ? " ds" : "")
+                                                        .concat(cours.summary.includes("Cours") ? " amphi" : "")
+                                                        .concat(cours.summary.includes("Reunion") ? " reunion" : "")
+                                                    } onClick={event => {
+                                                        const coursCopy = {...cours}
+                                                        coursCopy.start = formatStringToDate(coursCopy.start)
+                                                        coursCopy.end = formatStringToDate(coursCopy.end)
+
+                                                        setNextCours(coursCopy);
+                                                        submit(null, {action: "/app/directions"});
+                                                    }}>
+                                                    
+                                                    <p>{
+                                                        ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
+                                                        ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
+                                                        ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
+                                                        ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
+                                                    }</p>
+                                                    <p>{cours.summary.replaceAll('\\', '\n')}</p>
+                                                    <p>{cours.location}</p>
+                                                    </div>
+                                                </td>
+
+                                                : null
+                                        ])
+                                    })
+                                }
+                                
+                                </tr>
+                                )
+                            })
+                        }
+                        </tbody>
+                    </table>
+                </>
 
                 : null
             }

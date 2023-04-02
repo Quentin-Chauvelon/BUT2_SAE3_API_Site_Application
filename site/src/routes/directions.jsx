@@ -56,10 +56,16 @@ export async function loader({ request }) {
 
     let response = null;
     const cours = nextCours;
+
     if (cours.start && loaderFavoriteAddress != "" && selectedTransitMode != "") {
+        if (selectedTransitMode != "transit") {
+            cours.start.setTime(cours.start.getTime() - 5 * 60 * 1000);
+        }
+
         console.log("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode);
-        const responseJson = await fetch("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + (cours.start.getTime() - 5 * 60 * 1000) + "/" + selectedTransitMode)
-        response = await responseJson.json()
+        const response = null;
+        // const responseJson = await fetch("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode)
+        // response = await responseJson.json()
     }
     console.log(response);
 
@@ -305,9 +311,29 @@ export default function Directions() {
                                                 <p className="step_distance_time">{step.duration.text + " (" + step.distance.text + ")"}</p>
                                         </div>
                                     )
+
+                                    // return ([
+                                    //     ((cours.start.getHours() > 9) ? "" : "0") + cours.start.getHours() + ":" + ((cours.start.getMinutes() > 9) ? "" : "0") + cours.start.getMinutes()
+                                    //     <p className="departure_time">{coursStart - response.routes[0].legs[0].duration.value * 1000}</p>,
+                                        
+                                    //     <div key={i} className="step_not_transit_details">
+                                    //             <div className="step_direction_container">
+                                    //                 <div className="step_direction_icon_container">
+                                    //                     <img className="step_direction_icon" src={"../src/assets/img/Directions_Icons/" + ((step.maneuver) ? step.maneuver : "straight") + ".png"} alt="" />
+                                    //                 </div>
+
+                                    //                 <p dangerouslySetInnerHTML={{__html: step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "")}} className="step_direction"/>
+                                    //             </div>
+                                    //             {/* <p className="step_direction">{step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "").substring(0, ((step.html_instructions.indexOf("<div") >= 0) ? step.html_instructions.indexOf("<div>") : step.html_instructions.length + 1))}</p> */}
+                                    //             <p className="step_distance_time">{step.duration.text + " (" + step.distance.text + ")"}</p>
+                                    //     </div>,
+
+                                    //     <p className="departure_time">{coursStart + " : " + response.routes[0].legs[0].end_address}</p>
+                                    // ])
                                 })
 
-                              : null
+                            : null
+
                             // <div className="departure_details">
                             //     <p className="departure_time">08:14</p>
                             //     <div className="stop_icon"></div>

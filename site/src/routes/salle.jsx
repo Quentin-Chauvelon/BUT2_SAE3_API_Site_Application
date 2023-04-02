@@ -15,17 +15,25 @@ export async function action({ request, params }) {
     const roomsResponse = await fetch("http://172.26.82.56:443/rooms/".concat(computerRoomsOnly, "/", formatDateToString(date)));
     const rooms = await roomsResponse.json()
     
-    return rooms;
+    return {rooms};
 }
 
 
 export default function Salle() {
     const fetcher = useFetcher()
     
-    let rooms = useActionData()
-    if (rooms == undefined) {
-        rooms = [];
+    console.log(useActionData());
+
+    let rooms = []
+    let alreadySearched = false;
+
+    const actionData = useActionData()
+
+    if (actionData) {
+        rooms = actionData.rooms;
+        alreadySearched = true;
     }
+    
     rooms.sort((room1, room2) => {
         if (room1.name < room2.name) {
             return -1;
@@ -35,6 +43,7 @@ export default function Salle() {
         }
         return 0;  
     })
+    console.log(rooms.length);
     
     return (
         <>
@@ -60,7 +69,14 @@ export default function Salle() {
                     </Form>
                     
                     <p className="Sc">Les salles disponibles sont : </p>
-                    <p className="freeRoom">{rooms.map(room => {return room.name}).join(", ")}</p>
+                    
+                    {
+                        (alreadySearched)
+                            ? (rooms.length > 0)
+                                ? <p className="freeRoom">{rooms.map(room => {return room.name}).join(", ")}</p>
+                                : <p className="freeRoom">{"Il n'y a aucune salle de libre :("}</p>
+                            : null
+                    }
                     {
                         // rooms.map((room, i) => {
                         //     return <p key={i} className="freeRoom">{room.name}</p>
