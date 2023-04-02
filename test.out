@@ -8,18 +8,18 @@
     ✔ must show 400 - error
     ✔ must show 404 - not found
     /populate/rooms
-      ✔ must show rooms (174ms)
+      ✔ must show rooms (177ms)
     /populate/schedules
-      ✔ must show schedules (101ms)
+      ✔ must show schedules (107ms)
     /populate/teachers
-      ✔ must show teachers (104ms)
+      ✔ must show teachers (140ms)
 
   default route
     ✔ expected default route 
 
   room/{id}/{time}
-    ✔ should show room class of C0-05 at 30/10/2023 at 8:30 am and it has no class (5551ms)
-    ✔ should show room class of C0-04 at 30/10/2023 at  15:20 and it has no class at this time (334ms)
+    ✔ should show room class of C0-05 at 30/10/2023 at 8:30 am and it has no class (607ms)
+    ✔ should show room class of C0-04 at 30/10/2023 at  15:20 and it has no class at this time (383ms)
     ✔ should show error because the date is not well formated
     ✔ should show not found because the id does not exist 
     ✔ should show empty because the date is negative 
@@ -42,7 +42,7 @@
     roomId: 0
   }
 ]
-    ✔ should show all empty non-computer rooms on the given date (1380ms)
+    ✔ should show all empty non-computer rooms on the given date (1566ms)
 2023-03-30T15:20:00.000Z
 []
 []
@@ -57,7 +57,7 @@
     roomId: 0
   }
 ]
-    ✔ should show all empty computer rooms on the given date (60ms)
+    ✔ should show all empty computer rooms on the given date (57ms)
 2023-03-30T11:42:00.000Z
 [
   Cours {
@@ -99,66 +99,97 @@
     roomId: 0
   }
 ]
-    ✔ should show empty because there are no empty rooms (57ms)
+    ✔ should show empty because there are no empty rooms (58ms)
     ✔ should show error because the date is not well formated
     ✔ should show 404 because of bad params
 
   /schedule
     /schedule/day/{id}/{date}
-      ✔ should show 404 because the room does not exist
+      ✔ should show 404 because the room does not exist (103ms)
       ✔ should show error ? and the schedule of the room 
-      ✔ should show the schedule of the room C0/03 for the day
       1) should show the schedule of the room on the given day
     /schedule/week/{id}/{date}
       2) should show 404 because the room does not exist
-      3) should show error ? and the schedule of the room 
+      3) should show empty tab and the schedule of the room 
       4) should show error ? and the schedule of the room 
       ✔ should show the schedule of the room C0/03 for the week
-      5) should show the not found because the params are not correct
-      6) should show the schedule of the week for the room C0/03
+      ✔ should show the not found because the params are not correct
+      5) should show the schedule of the week for the room C0/03
 
   Models
     room
-      7) constructs
-      8) gets the url
+      6) constructs
+      7) gets the url
 
 
-  22 passing (8s)
-  8 failing
+  22 passing (3s)
+  7 failing
 
   1) /schedule
        /schedule/day/{id}/{date}
          should show the schedule of the room on the given day:
-     ReferenceError: formatStringToDate is not defined
-      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:408:28)
+
+      AssertionError: expected [ Cours{ id: undefined, …(5) }, …(1) ] to deeply equal [ { start: Invalid Date, …(4) }, …(1) ]
+      + expected - actual
+
+       [
+         {
+      -    "end": [Date: 2023-03-30T10:00:00.000Z]
+      -    "id": [undefined]
+      +    "end": [Date: Invalid Date]
+           "location": "J-C0/03"
+           "roomId": 0
+      -    "start": [Date: 2023-03-30T08:00:00.000Z]
+      +    "start": [Date: Invalid Date]
+           "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 3"
+         }
+         {
+      -    "end": [Date: 2023-03-30T12:20:00.000Z]
+      -    "id": [undefined]
+      +    "end": [Date: Invalid Date]
+           "location": "J-C0/03"
+           "roomId": 0
+      -    "start": [Date: 2023-03-30T10:10:00.000Z]
+      +    "start": [Date: Invalid Date]
+           "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4"
+         }
+       ]
+      
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:407:43)
       at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 
   2) /schedule
        /schedule/week/{id}/{date}
          should show 404 because the room does not exist:
 
-      AssertionError: expected 200 to equal 404
+      AssertionError: expected [ [], [], [], [], [], [], [] ] to deeply equal []
       + expected - actual
 
-      -200
-      +404
+      -[
+      -  []
+      -  []
+      -  []
+      -  []
+      -  []
+      -  []
+      -  []
+      -]
+      +[]
       
-      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:443:44)
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:445:43)
       at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 
   3) /schedule
        /schedule/week/{id}/{date}
-         should show error ? and the schedule of the room :
+         should show empty tab and the schedule of the room :
 
-      AssertionError: expected { message: 'date invalide' } to deeply equal { message: 'error' }
+      AssertionError: expected 400 to equal 200
       + expected - actual
 
-       {
-      -  "message": "date invalide"
-      +  "message": "error"
-       }
+      -400
+      +200
       
-      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:455:43)
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:453:44)
       at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 
   4) /schedule
@@ -173,23 +204,10 @@
       +  "message": "error"
        }
       
-      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:466:43)
+      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:463:43)
       at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 
   5) /schedule
-       /schedule/week/{id}/{date}
-         should show the not found because the params are not correct:
-
-      AssertionError: expected 404 to equal 200
-      + expected - actual
-
-      -404
-      +200
-      
-      at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:483:44)
-      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-
-  6) /schedule
        /schedule/week/{id}/{date}
          should show the schedule of the week for the room C0/03:
 
@@ -202,51 +220,51 @@
            {
       -      "end": [Date: 2023-03-27T10:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-27T10:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-27T09:30:00.000Z]
-      +      "start": "[Date : 2023-03-27T09:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Exploitation BD_R2\\, INFO 1 TP 1-2\\, NACHOUKI Gilles"
            }
            {
       -      "end": [Date: 2023-03-27T12:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-27T12:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-27T11:00:00.000Z]
-      +      "start": "[Date : 2023-03-27T11:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Exploitation BD_R2\\, INFO 1 TP 1-2\\, NACHOUKI Gilles"
            }
            {
       -      "end": [Date: 2023-03-27T14:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-27T14:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-27T13:30:00.000Z]
-      +      "start": "[Date : 2023-03-27T13:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Services réseau\\, INFO 1 Groupe 2\\, HERNANDEZ Nicolas"
            }
            {
       -      "end": [Date: 2023-03-27T16:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-27T16:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-27T15:00:00.000Z]
-      +      "start": "[Date : 2023-03-27T15:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Services réseau\\, INFO 1 TP 2-1\\, HERNANDEZ Nicolas"
            }
            {
       -      "end": [Date: 2023-03-27T17:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-27T17:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-27T16:30:00.000Z]
-      +      "start": "[Date : 2023-03-27T16:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Services réseau\\, INFO 1 TP 2-2\\, HERNANDEZ Nicolas"
            }
          ]
@@ -254,41 +272,41 @@
            {
       -      "end": [Date: 2023-03-28T09:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-28T09:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-28T08:00:00.000Z]
-      +      "start": "[Date : 2023-03-28T08:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Communication professionnelle\\, INFO 1 Groupe 1\\, CAZALAS Sebastien"
            }
            {
       -      "end": [Date: 2023-03-28T10:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-28T10:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-28T09:30:00.000Z]
-      +      "start": "[Date : 2023-03-28T09:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Services réseau\\, INFO 1 Groupe 1\\, REMM Jean-François"
            }
            {
       -      "end": [Date: 2023-03-28T12:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-28T12:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-28T11:00:00.000Z]
-      +      "start": "[Date : 2023-03-28T11:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Services réseau\\, INFO 1 TP 1-2\\, REMM Jean-François"
            }
            {
       -      "end": [Date: 2023-03-28T16:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-28T16:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-28T15:00:00.000Z]
-      +      "start": "[Date : 2023-03-28T15:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Services réseau\\, INFO 1 TP 1-1\\, REMM Jean-François"
            }
          ]
@@ -296,31 +314,31 @@
            {
       -      "end": [Date: 2023-03-29T14:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-29T14:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-29T13:30:00.000Z]
-      +      "start": "[Date : 2023-03-29T13:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Services réseau\\, INFO 1 Groupe 3\\, BOUTIN Olivier"
            }
            {
       -      "end": [Date: 2023-03-29T16:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-29T16:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-29T15:00:00.000Z]
-      +      "start": "[Date : 2023-03-29T15:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Services réseau\\, INFO 1 TP 3-1\\, BOUTIN Olivier"
            }
            {
       -      "end": [Date: 2023-03-29T17:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-29T17:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-29T16:30:00.000Z]
-      +      "start": "[Date : 2023-03-29T16:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TP - Services réseau\\, INFO 1 TP 3-1\\, BOUTIN Olivier"
            }
          ]
@@ -328,21 +346,21 @@
            {
       -      "end": [Date: 2023-03-30T10:00:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-30T10:00:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-30T08:00:00.000Z]
-      +      "start": "[Date : 2023-03-30T08:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 3"
            }
            {
       -      "end": [Date: 2023-03-30T12:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-30T12:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-30T10:10:00.000Z]
-      +      "start": "[Date : 2023-03-30T10:10:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4"
            }
          ]
@@ -350,21 +368,21 @@
            {
       -      "end": [Date: 2023-03-31T10:50:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-31T10:50:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-31T09:30:00.000Z]
-      +      "start": "[Date : 2023-03-31T09:30:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4"
            }
            {
       -      "end": [Date: 2023-03-31T12:20:00.000Z]
       -      "id": [undefined]
-      +      "end": "[Date : 2023-03-31T12:20:00.000Z]"
+      +      "end": [Date: Invalid Date]
              "location": "J-C0/03"
              "roomId": 0
       -      "start": [Date: 2023-03-31T11:00:00.000Z]
-      +      "start": "[Date : 2023-03-31T11:00:00.000Z]"
+      +      "start": [Date: Invalid Date]
              "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4"
            }
          ]
@@ -373,14 +391,14 @@
       at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-chai.mjs:492:43)
       at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 
-  7) Models
+  6) Models
        room
          constructs:
      TypeError: Class constructor Room cannot be invoked without 'new'
       at Context.<anonymous> (file:///var/www/html/SAE4/API/test/test-fonctionnel.mjs:16:24)
       at process.processImmediate (node:internal/timers:476:21)
 
-  8) Models
+  7) Models
        room
          gets the url:
      TypeError: Class constructor Room cannot be invoked without 'new'
@@ -397,10 +415,10 @@ All files |       0 |        0 |       0 |       0 |
 -------------------|---------|----------|---------|---------|---------------------------------------
 File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                     
 -------------------|---------|----------|---------|---------|---------------------------------------
-All files          |   70.38 |    76.57 |   56.97 |   70.38 |                                       
- API               |   76.16 |       75 |   41.66 |   76.16 |                                       
+All files          |   70.38 |    75.86 |   56.97 |   70.38 |                                       
+ API               |   76.16 |    71.79 |   41.66 |   76.16 |                                       
   cours.mjs        |   64.44 |      100 |      25 |   64.44 | 11-12,25-26,36-47,52-56,59-64,67-71   
-  server.mjs       |   77.94 |    72.97 |      50 |   77.94 | ...87,505-520,543-551,578-588,592-593 
+  server.mjs       |   77.94 |    69.44 |      50 |   77.94 | ...87,505-520,543-551,578-588,592-593 
  API/controller    |   53.17 |    75.67 |      40 |   53.17 |                                       
   controller.mjs   |   53.17 |    75.67 |      40 |   53.17 | ...39,243-271,275-299,303-323,327-344 
  API/dao           |   68.49 |    68.85 |   60.71 |   68.49 |                                       

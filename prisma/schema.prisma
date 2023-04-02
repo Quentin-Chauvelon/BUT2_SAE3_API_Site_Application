@@ -44,6 +44,8 @@ model User {
   login      String   @id
   password   String
   favoriteSchedule Int
+  favoriteAddress String
+  favoriteTransitMode String
   token      String
 }
 

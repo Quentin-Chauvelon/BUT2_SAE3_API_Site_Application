@@ -2,6 +2,8 @@ class User {
     login
     password
     favoriteSchedule
+    favoriteAddress
+    favoriteTransitMode
     token
 
     constructor(obj) {

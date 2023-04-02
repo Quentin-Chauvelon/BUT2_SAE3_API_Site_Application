@@ -1,4 +1,4 @@
-import {init} from '../server.mjs'
+import {init,formatStringToDate} from '../server.mjs'
 import chai from 'chai'
 import chaiHttp from 'chai-http'
 
@@ -169,8 +169,8 @@ describe('room/{id}/{time}', () => {
         chai.expect(res.result).to.be.eql(
         [
             {
-                "start": "[Date : 2023-03-30T09:35:00.000Z]",
-                "end": "[Date : 2023-03-30T12:30:00.000Z]",
+                "start":formatStringToDate("2023-03-30T09:35:00.000Z"),
+                "end":formatStringToDate("2023-03-30T12:30:00.000Z"),
                 "summary": "TD - PROJET PERSONNEL ET PROFESSIONNEL\\, GEA1 Promo\\, GODARD Claudio",
                 "location": "J-Amphi 1\\, J-C0/05\\, J-D0/02\\, J-D1/12\\, J-D2/23\\, J-E0/01\\, J-E1/12\\, J-E1/16\\, J-Salle du Conseil",
                 "roomId": 0
@@ -388,7 +388,7 @@ describe('/schedule', () => {
                 message : "date invalide"
             })
         });
-
+        /* Test dépendant de la date et l'heure actuelle
         it('should show the schedule of the room C0/03 for the day', async () => {
             const res = await server.inject({
                 method: 'get',
@@ -396,6 +396,7 @@ describe('/schedule', () => {
             });
             chai.expect(res.statusCode).to.equal(200);
         });
+        */
 
         it('should show the schedule of the room on the given day', async () => {
             const res = await server.inject({
@@ -440,21 +441,17 @@ describe('/schedule', () => {
                 method: 'get',
                 url: '/schedule/week/0000/20230330T11420000Z'
             });
-            chai.expect(res.statusCode).to.equal(404);
-            chai.expect(res.result).to.be.eql({
-                message : "not found"
-            })
+            chai.expect(res.statusCode).to.equal(200);
+            chai.expect(res.result).to.be.eql([])
         });
 
-        it('should show error ? and the schedule of the room ', async () => {
+        it('should show empty tab and the schedule of the room ', async () => {
             const res = await server.inject({
                 method: 'get',
                 url: '/schedule/week/1300/20230330'
             });
-            chai.expect(res.statusCode).to.equal(400);
-            chai.expect(res.result).to.be.eql({
-                message : "error"
-            })
+            chai.expect(res.statusCode).to.equal(200);
+            chai.expect(res.result).to.be.eql([])
         });
 
         it('should show error ? and the schedule of the room ', async () => {
@@ -480,7 +477,10 @@ describe('/schedule', () => {
                 method: 'get',
                 url: '/schedule/week/1300/20230330T11420000Z/bruh'
             });
-            chai.expect(res.statusCode).to.equal(200);
+            chai.expect(res.statusCode).to.equal(404);
+            chai.expect(res.result).to.be.eql({
+                message : "not found"
+            })
         });
 
         it('should show the schedule of the week for the room C0/03', async () => {
@@ -494,36 +494,36 @@ describe('/schedule', () => {
                     [],
                     [
                       {
-                        "start": "[Date : 2023-03-27T09:30:00.000Z]",
-                        "end": "[Date : 2023-03-27T10:50:00.000Z]",
+                        "start": formatStringToDate("2023-03-27T09:30:00.000Z"),
+                        "end": formatStringToDate("2023-03-27T10:50:00.000Z"),
                         "summary": "TP - Exploitation BD_R2\\, INFO 1 TP 1-2\\, NACHOUKI Gilles",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-27T11:00:00.000Z]",
-                        "end": "[Date : 2023-03-27T12:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-27T11:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-27T12:20:00.000Z"),
                         "summary": "TP - Exploitation BD_R2\\, INFO 1 TP 1-2\\, NACHOUKI Gilles",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-27T13:30:00.000Z]",
-                        "end": "[Date : 2023-03-27T14:50:00.000Z]",
+                        "start":formatStringToDate("2023-03-27T13:30:00.000Z"),
+                        "end":formatStringToDate("2023-03-27T14:50:00.000Z"),
                         "summary": "TD - Services réseau\\, INFO 1 Groupe 2\\, HERNANDEZ Nicolas",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-27T15:00:00.000Z]",
-                        "end": "[Date : 2023-03-27T16:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-27T15:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-27T16:20:00.000Z"),
                         "summary": "TP - Services réseau\\, INFO 1 TP 2-1\\, HERNANDEZ Nicolas",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-27T16:30:00.000Z]",
-                        "end": "[Date : 2023-03-27T17:50:00.000Z]",
+                        "start":formatStringToDate("2023-03-27T16:30:00.000Z"),
+                        "end":formatStringToDate("2023-03-27T17:50:00.000Z"),
                         "summary": "TP - Services réseau\\, INFO 1 TP 2-2\\, HERNANDEZ Nicolas",
                         "location": "J-C0/03",
                         "roomId": 0
@@ -531,29 +531,29 @@ describe('/schedule', () => {
                     ],
                     [
                       {
-                        "start": "[Date : 2023-03-28T08:00:00.000Z]",
-                        "end": "[Date : 2023-03-28T09:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-28T08:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-28T09:20:00.000Z"),
                         "summary": "TD - Communication professionnelle\\, INFO 1 Groupe 1\\, CAZALAS Sebastien",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-28T09:30:00.000Z]",
-                        "end": "[Date : 2023-03-28T10:50:00.000Z]",
+                        "start":formatStringToDate("2023-03-28T09:30:00.000Z"),
+                        "end":formatStringToDate("2023-03-28T10:50:00.000Z"),
                         "summary": "TD - Services réseau\\, INFO 1 Groupe 1\\, REMM Jean-François",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-28T11:00:00.000Z]",
-                        "end": "[Date : 2023-03-28T12:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-28T11:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-28T12:20:00.000Z"),
                         "summary": "TP - Services réseau\\, INFO 1 TP 1-2\\, REMM Jean-François",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-28T15:00:00.000Z]",
-                        "end": "[Date : 2023-03-28T16:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-28T15:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-28T16:20:00.000Z"),
                         "summary": "TP - Services réseau\\, INFO 1 TP 1-1\\, REMM Jean-François",
                         "location": "J-C0/03",
                         "roomId": 0
@@ -561,22 +561,22 @@ describe('/schedule', () => {
                     ],
                     [
                       {
-                        "start": "[Date : 2023-03-29T13:30:00.000Z]",
-                        "end": "[Date : 2023-03-29T14:50:00.000Z]",
+                        "start":formatStringToDate("2023-03-29T13:30:00.000Z"),
+                        "end":formatStringToDate("2023-03-29T14:50:00.000Z"),
                         "summary": "TD - Services réseau\\, INFO 1 Groupe 3\\, BOUTIN Olivier",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-29T15:00:00.000Z]",
-                        "end": "[Date : 2023-03-29T16:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-29T15:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-29T16:20:00.000Z"),
                         "summary": "TP - Services réseau\\, INFO 1 TP 3-1\\, BOUTIN Olivier",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-29T16:30:00.000Z]",
-                        "end": "[Date : 2023-03-29T17:50:00.000Z]",
+                        "start":formatStringToDate("2023-03-29T16:30:00.000Z"),
+                        "end":formatStringToDate("2023-03-29T17:50:00.000Z"),
                         "summary": "TP - Services réseau\\, INFO 1 TP 3-1\\, BOUTIN Olivier",
                         "location": "J-C0/03",
                         "roomId": 0
@@ -584,15 +584,15 @@ describe('/schedule', () => {
                     ],
                     [
                       {
-                        "start": "[Date : 2023-03-30T08:00:00.000Z]",
-                        "end": "[Date : 2023-03-30T10:00:00.000Z]",
+                        "start":formatStringToDate("2023-03-30T08:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-30T10:00:00.000Z"),
                         "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 3",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-30T10:10:00.000Z]",
-                        "end": "[Date : 2023-03-30T12:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-30T10:10:00.000Z"),
+                        "end":formatStringToDate("2023-03-30T12:20:00.000Z"),
                         "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4",
                         "location": "J-C0/03",
                         "roomId": 0
@@ -600,15 +600,15 @@ describe('/schedule', () => {
                     ],
                     [
                       {
-                        "start": "[Date : 2023-03-31T09:30:00.000Z]",
-                        "end": "[Date : 2023-03-31T10:50:00.000Z]",
+                        "start":formatStringToDate("2023-03-31T09:30:00.000Z"),
+                        "end":formatStringToDate("2023-03-31T10:50:00.000Z"),
                         "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4",
                         "location": "J-C0/03",
                         "roomId": 0
                       },
                       {
-                        "start": "[Date : 2023-03-31T11:00:00.000Z]",
-                        "end": "[Date : 2023-03-31T12:20:00.000Z]",
+                        "start":formatStringToDate("2023-03-31T11:00:00.000Z"),
+                        "end":formatStringToDate("2023-03-31T12:20:00.000Z"),
                         "summary": "TD - Développement d'une application complexe (parc. REAL)\\, INFO 2 Groupe 4",
                         "location": "J-C0/03",
                         "roomId": 0

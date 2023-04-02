@@ -9,7 +9,7 @@ import {Schedule} from "../model/schedule.mjs"
 import {Cours} from "../model/cours.mjs"
 import {Room} from "../model/room.mjs"
 import {User} from "../model/user.mjs"
-import { ScheduleType } from "../model/scheduleType.mjs";
+import {ScheduleType} from "../model/scheduleType.mjs";
 
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs";
@@ -258,6 +258,8 @@ export const controller = {
                 login: user.login,
                 password: bcrypt.hashSync(user.password, 8),
                 favoriteSchedule: 0,
+                favoriteAddress: "",
+                favoriteTransitMode: "transit",
                 token: token
             })
 
@@ -337,6 +339,96 @@ export const controller = {
             }
 
             return {favoriteSchedule: user.favoriteSchedule}
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    setFavoriteAddress : async(token, favoriteAddress) => {
+        try {
+            const user = await userDao.findByToken(token)
+            if (user == null) {
+                return null
+            }
+
+            const validToken = verifyToken(user.token)
+            // if the token is invalid (a valid token is an object with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return {message: validToken}
+            }
+
+            user.favoriteAddress = favoriteAddress
+            const userUpdated = await userDao.update(user)
+            delete userUpdated.password
+            return {favoriteAddress: userUpdated}
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    getFavoriteAddress : async (token) => {
+        try {
+            const user = await userDao.findByToken(token)
+            if (user == null) {
+                return null
+            }
+
+            const validToken = verifyToken(token)
+            // if the token is invalid (a valid token is a object with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return {message: validToken}
+            }
+
+            return {favoriteAddress: user.favoriteAddress}
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    setFavoriteTransitMode : async(token, favoriteTransitMode) => {
+        try {
+            const user = await userDao.findByToken(token)
+            if (user == null) {
+                return null
+            }
+
+            const validToken = verifyToken(user.token)
+            // if the token is invalid (a valid token is an object with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return {message: validToken}
+            }
+
+            user.favoriteTransitMode = favoriteTransitMode
+            const userUpdated = await userDao.update(user)
+            delete userUpdated.password
+            return {favoriteTransitMode: userUpdated}
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    getFavoriteTransitMode : async (token) => {
+        try {
+            const user = await userDao.findByToken(token)
+            if (user == null) {
+                return null
+            }
+
+            const validToken = verifyToken(token)
+            // if the token is invalid (a valid token is a object with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return {message: validToken}
+            }
+
+            return {favoriteTransitMode: user.favoriteTransitMode}
 
         } catch (e) {
             console.log(e);
