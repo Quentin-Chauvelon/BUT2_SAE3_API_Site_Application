@@ -187,7 +187,16 @@ html, body {
     font-weight: 500;
 }
 
+.line_name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
+    width: 40px;
+    height: 25px;
+
+    border-radius: 8px;
+}
 
 
 

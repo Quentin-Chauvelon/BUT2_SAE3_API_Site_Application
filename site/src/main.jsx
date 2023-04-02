@@ -13,7 +13,7 @@ import Home, {loader as homeLoader, action as homeAction} from "./routes/home";
 import Navbar from './routes/navbar';
 import Salle, {action as salleAction} from './routes/salle';
 import Prof , {loader as profLoader} from './routes/prof';
-import Directions from "./routes/directions";
+import Directions, {loader as directionsLoader, action as directionsAction} from "./routes/directions";
 
 import './assets/css/root.css'
 import "./assets/css/home.css"
@@ -90,7 +90,9 @@ const router = createBrowserRouter([
         },
         {
           path:"directions",
-          element: <Directions/>
+          element: <Directions/>,
+          loader: directionsLoader,
+          action: directionsAction
         }
       ],
     },

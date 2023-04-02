@@ -44,8 +44,9 @@ export async function loader({ request }) {
         if (favoriteSchedule.favoriteSchedule) {
             favoriteScheduleString = favoriteSchedule.favoriteSchedule.toString();
 
-            if (scheduleId == "")
-            scheduleId = favoriteScheduleString;
+            if (scheduleId == "") {
+                scheduleId = favoriteScheduleString;
+            }
         }
     }
     
