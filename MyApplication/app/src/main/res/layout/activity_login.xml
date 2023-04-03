@@ -8,6 +8,8 @@
     tools:context=".Login">
 
 
+    <include layout="@layout/activity_accueil" />
+
     <EditText
         android:id="@+id/motDePasse"
         android:layout_width="wrap_content"

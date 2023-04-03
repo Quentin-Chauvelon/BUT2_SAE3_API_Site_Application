@@ -6,4 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Profs">
 
+    <include layout="@layout/activity_accueil" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
