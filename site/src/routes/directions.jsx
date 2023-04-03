@@ -1,6 +1,12 @@
 import {Form, useLoaderData, useSubmit} from "react-router-dom"
-import {token, nextCours} from "../main.jsx"
+import {token, nextCours, setNextCours} from "../main.jsx"
 import '../assets/css/directions.css'
+// import GoogleMapReact from 'google-map-react';
+// console.log(GoogleMapReact);
+import {GoogleMap, LoadScript, DirectionsRenderer, DirectionsService, Polyline, Marker} from '@react-google-maps/api';
+import decodePolyline from "decode-google-map-polyline"
+
+// const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
 
 // export async function action({ request, params }) {
@@ -27,49 +33,75 @@ import '../assets/css/directions.css'
 
 
 export async function loader({ request }) {
-    let loaderFavoriteAddress = "";
-    let selectedTransitMode = "";
+   let loaderFavoriteAddress = "";
+   let selectedTransitMode = "";
 
-    const url = new URL(request.url);
-    loaderFavoriteAddress = url.searchParams.get("favoriteAddress") || "";
-    selectedTransitMode = url.searchParams.get("transitMode")
+   const url = new URL(request.url);
+   loaderFavoriteAddress = url.searchParams.get("favoriteAddress") || "";
+   selectedTransitMode = url.searchParams.get("transitMode")
 
-    if (selectedTransitMode == null) {
-        selectedTransitMode = "transit";
+   if (selectedTransitMode == null) {
+      selectedTransitMode = "transit";
 
-        if (token != "") {
-            const favoriteAddressResponse = await fetch("http://172.26.82.56:443/user/favoriteAddress/".concat(token))
-            const favoriteAddressJson = await favoriteAddressResponse.json()
-            
-            if (favoriteAddressJson.favoriteAddress) {
-                loaderFavoriteAddress = favoriteAddressJson.favoriteAddress;
-            }
+      if (token != "") {
+         const favoriteAddressResponse = await fetch("http://172.26.82.56:443/user/favoriteAddress/".concat(token))
+         const favoriteAddressJson = await favoriteAddressResponse.json()
+         
+         if (favoriteAddressJson.favoriteAddress) {
+               loaderFavoriteAddress = favoriteAddressJson.favoriteAddress;
+         }
 
-            const selectedTransitModeResponse = await fetch("http://172.26.82.56:443/user/favoriteTransitMode/".concat(token))
-            const selectedTransitModeJson = await selectedTransitModeResponse.json()
-            
-            if (selectedTransitModeJson.favoriteTransitMode) {
-                selectedTransitMode = selectedTransitModeJson.favoriteTransitMode;
-            }
-        }
-    }
+         const selectedTransitModeResponse = await fetch("http://172.26.82.56:443/user/favoriteTransitMode/".concat(token))
+         const selectedTransitModeJson = await selectedTransitModeResponse.json()
+         
+         if (selectedTransitModeJson.favoriteTransitMode) {
+               selectedTransitMode = selectedTransitModeJson.favoriteTransitMode;
+         }
+      }
+   } else {
+      if (token != "" && loaderFavoriteAddress != "" && selectedTransitMode != "") {
+         await fetch("http://172.26.82.56:443/user/favoriteAddress", {
+               method: 'POST',
+               headers: {
+               'Accept': 'application/json',
+               'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({
+                  token: token,
+                  favoriteAddress: loaderFavoriteAddress
+               })
+         });
 
-    let response = null;
-    const cours = nextCours;
+         await fetch("http://172.26.82.56:443/user/favoriteTransitMode", {
+               method: 'POST',
+               headers: {
+               'Accept': 'application/json',
+               'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({
+                  token: token,
+                  favoriteTransitMode: selectedTransitMode
+               })
+         });
+      }
+   }
 
-    if (cours.start && loaderFavoriteAddress != "" && selectedTransitMode != "") {
-        if (selectedTransitMode != "transit") {
-            cours.start.setTime(cours.start.getTime() - 5 * 60 * 1000);
-        }
+   let response = null;
+   const cours = nextCours;
 
-        console.log("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode);
-        const response = null;
-        // const responseJson = await fetch("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode)
-        // response = await responseJson.json()
-    }
-    console.log(response);
+   if (cours.start && loaderFavoriteAddress != "" && selectedTransitMode != "") {
+      // if (selectedTransitMode != "transit") {
+      //     cours.start.setTime(cours.start.getTime() - 5 * 60 * 1000);
+      // }
 
-    return {loaderFavoriteAddress, selectedTransitMode, cours, response}
+      console.log("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode);
+      const responseJson = await fetch("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode)
+      response = await responseJson.json()
+
+      console.log(response);
+   }
+
+   return {loaderFavoriteAddress, selectedTransitMode, cours, response}
 }
 
 
@@ -79,10 +111,25 @@ export default function Directions() {
     // const favoriteAddress = departureAddress || loaderFavoriteAddress
     let coursStart = "";
     let coursEnd = "";
+
+    console.log(response);
+
+    let path = undefined;
+    if (response && response.routes && response.routes[0] && response.routes[0].overview_polyline) {
+      path = decodePolyline(response.routes[0].overview_polyline.points)
+    }
     
     if (cours.start && cours.end) {
         coursStart = ((cours.start.getHours() > 9) ? "" : "0") + cours.start.getHours() + ":" + ((cours.start.getMinutes() > 9) ? "" : "0") + cours.start.getMinutes()
         coursEnd = ((cours.end.getHours() > 9) ? "" : "0") + cours.end.getHours() + ":" + ((cours.end.getMinutes() > 9) ? "" : "0") + cours.end.getMinutes()
+    }
+
+
+    let departureTimeStart = "";
+    if (response != null && response.status && response.status == "OK" && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0 && response.routes[0].legs[0].duration) {
+        let departure = new Date()
+        departure.setTime(cours.start.getTime() - response.routes[0].legs[0].duration.value * 1000);
+        departureTimeStart = ((departure.getHours() > 9) ? "" : "0") + departure.getHours() + ":" + ((departure.getMinutes() > 9) ? "" : "0") + departure.getMinutes();
     }
 
     const favoriteAddress = loaderFavoriteAddress
@@ -113,6 +160,8 @@ export default function Directions() {
 
                     <div className="search">
                         <div className="button" onClick={(event) => {
+                                    setNextCours(cours)
+
                                     let formData = new FormData();
                                     formData.append("favoriteAddress", (event.target.parentElement.parentElement.querySelector("#departure").value != "")
                                                                         ? event.target.parentElement.parentElement.querySelector("#departure").value
@@ -135,6 +184,7 @@ export default function Directions() {
                         <Form id="transitMode" role="search">
                             <div className={(selectedTransitMode == "transit") ? "transit_mode_selected" : ""}>
                                 <img src="../src/assets/img/bus.png" id="transit" alt="bus" onClick={(event) => {
+                                    setNextCours(cours)
                                     let formData = new FormData();
                                     formData.append("favoriteAddress", favoriteAddress);
                                     formData.append("transitMode", "transit");
@@ -144,6 +194,7 @@ export default function Directions() {
 
                             <div className={(selectedTransitMode == "bicycling") ? "transit_mode_selected" : ""}>
                                 <img src="../src/assets/img/bike.png" alt="velo" onClick={(event) => {
+                                    setNextCours(cours)
                                     let formData = new FormData();
                                     formData.append("favoriteAddress", favoriteAddress);
                                     formData.append("transitMode", "bicycling");
@@ -153,6 +204,7 @@ export default function Directions() {
 
                             <div className={(selectedTransitMode == "walking") ? "transit_mode_selected" : ""}>
                                 <img src="../src/assets/img/pedestrian.png" alt="marche" onClick={(event) => {
+                                    setNextCours(cours)
                                     let formData = new FormData();
                                     formData.append("favoriteAddress", favoriteAddress);
                                     formData.append("transitMode", "walking");
@@ -162,6 +214,7 @@ export default function Directions() {
 
                             <div className={(selectedTransitMode == "driving") ? "transit_mode_selected" : ""}>
                                 <img src="../src/assets/img/car.png" alt="voiture" onClick={(event) => {
+                                    setNextCours(cours)
                                     let formData = new FormData();
                                     formData.append("favoriteAddress", favoriteAddress);
                                     formData.append("transitMode", "driving");
@@ -177,7 +230,7 @@ export default function Directions() {
                             {
                               (response != null && response.status && response.status == "OK" && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0)
                               
-                              ? (selectedTransitMode == "transit")
+                              ? (selectedTransitMode == "transit" && response.routes[0].legs[0].departure_time)
                             
                                 ? response.routes[0].legs[0].steps.map((step, i) => {
 
@@ -297,20 +350,27 @@ export default function Directions() {
                                 })
 
                                 // if transit mode is not transit (walking, bicycling or driving)
-                                : response.routes[0].legs[0].steps.map((step, i) => {
-                                    return (
-                                        <div key={i} className="step_not_transit_details">
-                                                <div className="step_direction_container">
-                                                    <div className="step_direction_icon_container">
-                                                        <img className="step_direction_icon" src={"../src/assets/img/Directions_Icons/" + ((step.maneuver) ? step.maneuver : "straight") + ".png"} alt="" />
+                                : [
+                                    <p className="time_address start">{departureTimeStart + " : " + response.routes[0].legs[0].start_address}</p>,
+                                    
+                                    response.routes[0].legs[0].steps.map((step, i) => {
+                                        return (
+                                            <div key={i} className="step_not_transit_details">
+                                                    <div className="step_direction_container">
+                                                        <div className="step_direction_icon_container">
+                                                            <img className="step_direction_icon" src={"../src/assets/img/Directions_Icons/" + ((step.maneuver && step.maneuver != "keep-left" && step.maneuver != "keep-right") ? step.maneuver : "straight") + ".png"} alt="" />
+                                                        </div>
+    
+                                                        <p dangerouslySetInnerHTML={{__html: step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "")}} className="step_direction"/>
                                                     </div>
+                                                    {/* <p className="step_direction">{step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "").substring(0, ((step.html_instructions.indexOf("<div") >= 0) ? step.html_instructions.indexOf("<div>") : step.html_instructions.length + 1))}</p> */}
+                                                    <p className="step_distance_time">{step.duration.text + " (" + step.distance.text + ")"}</p>
+                                            </div>
+                                        )
+                                    }),
 
-                                                    <p dangerouslySetInnerHTML={{__html: step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "")}} className="step_direction"/>
-                                                </div>
-                                                {/* <p className="step_direction">{step.html_instructions.replaceAll("<b>", "").replaceAll("</b>", "").substring(0, ((step.html_instructions.indexOf("<div") >= 0) ? step.html_instructions.indexOf("<div>") : step.html_instructions.length + 1))}</p> */}
-                                                <p className="step_distance_time">{step.duration.text + " (" + step.distance.text + ")"}</p>
-                                        </div>
-                                    )
+                                    <p className="time_address end">{coursStart  + " : " + response.routes[0].legs[0].end_address}</p>
+                                ]
 
                                     // return ([
                                     //     ((cours.start.getHours() > 9) ? "" : "0") + cours.start.getHours() + ":" + ((cours.start.getMinutes() > 9) ? "" : "0") + cours.start.getMinutes()
@@ -330,7 +390,6 @@ export default function Directions() {
 
                                     //     <p className="departure_time">{coursStart + " : " + response.routes[0].legs[0].end_address}</p>
                                     // ])
-                                })
 
                             : null
 
@@ -362,6 +421,86 @@ export default function Directions() {
                             }
                         
                     </div>
+                </div>
+
+                <div className="map_container">
+                    {/* <div style={{ height: '100vh', width: '100%' }}>
+                        <GoogleMapReact
+                          bootstrapURLKeys={{ key: "" }}
+                          defaultCenter={{lat: 47.2231906, lng: -1.5444105}}
+                          defaultZoom={11}
+                        >
+                          <AnyReactComponent
+                            lat={59.955413}
+                            lng={30.337844}
+                            text="My Marker"
+                          />
+                        </GoogleMapReact>
+                    </div> */}
+
+                    <LoadScript
+                        googleMapsApiKey="AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y"
+                    >
+                        <GoogleMap
+                            mapContainerStyle={{width: '100%', height: '100%'}}
+                            center={{lat: 47.2231906, lng: -1.5444105}}
+                            zoom={13}
+                        >
+                           {/* <DirectionsService
+                              // required
+                              options={{ // eslint-disable-line react-perf/jsx-no-new-object-as-prop
+                              destination: "iut de nantes",
+                              origin: "machines de l'ile nantes",
+                              travelMode: "TRANSIT"
+                              }}
+                              // required
+                              callback={directionsCallback}
+                           />
+                           
+                           {
+                           (newResponse != null)
+                              ? <DirectionsRenderer
+                                    options={{
+                                       directions: {newResponse}
+                                    }}          
+                              // directions= {newResponse}
+                                 //https://maps.googleapis.com/maps/api/directions/json?origin=machines de l'ile nantes&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto&arrival_time=1680501600&mode=transit&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y
+                              >
+                              </DirectionsRenderer>
+                              : null
+                           } */}
+
+                           <Polyline
+                              path={path}
+                              options={{
+                                 strokeColor: '#067df5',
+                                 strokeOpacity: 0.8,
+                                 strokeWeight: 5,
+                                 fillColor: '#067df5',
+                                 fillOpacity: 0.35,
+                                 clickable: false,
+                                 draggable: false,
+                                 editable: false,
+                                 visible: true,
+                                 radius: 30000,
+                                 paths: {path},
+                                 zIndex: 1
+                               }}
+                           />
+
+                           {
+                           (response && response.routes && response.routes.length > 0 && response.routes[0].legs && response.routes[0].legs.length > 0)
+                              ? <><Marker
+                                 position={response.routes[0].legs[0].start_location}
+                              />
+                              <Marker
+                                 position={response.routes[0].legs[0].end_location}
+                              /></>
+
+                              : null
+                           }
+                        </GoogleMap>
+                    </LoadScript>
                 </div>
             </div>
         </div>

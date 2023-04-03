@@ -1,5 +1,5 @@
 
-import {Link, useFetcher, redirect} from "react-router-dom"
+import {Link, redirect, useActionData, Form} from "react-router-dom"
 import {setToken} from "../main.jsx"
 
 
@@ -23,11 +23,10 @@ export async function action({ request, params }) {
     if (json.token) {
         setToken(json.token);
         return redirect("/app/home");
-    } else {
-        console.log("login ou mot de passe incorrect");
     }
 
-    return null
+    const error = true;
+    return error
     // return updateContact(params.contactId, {
     //   favorite: formData.get("favorite") === "true",
     // });
@@ -35,7 +34,7 @@ export async function action({ request, params }) {
 
 
 export default function Login() {
-    const fetcher = useFetcher()
+    const error = useActionData();
 
     return (
         <>
@@ -44,11 +43,16 @@ export default function Login() {
                     <div className="Sc">Connexion</div>
                     <div className="barre-h1"></div>
 
-                    <fetcher.Form method="post">
+                    <Form method="post">
                         <input name="login" className="bodyInput" placeholder="Login" required/><br/>
                         <input name="password" className="bodyInput" placeholder="Password" type="password" required/><br/>
+                        {
+                            (error)
+                                ? <p className="error">Login ou mot de passe incorrect</p>
+                                : null
+                        }
                         <button name="register" className="bodyButton Sc">Entrer</button><br/>
-                    </fetcher.Form>
+                    </Form>
                     
                     <Link to={"/register"} className="petit Sc a">Créez un compte ?</Link>
                 </div>
@@ -62,6 +66,7 @@ export default function Login() {
                     <Link to={"/app/home"}><button name="register" className="bodyButton Sc">Entrer</button></Link> 
                 </div>
             </div>
+
         </>
     );
 }

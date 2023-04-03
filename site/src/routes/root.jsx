@@ -1,6 +1,18 @@
-import {Outlet} from "react-router-dom"
+import {Outlet, redirect, useLocation, useSubmit} from "react-router-dom"
+
+
+export async function loader({ request }) {
+    return null
+}
+
 
 export default function Root() {
+    const submit = useSubmit()
+    const location = useLocation();
+    if (location.pathname == "/") {
+        submit(null, {action: "/login"})
+    }
+
     return (
         <>
             <div  className="Infant homeHeader grand">

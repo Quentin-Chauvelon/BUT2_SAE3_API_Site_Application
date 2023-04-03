@@ -1,4 +1,5 @@
-import {Link, useFetcher, redirect} from "react-router-dom"
+import {Link, redirect, Form, useActionData} from "react-router-dom"
+import {setToken} from "../main.jsx"
 
 
 export async function action({ request, params }) {
@@ -16,16 +17,17 @@ export async function action({ request, params }) {
         })
     });
     const json = await response.json();
-    console.log(json.token);
     
     if (json.token) {
+        setToken(json.token);
         return redirect("/app/home");
     }
         
-        // const response = await fetch("http://172.26.82.56:443/user/login")
+    // const response = await fetch("http://172.26.82.56:443/user/login")
     // console.log(await response.json());
     
-    return null
+    const error = true;
+    return error
     // return updateContact(params.contactId, {
     //   favorite: formData.get("favorite") === "true",
     // });
@@ -33,7 +35,7 @@ export async function action({ request, params }) {
 
 
 export default function Register() {
-    const fetcher = useFetcher();
+    const error = useActionData();
 
     return (
         <>
@@ -41,11 +43,16 @@ export default function Register() {
                 <div className="Sc">S'enregistrer</div>
                 <div className="barre-h1"></div>
 
-                <fetcher.Form method="post" className="registerForm">
+                <Form method="post" className="registerForm">
                     <input name="login" className="bodyInput" placeholder="Login" required/>
                     <input name="password" className="bodyInput" placeholder="Password" type="password" required/>
+                    {
+                        (error)
+                            ? <p className="error">Un compte existe déjà avec le mot de passe donnée</p>
+                            : null
+                    }
                     <button name="log in" className="bodyButton Sc">Entrer</button>
-                </fetcher.Form>
+                </Form>
                 <Link to={"/login"} className="Sc petit a br">Annuler ?</Link>
             </div>
         </>

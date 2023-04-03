@@ -1,5 +1,5 @@
 import {useLoaderData, useSubmit, Form, useFetcher, redirect} from "react-router-dom";
-import {token, formatDateToString, nextCours, setNextCours, formatStringToDate} from "../main.jsx"
+import {token, formatDateToString, setNextCours, formatStringToDate} from "../main.jsx"
 import '../assets/css/root.css'
 
 
@@ -311,6 +311,7 @@ export default function Home() {
                                                         coursCopy.end = formatStringToDate(coursCopy.end)
 
                                                         setNextCours(coursCopy);
+
                                                         submit(null, {action: "/app/directions"});
                                                     }}>
                                                     

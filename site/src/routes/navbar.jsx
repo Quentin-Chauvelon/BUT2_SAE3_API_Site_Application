@@ -1,5 +1,8 @@
 import { Outlet,Link } from "react-router-dom";
 
+import "./../assets/css/navbar.css"
+
+
 export default function Navbar(){
     return (
         <>
@@ -30,9 +33,9 @@ export default function Navbar(){
                 </Link>
         </div>
         <Outlet/>
-        <div className="homeFooter">
+        {/* <div className="homeFooter">
             <img src="../src/assets/img/univ.png"/>
-        </div>
+        </div> */}
         </>
     )
 }

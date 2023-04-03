@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import Root from "./routes/root";
+import Root, {loader as rootLoader} from "./routes/root";
 import Register, {action as registerAction} from "./routes/register"
 import Login, {action as loginAction} from "./routes/login"
 import Home, {loader as homeLoader, action as homeAction} from "./routes/home";
@@ -14,13 +14,9 @@ import Navbar from './routes/navbar';
 import Salle, {action as salleAction} from './routes/salle';
 import Prof , {loader as profLoader} from './routes/prof';
 import Directions, {loader as directionsLoader} from "./routes/directions";
-import Cours from "./routes/cours";
 
 import './assets/css/root.css'
 import "./assets/css/home.css"
-import "./assets/css/salle.css"
-import "./assets/css/navbar.css"
-import "./assets/css/prof.css"
 
 let token = "";
 function setToken(tokenToSet) {
@@ -66,12 +62,8 @@ const router = createBrowserRouter([
     {
       path: "/",
       element: <Root />,
+      loader: rootLoader,
       children: [
-        {
-          path: "",
-          element: <Login />,
-          action: loginAction,
-        },
         {
           path: "login",
           element: <Login />,
@@ -121,7 +113,7 @@ const router = createBrowserRouter([
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )

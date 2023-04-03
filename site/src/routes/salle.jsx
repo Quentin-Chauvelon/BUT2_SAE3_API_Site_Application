@@ -1,5 +1,7 @@
 import {Form, useFetcher, useActionData} from "react-router-dom";
 import {formatDateToString, formatStringToDate} from "../main.jsx"
+import "./../assets/css/salle.css"
+
 
 
 export async function action({ request, params }) {
@@ -20,12 +22,9 @@ export async function action({ request, params }) {
 
 
 export default function Salle() {
-    const fetcher = useFetcher()
-    
-    console.log(useActionData());
-
     let rooms = []
     let alreadySearched = false;
+    let i = 0
 
     const actionData = useActionData()
 
@@ -43,7 +42,6 @@ export default function Salle() {
         }
         return 0;  
     })
-    console.log(rooms.length);
     
     return (
         <>
@@ -73,8 +71,14 @@ export default function Salle() {
                     {
                         (alreadySearched)
                             ? (rooms.length > 0)
-                                ? <p className="freeRoom">{rooms.map(room => {return room.name}).join(", ")}</p>
-                                : <p className="freeRoom">{"Il n'y a aucune salle de libre :("}</p>
+                                ? <div className="Sc profEdt">{rooms.map(room => {
+                                    if (room.computerRoom==true) {
+                                        room.computerRoom=<img src="../src/assets/img/iconOrdi.png"/>
+                                    } else if (room.computerRoom==false) {
+                                        room.computerRoom=<img src="../src/assets/img/devoirIcon.png"/>
+                                    } 
+                                    return <div className="card2" key={i=i+1}><br/>{room.name}<br/><br/>{(room.computerRoom)}</div>})}</div>
+                                : <p className="Sc">{"Il n'y a aucune salle de libre :("}</p>
                             : null
                     }
                     {

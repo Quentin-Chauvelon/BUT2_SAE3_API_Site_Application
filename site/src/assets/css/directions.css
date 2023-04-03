@@ -87,14 +87,24 @@ html, body {
     justify-content: space-between;
     
     width: 90%;
-    margin-top: 60px;
+    margin: 60px 0 100px 0;
 }
 
 .directions_steps {
     width: min-content;
+    height: min-content;
+    margin-right: 100px;
 
     background-color: white;
     border-radius: 10px;
+}
+
+.map_container {
+    background-color: white;
+    width: 100%;
+    height: min-content;
+    border-radius: 10px;
+    aspect-ratio: 1.7;
 }
 
 .transit_mode {
@@ -264,5 +274,19 @@ html, body {
     margin: 8px 0 5px 0 !important;
 }
 
+.time_address {
+    width: 100%;
+    font-size: 17px;
+    font-weight: 900;
+}
 
+.time_address.start {
+    margin: 0 0 20px -12px;
+    padding: 0 0 10px 12px;
+    border-bottom: 2px solid #4b4b4b
+}
+
+.time_address.end {
+    margin-top: 10px;
+}
 

@@ -113,12 +113,21 @@
   border-radius: 30px;
   height: 90px;
   width: 350px;
-  font-size: 40px;
+  font-size: 32px;
   text-align: center;
 }
 
-.freeRoom {
-  text-decoration: none;
-  font-size: 30px;
-  margin: 5px;
+.profEdt {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 35px;
+
+  font-size: 0.8rem;
+}
+
+.now {
+  background-color: rgb(241, 223, 199);
 }

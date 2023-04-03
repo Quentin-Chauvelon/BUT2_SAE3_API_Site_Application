@@ -10,5 +10,5 @@ export default defineConfig({
     host: "172.26.82.56",
     port: 80
   },
-  base: "http://172.26.82.56/"
+  base: "http://172.26.82.56"
 })
