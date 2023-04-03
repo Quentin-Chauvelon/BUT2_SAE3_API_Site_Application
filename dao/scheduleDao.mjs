@@ -8,7 +8,6 @@ import {roomDao} from "./roomDao.mjs"
 import {Schedule} from "../model/schedule.mjs";
 import {Cours} from "../model/cours.mjs"
 import {Room} from "../model/room.mjs";
-import {Schedules} from "../model/schedules.mjs";
 
 const prisma = new PrismaClient()
 
@@ -76,15 +75,6 @@ export const scheduleDao = {
         }
     },
 
-    findSchedules : async() => {
-        try {
-            console.log(await prisma.schedules.findMany({}));
-            return await prisma.schedules.findMany({})
-        } catch(e){
-            return Promise.reject(e)
-        }
-    },
-    
     findByDay : async(schedule, date) => {
         try {
             const classesOfDate = [];
@@ -167,63 +157,6 @@ export const scheduleDao = {
             
         } catch(e){
             console.log(e);
-            return Promise.reject(e)
-        }
-    },
-
-    findSchedules : async () => {
-        try {
-            return await prisma.schedules.findMany({})
-        } catch(e){
-            return Promise.reject(e)
-        }
-    },
-
-    saveSchedules : async (schedule) => {
-        try {
-            return await prisma.schedules.create({
-                data: schedule
-            })
-        } catch(e){
-            return Promise.reject(e)
-        }
-    },
-
-    deleteSchedules : async (schedule) => {
-        try {
-            return await prisma.schedules.deleteMany({})
-        } catch(e){
-            return Promise.reject(e)
-        }
-    },
-
-    populate : async (fileName) => {
-        try {
-            await scheduleDao.deleteSchedules();
-            
-            await new Promise((resolve, reject) => {
-                fs.createReadStream(fileName)
-                .pipe(csv())
-                .on('data', async data => {
-                    const schedules = new Schedules({
-                        id: parseInt(data["id"]),
-                        name: data["name"],
-                    })
-                    
-                    try {
-                        await scheduleDao.saveSchedules(schedules)
-                    }
-                    catch (e) {
-                        // reject({message: "error"})
-                    }
-                })
-                .on('end', () => {
-                    resolve(true);
-                });
-            })
-            
-            return await scheduleDao.findSchedules();
-        } catch(e){
             return Promise.reject(e)
         }
     },

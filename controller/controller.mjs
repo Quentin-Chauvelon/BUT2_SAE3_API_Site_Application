@@ -4,6 +4,7 @@ import {teacherDao} from "../dao/teacherDao.mjs";
 import {scheduleDao} from "../dao/scheduleDao.mjs";
 import {roomDao} from "../dao/roomDao.mjs";
 import {userDao} from "../dao/userDao.mjs";
+import {groupDao} from "../dao/groupDao.mjs";
 
 import {Schedule} from "../model/schedule.mjs"
 import {Cours} from "../model/cours.mjs"
@@ -48,13 +49,13 @@ const verifyToken = (token) => {
   
 
 export const controller = {
-    findSchedules : async() => {
+    findGroups : async() => {
         try {
 
             // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
             clearDatabaseIfNotUpdatedToday()
 
-            return await scheduleDao.findSchedules();
+            return await groupDao.findAll();
             
         } catch (e) {
             console.log(e);
@@ -155,8 +156,8 @@ export const controller = {
         try {
             let file = "";
             switch (fileName) {
-                case "schedules":
-                    return await scheduleDao.populate("./data/schedules.csv")
+                case "groups":
+                    return await groupDao.populate("./data/groups.csv")
 
                 case "rooms":
                     return await roomDao.populate("./data/rooms.csv")
@@ -223,7 +224,6 @@ export const controller = {
                 // filter computer rooms only if needed
                 if (computerRoomsOnly == false || room.computerRoom) {
                     const roomSchedule = await controller.findByTime(room.id, time, scheduleType);
-                    console.log(roomSchedule);
 
                     // if the room is free, add it to the table of free rooms
                     if (roomSchedule.length == 0) {
