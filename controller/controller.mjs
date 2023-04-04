@@ -81,6 +81,12 @@ export const controller = {
             // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
             clearDatabaseIfNotUpdatedToday()
 
+            const teacher = await teacherDao.find(id);
+            const group = await groupDao.find(id);
+            if (teacher == null && group == null) {
+                return null;
+            }
+
             let schedule = await scheduleDao.find(id);
             if (schedule == null) {
                 schedule = await scheduleDao.save(id, scheduleType)
@@ -332,6 +338,16 @@ export const controller = {
             return Promise.reject({message : "error"})
         }
     },
+
+    deleteAllUsers : async(token) => {
+        try {
+            return await userDao.deleteAll();
+        } catch(e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
 
     setFavorite : async(token, favoriteSchedule) => {
         try {

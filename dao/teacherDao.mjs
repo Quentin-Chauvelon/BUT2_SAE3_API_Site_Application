@@ -20,6 +20,18 @@ export const teacherDao = {
         }
     },
 
+    find : async (id) => {
+        try {
+            return await prisma.teacher.findUnique({
+                where: {
+                    id: id
+                }
+            })
+        } catch(e){
+            return Promise.reject(e)
+        }
+    },
+
     findByName : async (name) => {
         for (const teacher of Teachers) {
             if (teacher.name == name) {

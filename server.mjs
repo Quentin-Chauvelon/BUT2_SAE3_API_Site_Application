@@ -583,6 +583,32 @@ const routes =[
     },
 
     {
+        method: 'DELETE',
+        path: '/user',
+        options : {
+            description : 'Supprime tous les utilisateurs (utiliser pour tester)',
+            notes : 'Supprime tous les utilisateurs (utiliser pour tester)',
+            tags : ['api'],
+            response: {
+                status: {
+                    200 : Joi.object(),
+                    400 : Joi.object()
+                }
+            }
+        },
+        handler: async (request, h) => {
+            try {
+                const token = request.params.token
+
+                return await controller.deleteAllUsers()
+
+            } catch (e) {
+                return h.response({message: 'error'}).code(400)
+            }
+        }
+    },
+
+    {
         method: 'PUT',
         path: '/user/favoriteSchedule',
         options : {
@@ -850,7 +876,7 @@ const routes =[
                 const origin = request.params.origin;
                 const arrivalTime = request.params.arrivalTime
                 const transitMode = request.params.transitMode || "transit"
-
+                
                 const data = await controller.directions(origin, arrivalTime, transitMode)
 
                 return h.response(data).code(200)

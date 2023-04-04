@@ -15,6 +15,18 @@ export const groupDao = {
         }
     },
 
+    find : async (id) => {
+        try {
+            return await prisma.group.findUnique({
+                where: {
+                    id: id
+                }
+            })
+        } catch(e){
+            return Promise.reject(e)
+        }
+    },
+
     save : async (group) => {
         try {
             return await prisma.group.create({
