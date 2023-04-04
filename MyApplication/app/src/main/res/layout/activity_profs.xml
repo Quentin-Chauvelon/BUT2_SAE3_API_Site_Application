@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Profs">
 
-    <include layout="@layout/activity_accueil" />
+    <include layout="@layout/activity_accueil"
+        android:id="@+id/includedLayout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

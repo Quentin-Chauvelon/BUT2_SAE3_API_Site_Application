@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -17,9 +19,10 @@ class Login : AppCompatActivity() {
         val queue = Volley.newRequestQueue(this)
         val loginURL = "http://172.26.82.56:443/schedules"
 
-        /* binding.inviter.setOnClickListener {
-             Intent(this,)
-         }*/
+        binding.inviter.setOnClickListener {
+             startActivity(Intent(this,Accueil::class.java))
+        }
+
         binding.seConnecter.setOnClickListener {
             // Request a string response from the provided URL.
             val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, loginURL, null,
@@ -30,13 +33,13 @@ class Login : AppCompatActivity() {
                     binding.info.text = "error: %s".format(error.toString())
                 }
             )
-
             // Add the request to the RequestQueue.
             queue.add(jsonObjectRequest)
-            /*
-            if (binding.Login.text.toString() == "test" && binding.motDePasse.text.toString() == "test"){
-                Intent(this,).PutExtra()
-            }*/
+            //TODO suprimer pour test
+            if (binding.login.text.toString() == "test" && binding.motDePasse.text.toString() == "test"){
+                val a = Intent(this,Accueil::class.java).putExtra("compte",Compte("test","test"))
+                startActivity(a)
+            }
         }
 
     }
