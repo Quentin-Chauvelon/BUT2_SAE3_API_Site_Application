@@ -3,18 +3,7 @@
 import Hapi from '@hapi/hapi';
 import Jois from 'joi';
 
-const proxy = process.env.https_proxy
-import axios from "axios";
 import fetch from "node-fetch";
-import HttpsProxyAgent from 'https-proxy-agent';
-
-let agent = null
-if (proxy != undefined) {
-    agent =  new HttpsProxyAgent(proxy);
-}
-else {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
 
 import JoiDate from '@hapi/joi-date'
 const Joi = Jois.extend(JoiDate)
@@ -38,6 +27,7 @@ import {ScheduleType} from "./model/scheduleType.mjs"
 // re-swagger bien toutes les routes + secure + joi (object + notes...)
 // feedback and errors pour le site (choisir un edt au lieu d'un edt vide, mauvais login ou mdp, login déjà pris...)
 // remove useless commented code + comment code + remove prints
+// sort
 
 // Partie JOI - Définitions des objets joi
 const joiCours = Joi.object({
@@ -45,8 +35,8 @@ const joiCours = Joi.object({
     start : Joi.date().description("Date de début du cours"),
     end : Joi.date().description("Date de début du cours"),
     // .format('YYYYMMDDTHHmmSSSSS').utc()
-    summary : Joi.string().allow(null).required().description("Corps du cours (quel cours, etc)"),
-    location : Joi.string().allow(null).required().description("identifiant de la salle ( EX-XX )"),
+    summary : Joi.string().allow(null, '').required().description("Corps du cours (quel cours, etc)"),
+    location : Joi.string().allow(null, '').required().description("identifiant de la salle ( EX-XX )"),
     roomId :  Joi.number().integer().required().description("L'id d'une salle"),
     Schedule : Joi.array(), 
 }).description('Cours')
@@ -73,20 +63,24 @@ const joiTeacherTab = Joi.array().items(joiTeacher).description("A collection of
 
 const joiRoom = Joi.object({
     id : Joi.number().integer().required().description("L'id d'une salle doit être unique"),
-    name : Joi.string().allow(null).required().description("Le nom de la salle"),
+    name : Joi.string().allow(null, '').required().description("Le nom de la salle"),
     computerRoom : Joi.boolean().required().description("Vaut vrai quand la salle est équipée de matériel informatique")
 }).description('Room')
 
 const joiRoomsTab = Joi.array().items(joiRoom).description("A collection of Rooms")
 
 
-const joiUser = Joi.object({
-    login : Joi.number().integer().required().description("Le login d'un utilisateur doit être unique"),
-    password : Joi.string().required().description("Le mot de passe de l'utilisateur"),
+const joiUserSansMdp = Joi.object({
+    login : Joi.string().required().description("Le login d'un utilisateur doit être unique"),
     favoriteSchedule : Joi.number().integer().required().description("L'identifiant de l'emploi du temps favori de l'utilisateur"),
-    token : Joi.string().allow(null).required().description("Dernier web token connu de l'utilisateur"),
+    favoriteAddress : Joi.string().allow(null, '').required().description("L'adresse favorite de l'utilisateur"),
+    favoriteTransitMode : Joi.string().allow(null, '').required().description("Le mode de transport favori de l'utilisateur"),
+    token : Joi.string().allow(null, '').required().description("Dernier web token connu de l'utilisateur"),
 }).description('User')
 
+const joiToken = Joi.object({
+    token: Joi.string().required().description("Le token associé au compte utilisateur")
+})
 
 const joiGroup = Joi.object({
     id: Joi.number().integer().required().description("L'id du groupe doit être unique"),
@@ -109,7 +103,7 @@ const errorMessage = Joi.object({
 // Partie Swagger
 const swaggerOptions = {
     info: {
-        title: "L'API des utilisateurs",
+        title: "API ScheduleTrack Nantes",
         version: '1.0.0',
     }
 };
@@ -147,7 +141,7 @@ function getDateFromPayload(payloadDate) {
     try {
         date = (payloadDate) ? formatStringToDate(payloadDate) : new Date()
     } catch(e) {
-        return h.response({message: 'date invalide'}).code(400)
+        return {message: 'date invalide'}
     }
 
     return date
@@ -158,6 +152,16 @@ const routes =[
     {
         method: '*',
         path: '/{any*}',
+        options : {
+            description : "Route par défaut",
+            notes : 'Route par défaut',
+            tags : ['api'],
+            response: {
+                status: {
+                    404 : notFound
+                }
+            }
+        },
         handler: function (_, h) {
             return h.response({message: 'not found'}).code(404)
         }
@@ -172,7 +176,8 @@ const routes =[
             tags : ['api'],
             response: {
                 status: {
-                    200 : joiGroupsTab
+                    200 : joiGroupsTab.description("La liste des groupes disponibles"),
+                    400 : Joi.object()
                 }
             }
         },
@@ -192,19 +197,20 @@ const routes =[
         method: 'GET',
         path: '/schedule/day/{id}/{date?}',
         options : {
-            description : 'get classes for a day from an id, the date can be expressed, by default its the current day',
-            notes : 'get classes for a day from an id, the date can be expressed, by default its the current day',
+            description : "Renvoie les cours du jour pour l'id du groupe donné et la date donnée",
+            notes : "Renvoie les cours du jour pour l'id du groupe donné et la date donnée",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.string(),
-                    date : Joi.string().allow(null),
+                    id : Joi.string().description("L'id du groupe"),
+                    date : Joi.string().allow(null, "").description("La date ou vide (par défaut, la date du jour est utilisée)"),
                 }),
             },
             response: {
                 status: {
-                    200 : joiCoursTab,
-                    404 : notFound
+                    200 : joiCoursTab.description("La liste des cours du jour"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
             }
         },
@@ -212,7 +218,7 @@ const routes =[
             try {
                 const id = getIdFromPayload(request.params.id)
                 const date = getDateFromPayload(request.params.date)
-                if (date.message) { return date}
+                if (date.message) { return h.response(date).code(400)}
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Schedule)
 
@@ -232,19 +238,20 @@ const routes =[
         method: 'GET',
         path: '/schedule/week/{id}/{date?}',
         options : {
-            description : 'get classes for a week from an id, the date can be expressed, by default its the current day',
-            notes : 'get classes for a week from an id, the date can be expressed, by default its the current day',
+            description : "Renvoie les cours de la semaine pour l'id du groupe donné et la date donnée",
+            notes : "Renvoie les cours de la semaine pour l'id du groupe donné et la date donnée",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.string(),
-                    date : Joi.string().allow(null),
+                    id : Joi.string().description("L'id du groupe"),
+                    date : Joi.string().allow(null, "").description("La date ou vide (par défaut, la date du jour est utilisée)"),
                 })
             },
             response: {
                 status: {
-                    200 : Joi.array().items(joiCoursTab),
-                    404 : notFound
+                    200 : Joi.array().items(joiCoursTab).description("La liste des cours de la semaine"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
             }
         },
@@ -252,7 +259,7 @@ const routes =[
             try {
                 const id = getIdFromPayload(request.params.id)
                 const date = getDateFromPayload(request.params.date)
-                if (date.message) { return date}
+                if (date.message) { return h.response(date).code(400)}
 
                 const classes = await controller.findByWeek(id, date, ScheduleType.Schedule)
                 
@@ -272,19 +279,20 @@ const routes =[
         method: 'GET',
         path: '/teacher/{id}/{date?}',
         options : {
-            description : 'get classes for a given day for a teacher from an id, the date can be expressed, by default its the current day',
-            notes : 'get classes for a given day for a teacher from an id, the date can be expressed, by default its the current day',
+            description : "Renvoie les cours du jour pour l'id du professeur donné et la date donnée",
+            notes : "Renvoie les cours du jour pour l'id du professeur donné et la date donnée",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.string(),
-                    date : Joi.string().allow(null),
+                    id : Joi.string().description("L'id du professeur"),
+                    date : Joi.string().allow(null, "").description("La date ou vide (par défaut, la date du jour est utilisée)"),
                 })
             },
             response: {
                 status: {
-                    200 : joiCoursTab,
-                    404 : notFound
+                    200 : joiCoursTab.description("La liste des cours du professeur"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
             }
         },
@@ -292,7 +300,7 @@ const routes =[
             try {
                 const id = getIdFromPayload(request.params.id)
                 const date = getDateFromPayload(request.params.date)
-                if (date.message) { return date}
+                if (date.message) { return h.response(date).code(400)}
                 
                 const classes = await controller.findByDay(id, date, ScheduleType.Teacher)
                 
@@ -318,7 +326,8 @@ const routes =[
             tags : ['api'],
             response: {
                 status: {
-                    200 : joiTeacherTab
+                    200 : joiTeacherTab.description("La liste des professeurs"),
+                    400 : Joi.object()
                 }
             }
         },
@@ -340,19 +349,20 @@ const routes =[
         method: 'GET',
         path: '/room/{id}/{time?}',
         options : {
-            description : 'get classes for a given day for a room from an id, the date can be expressed, by default its the current day',
-            notes : 'can be a tab containing a single class or no class',
+            description : "Renvoie le cours pour l'id de la salle donné et l'heure donnée",
+            notes : "Renvoie le cours pour l'id de la salle donné et l'heure donnée",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    id : Joi.string(),
-                    time : Joi.string().allow(null),
+                    id : Joi.string().description("L'id de la salle"),
+                    time : Joi.string().allow(null, "").description("L'heure (date + heure) ou vide (par défaut, l'heure actuelle est utilisée)"),
                 })
             },
             response: {
                 status: {
-                    200 : joiCoursTab,
-                    404 : notFound
+                    200 : joiCoursTab.description("Le cours actuel de la salle ou un tableau vide s'il n'y a pas de cours"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
             }
         },
@@ -360,7 +370,7 @@ const routes =[
             try {
                 const id = getIdFromPayload(request.params.id)
                 const time = getDateFromPayload(request.params.time)
-                if (time.message) { return time}
+                if (time.message) { return h.response(time).code(400)}
                 
                 const classes = await controller.findByTime(id, time, ScheduleType.Room)
                 
@@ -381,18 +391,19 @@ const routes =[
         method: 'GET',
         path: '/rooms/{computerRoomsOnly}/{time?}',
         options : {
-            description : 'get empty rooms for a given daytime, computerRoomsOnly can be set to true to get rooms equipped with it equipment the date can be expressed, by default its the current day and time',
-            notes : 'a tab containing empty rooms, computerRoom or computerRoom and !computerRoom',
+            description : "Renvoie la liste des salles où il n'y a pas cours à l'heure donnée, il est possible de filtrer les salles informatiques uniquement",
+            notes : "Renvoie la liste des salles où il n'y a pas cours à l'heure donnée, il est possible de filtrer les salles informatiques uniquement",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    computerRoomsOnly : Joi.boolean(),
-                    time : Joi.string().allow(null),
+                    computerRoomsOnly : Joi.boolean().description("Un booléen indiquant s'il ne faut renvoyer que les salles informatiques ou toutes"),
+                    time : Joi.string().allow(null, "").description("L'heure (date + heure) ou vide (par défaut, l'heure actuelle est utilisée)"),
                 })
             },
             response: {
                 status: {
-                    200 : joiRoomsTab,
+                    200 : joiRoomsTab.description("La liste des salles actuellement disponibles"),
+                    400 : Joi.object()
                 }
             }
         },
@@ -400,7 +411,7 @@ const routes =[
             try {
                 const computerRoomsOnly = request.params.computerRoomsOnly
                 const time = getDateFromPayload(request.params.time)
-                if (time.message) { return time}
+                if (time.message) { return h.response(time).code(400)}
 
                 if (!time) {
                     time.setTime(time.getTime() + 2 * 60 * 60 * 1000);
@@ -420,26 +431,31 @@ const routes =[
         method: 'GET',
         path: '/populate/{type}',
         options : {
-            description : 'read the csv corresponding to the type and populates the database',
-            notes : 'read the csv corresponding to the type and populates the database',
+            description : "Lit le csv corresopndant au type donné et peuple la base de données",
+            notes : "Lit le csv corresopndant au type donné et peuple la base de données",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    type : Joi.string(),
+                    type : Joi.string().description("Le type de données à peupler (teachers, rooms ou schedules)"),
                 }),
             },
             response: {
                 status: {
-                    // 200 : joiRoomsTab,
-                    404 : notFound
-                    }
+                    200 : Joi.array().items(Joi.object()).description("Une liste de JoiRoom, JoiGroup ou JoiTeacher représentant ce qui a été ajouté à la base de données"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
+            }
         },
         handler: async (request, h) => {
             try {
                 const classes = await controller.populate(request.params.type)
                 
-                return h.response(classes).code(200)
+                if (classes != null) {
+                    return h.response(classes).code(200)
+                } else {
+                    return h.response({message: 'not found'}).code(404)
+                }
             } catch (e) {
                 return h.response(e).code(400)
             }
@@ -450,28 +466,36 @@ const routes =[
         method: 'POST',
         path: '/user/register',
         options : {
-            description : 'allow users to register',
-            notes : 'allow users to register',
+            description : 'Permet de créer un compte',
+            notes : 'Permet de créer un compte',
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    login : Joi.string(),
-                    password : Joi.string() 
+                    login : Joi.string().description("Le login du compte à créer"),
+                    password : Joi.string().description("Le mot de passe du compte à créer")
                 })
             },
+            response: {
+                status: {
+                    201 : joiToken.description("Le token permettant d'effectuer les actions liées au compte"),
+                    400 : Joi.object()
+                }
+            }
         },
         handler: async (request, h) => {
             try {
                 const userToAdd = request.payload
-                const user = await controller.register(userToAdd)
+
+                const token = await controller.register(userToAdd)
                 
-                if (user != null) {
-                    return h.response(user).code(201)
+                if (token != null) {
+                    return h.response(token).code(201)
                 } else {
-                    return h.response(user).code(403)
+                    return h.response({message: "user already exists"}).code(400)
                 }
 
             } catch (e) {
+                console.log(e);
                 return h.response({message: 'error'}).code(400)
             }
         }
@@ -481,30 +505,79 @@ const routes =[
         method: 'POST',
         path: '/user/login',
         options : {
-            description : 'allow users to log in',
-            notes : 'allow users to log in',
+            description : 'Permet de se connecter à un compte existant',
+            notes : 'Permet de se connecter à un compte existant',
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    login : Joi.string(),
-                    password : Joi.string() 
+                    login : Joi.string().description("Le login du compte"),
+                    password : Joi.string().description("Le mot de passe du compte")
                 })
             },
+            response: {
+                status: {
+                    201 : joiToken.description("Le token permettant d'effectuer les actions liées au compte"),
+                    404 : notFound,
+                    400 : Joi.object()
+                }
+            }
         },
         handler: async (request, h) => {
             try {
                 const userToAdd = request.payload
-                console.log(userToAdd);
-                const user = await controller.login(userToAdd)
+
+                const token = await controller.login(userToAdd)
                 
-                if (user != null) {
-                    return h.response(user).code(201)
+                if (token != null && !token.message) {
+                    return h.response(token).code(201)
+                } else if(token.message == "not found") {
+                    return h.response(token).code(404)
                 } else {
-                    return h.response(user).code(403)
+                    return h.response(token).code(400)
                 }
 
             } catch (e) {
-                return h.response({message: 'error'}).code(404)
+                return h.response({message: 'error'}).code(400)
+            }
+        }
+    },
+
+    {
+        method: 'DELETE',
+        path: '/user/{token}',
+        options : {
+            description : 'Supprime un utilisateur',
+            notes : 'Supprime un utilisateur en utilisant le token donné',
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
+                }),
+            },
+            response: {
+                status: {
+                    200 : joiUserSansMdp.description("Le compte qui vient d'être supprimé (le mot de passe est retiré de l'objet)"),
+                    404 : notFound,
+                    400 : Joi.object()
+                }
+            }
+        },
+        handler: async (request, h) => {
+            try {
+                const token = request.params.token
+
+                const user = await controller.deleteUser(token)
+
+                if (user != null && !user.message) {
+                    return h.response(user).code(200)
+                } else if(user.message == "not found") {
+                    return h.response(user).code(404)
+                } else {
+                    return h.response(user).code(400)
+                }
+
+            } catch (e) {
+                return h.response({message: 'error'}).code(400)
             }
         }
     },
@@ -513,28 +586,36 @@ const routes =[
         method: 'PUT',
         path: '/user/favoriteSchedule',
         options : {
-            description : 'allow users to get their favorite schedule',
-            notes : 'allow users to log in',
+            description : "Permet à l'utilisateur de redéfinir son emploi du temps favori",
+            notes : "Permet à l'utilisateur de redéfinir son emploi du temps favori",
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    token : Joi.string(),
-                    favoriteSchedule : Joi.number() 
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
+                    favoriteSchedule : Joi.number().description("L'id de l'emploi du temps à mettre en favori") 
                 })
             },
+            response: {
+                status: {
+                    200 : Joi.object({favoriteSchedule: Joi.number().integer().required()}).description("L'id de l'emploi du temps favori de l'utilisateur"),
+                    404 : notFound,
+                    400 : Joi.object()
+                }
+            }
         },
         handler: async (request, h) => {
             try {
-                console.log("here");
                 const token = request.payload.token
                 const favoriteSchedule = request.payload.favoriteSchedule
 
                 const user = await controller.setFavorite(token, favoriteSchedule)
                 
-                if (user != null) {
-                    return h.response(user).code(201)
+                if (user != null && !user.message) {
+                    return h.response(user).code(200)
+                } else if(user.message == "not found") {
+                    return h.response(user).code(404)
                 } else {
-                    return h.response(user).code(403)
+                    return h.response(user).code(400)
                 }
 
             } catch (e) {
@@ -547,28 +628,35 @@ const routes =[
         method: 'GET',
         path: '/user/favoriteSchedule/{token}',
         options : {
-            description : 'read the csv corresponding to the type and populates the database',
-            notes : 'read the csv corresponding to the type and populates the database',
+            description : "Renvoie l'id de l'emploi du temps favori de l'utilisateur",
+            notes : "Renvoie l'id de l'emploi du temps favori de l'utilisateur",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    token : Joi.string(),
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
                 })
             },
             response: {
                 status: {
-                    // 200 : Joi.number().integer(),
-                    404 : notFound
-                    }
+                    200 : Joi.object({favoriteSchedule: Joi.number().integer().required()}).description("L'id de l'emploi du temps favori de l'utilisateur"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
+            }
         },
         handler: async (request, h) => {
             try {
                 const favoriteSchedule = await controller.getFavorite(request.params.token)
 
-                return h.response(favoriteSchedule).code(200)
+                if (favoriteSchedule != null && !favoriteSchedule.message) {
+                    return h.response(favoriteSchedule).code(200)
+                } else if(favoriteSchedule.message == "not found") {
+                    return h.response(favoriteSchedule).code(404)
+                } else {
+                    return h.response(favoriteSchedule).code(400)
+                }
+
             } catch (e) {
-                console.log(e);
                 return h.response(e).code(400)
             }
         }
@@ -578,15 +666,22 @@ const routes =[
         method: 'PUT',
         path: '/user/favoriteAddress',
         options : {
-            description : 'allow users to get their favorite schedule',
-            notes : 'allow users to log in',
+            description : "Permet à l'utilisateur de redéfinir son adresse favorite",
+            notes : "Permet à l'utilisateur de redéfinir son adresse favorite",
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    token : Joi.string(),
-                    favoriteAddress : Joi.string() 
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
+                    favoriteAddress : Joi.string().allow(null, "").description("L'adresse à mettre en favori")
                 })
             },
+            response: {
+                status: {
+                    200 : Joi.object({favoriteAddress: Joi.string().allow(null, "").required()}).description("L'adresse favorite de l'utilisateur"),
+                    404 : notFound,
+                    400 : Joi.object()
+                }
+            }
         },
         handler: async (request, h) => {
             try {
@@ -595,10 +690,12 @@ const routes =[
 
                 const user = await controller.setFavoriteAddress(token, favoriteAddress)
                 
-                if (user != null) {
-                    return h.response(user).code(201)
+                if (user != null && !user.message) {
+                    return h.response(user).code(200)
+                } else if(user.message == "not found") {
+                    return h.response(user).code(404)
                 } else {
-                    return h.response(user).code(403)
+                    return h.response(user).code(400)
                 }
 
             } catch (e) {
@@ -611,26 +708,34 @@ const routes =[
         method: 'GET',
         path: '/user/favoriteAddress/{token}',
         options : {
-            description : 'read the csv corresponding to the type and populates the database',
-            notes : 'read the csv corresponding to the type and populates the database',
+            description : "Renvoie l'id de l'emploi du temps favori de l'utilisateur",
+            notes : "Renvoie l'id de l'emploi du temps favori de l'utilisateur",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    token : Joi.string(),
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
                 })
             },
             response: {
                 status: {
-                    // 200 : Joi.number().integer(),
-                    404 : notFound
-                    }
+                    200 : Joi.object({favoriteAddress: Joi.string().allow(null, "").required()}).description("L'adresse favorite de l'utilisateur"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
+            }
         },
         handler: async (request, h) => {
             try {
                 const favoriteAddress = await controller.getFavoriteAddress(request.params.token)
 
-                return h.response(favoriteAddress).code(200)
+                if (favoriteAddress != null && !favoriteAddress.message) {
+                    return h.response(favoriteAddress).code(200)
+                } else if(favoriteAddress.message == "not found") {
+                    return h.response(favoriteAddress).code(404)
+                } else {
+                    return h.response(favoriteAddress).code(400)
+                }
+
             } catch (e) {
                 console.log(e);
                 return h.response(e).code(400)
@@ -642,15 +747,22 @@ const routes =[
         method: 'PUT',
         path: '/user/favoriteTransitMode',
         options : {
-            description : 'allow users to get their favorite schedule',
-            notes : 'allow users to log in',
+            description : "Permet à l'utilisateur de redéfinir son mode de transport favori",
+            notes : "Permet à l'utilisateur de redéfinir son mode de transport favori",
             tags : ['api'],
             validate: {
                 payload: Joi.object({
-                    token : Joi.string(),
-                    favoriteTransitMode : Joi.string() 
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
+                    favoriteTransitMode : Joi.string().allow(null, "").description("Le mode de transport à mettre en favori")
                 })
             },
+            response: {
+                status: {
+                    200 : Joi.object({favoriteTransitMode: Joi.string().allow(null, "").required()}).description("Le mode de transport favori de l'utilisateur"),
+                    404 : notFound,
+                    400 : Joi.object()
+                }
+            }
         },
         handler: async (request, h) => {
             try {
@@ -659,10 +771,12 @@ const routes =[
 
                 const user = await controller.setFavoriteTransitMode(token, favoriteTransitMode)
                 
-                if (user != null) {
-                    return h.response(user).code(201)
+                if (user != null && !user.message) {
+                    return h.response(user).code(200)
+                } else if(user.message == "not found") {
+                    return h.response(user).code(404)
                 } else {
-                    return h.response(user).code(403)
+                    return h.response(user).code(400)
                 }
 
             } catch (e) {
@@ -675,26 +789,34 @@ const routes =[
         method: 'GET',
         path: '/user/favoriteTransitMode/{token}',
         options : {
-            description : 'read the csv corresponding to the type and populates the database',
-            notes : 'read the csv corresponding to the type and populates the database',
+            description : "Renvoie le mode de transport favori de l'utilisateur",
+            notes : "Renvoie le mode de transport favori de l'utilisateur",
             tags : ['api'],
             validate: {
                 params: Joi.object({
-                    token : Joi.string(),
+                    token : Joi.string().description("Le token lié au compte (obtenu lors de la création du compte ou de la connexion)"),
                 })
             },
             response: {
                 status: {
-                    // 200 : Joi.number().integer(),
-                    404 : notFound
-                    }
+                    200 : Joi.object({favoriteTransitMode: Joi.string().allow(null, "").required()}).description("Le mode de transport faovri de l'utilisateur"),
+                    404 : notFound,
+                    400 : Joi.object()
                 }
+            }
         },
         handler: async (request, h) => {
             try {
                 const favoriteTransitMode = await controller.getFavoriteTransitMode(request.params.token)
 
-                return h.response(favoriteTransitMode).code(200)
+                if (favoriteTransitMode != null && !favoriteTransitMode.message) {
+                    return h.response(favoriteTransitMode).code(200)
+                } else if(favoriteTransitMode.message == "not found") {
+                    return h.response(favoriteTransitMode).code(404)
+                } else {
+                    return h.response(favoriteTransitMode).code(400)
+                }
+
             } catch (e) {
                 console.log(e);
                 return h.response(e).code(400)
@@ -705,42 +827,34 @@ const routes =[
     {
         method: 'GET',
         path: '/directions/{origin}/{arrivalTime}/{transitMode?}',
+        options : {
+            description : "Renvoie un objet décrivant le trajet pour aller du point d'origine donné à l'IUT pour arriver à l'heure donnée par le mode transport donné",
+            notes : "Renvoie un objet décrivant le trajet pour aller du point d'origine donné à l'IUT pour arriver à l'heure donnée par le mode transport donné",
+            tags : ['api'],
+            validate: {
+                params: Joi.object({
+                    origin : Joi.string().description("Le point de départ du trajet"),
+                    arrivalTime : Joi.number().integer().description("L'heure d'arrivée"),
+                    transitMode : Joi.string().description("Le moyen de transport à utiliser"),
+                })
+            },
+            response: {
+                status: {
+                    200 : Joi.object().description("Un objet complexe représentant le trajet"),
+                    400 : Joi.object()
+                }
+            }
+        },
         handler: async (request, h) => {
             try {
                 const origin = request.params.origin;
                 const arrivalTime = request.params.arrivalTime
                 const transitMode = request.params.transitMode || "transit"
 
-                console.log(
-                    "https://maps.googleapis.com/maps/api/directions/json?" +
-                    "origin=" + origin + 
-                    "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
-                    "&arrival_time=" + arrivalTime / 1000 +
-                    "&mode=" + transitMode +
-                    "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
-                );
+                const data = await controller.directions(origin, arrivalTime, transitMode)
 
-                const result = agent!=null
-                    ? await fetch(
-                        "https://maps.googleapis.com/maps/api/directions/json?" +
-                        "origin=" + origin + 
-                        "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
-                        "&arrival_time=" + arrivalTime / 1000 +
-                        "&mode=" + transitMode +
-                        "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
-                        {agent: agent}
-                    )
-                    : await fetch(
-                        "https://maps.googleapis.com/maps/api/directions/json?" +
-                        "origin=" + origin + 
-                        "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
-                        "&arrival_time=" + arrivalTime / 1000 +
-                        "&mode=" + transitMode +
-                        "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
-                    )
-
-                const data = await result.json()
                 return h.response(data).code(200)
+
             } catch (e) {
                 console.log(e);
                 return h.response(e).code(400)
@@ -748,6 +862,7 @@ const routes =[
         }
     },
 ]
+
 
 const server = Hapi.server({
     port: 443,

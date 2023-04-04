@@ -14,6 +14,18 @@ import {ScheduleType} from "../model/scheduleType.mjs";
 
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs";
+import fetch from "node-fetch";
+import HttpsProxyAgent from 'https-proxy-agent';
+
+const proxy = process.env.https_proxy
+
+let agent = null
+if (proxy != undefined) {
+    agent =  new HttpsProxyAgent(proxy);
+}
+else {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
 
 let lastUpdate = null;
 const PRIVATE_KEY = "OnDevraitTrouverMieux"
@@ -166,10 +178,11 @@ export const controller = {
                 return await teacherDao.populate("./data/teachers.csv")
                 
                 default:
-                    return h.response({message: 'not found'}).code(404);
+                    return null;
             }
 
         } catch (e) {
+            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -243,7 +256,7 @@ export const controller = {
         try {
             const userAlreadyExists = await userDao.find(user.login)
             if (userAlreadyExists) {
-                return {message: "user already exists"}
+                return null
             }
 
             const token = jwt.sign(
@@ -256,7 +269,7 @@ export const controller = {
 
             const userToAdd = new User({
                 login: user.login,
-                password: bcrypt.hashSync(user.password, 8),
+                password: user.password,
                 favoriteSchedule: 0,
                 favoriteAddress: "",
                 favoriteTransitMode: "transit",
@@ -276,9 +289,8 @@ export const controller = {
     login : async (user) => {
         try {
             const userFound = await userDao.find(user.login)
-            if (!userFound || !bcrypt.compareSync(user.password, userFound.password)) {
-                console.log("wrong");
-                return {message: "user not found"}
+            if (!userFound) {
+                return {message: "not found"}
             }
 
             const token = jwt.sign(
@@ -292,10 +304,30 @@ export const controller = {
             userFound.token = token
 
             const userUpdated = await userDao.update(userFound)
-            // delete userUpdated.password
             return {token: userUpdated.token}
 
         } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    deleteUser : async(token) => {
+        try {
+            const user = await userDao.findByToken(token)
+            if (user == null) {
+                return {message: "not found"}
+            }
+
+            const validToken = verifyToken(user.token)
+            // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
+            if (!validToken.login) {
+                return {message: validToken}
+            }
+
+            return await userDao.delete(user.login);
+
+        } catch(e) {
             console.log(e);
             return Promise.reject({message : "error"})
         }
@@ -305,7 +337,7 @@ export const controller = {
         try {
             const user = await userDao.findByToken(token)
             if (user == null) {
-                return null
+                return {message: "not found"}
             }
 
             const validToken = verifyToken(user.token)
@@ -316,8 +348,7 @@ export const controller = {
 
             user.favoriteSchedule = favoriteSchedule
             const userUpdated = await userDao.update(user)
-            delete userUpdated.password
-            return {favoriteSchedule: userUpdated}
+            return {favoriteSchedule: userUpdated.favoriteSchedule}
 
         } catch (e) {
             console.log(e);
@@ -329,7 +360,7 @@ export const controller = {
         try {
             const user = await userDao.findByToken(token)
             if (user == null) {
-                return null
+                return {message: "not found"}
             }
 
             const validToken = verifyToken(token)
@@ -350,7 +381,7 @@ export const controller = {
         try {
             const user = await userDao.findByToken(token)
             if (user == null) {
-                return null
+                return {message: "not found"}
             }
 
             const validToken = verifyToken(user.token)
@@ -361,8 +392,7 @@ export const controller = {
 
             user.favoriteAddress = favoriteAddress
             const userUpdated = await userDao.update(user)
-            delete userUpdated.password
-            return {favoriteAddress: userUpdated}
+            return {favoriteAddress: userUpdated.favoriteAddress}
 
         } catch (e) {
             console.log(e);
@@ -374,7 +404,7 @@ export const controller = {
         try {
             const user = await userDao.findByToken(token)
             if (user == null) {
-                return null
+                return {message: "not found"}
             }
 
             const validToken = verifyToken(token)
@@ -395,7 +425,7 @@ export const controller = {
         try {
             const user = await userDao.findByToken(token)
             if (user == null) {
-                return null
+                return {message: "not found"}
             }
 
             const validToken = verifyToken(user.token)
@@ -406,8 +436,7 @@ export const controller = {
 
             user.favoriteTransitMode = favoriteTransitMode
             const userUpdated = await userDao.update(user)
-            delete userUpdated.password
-            return {favoriteTransitMode: userUpdated}
+            return {favoriteTransitMode: userUpdated.favoriteTransitMode}
 
         } catch (e) {
             console.log(e);
@@ -419,7 +448,7 @@ export const controller = {
         try {
             const user = await userDao.findByToken(token)
             if (user == null) {
-                return null
+                return {message: "not found"}
             }
 
             const validToken = verifyToken(token)
@@ -429,6 +458,45 @@ export const controller = {
             }
 
             return {favoriteTransitMode: user.favoriteTransitMode}
+
+        } catch (e) {
+            console.log(e);
+            return Promise.reject({message : "error"})
+        }
+    },
+
+    directions : async (origin, arrivalTime, transitMode) => {
+        try {
+            console.log(
+                "https://maps.googleapis.com/maps/api/directions/json?" +
+                "origin=" + origin + 
+                "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
+                "&arrival_time=" + arrivalTime / 1000 +
+                "&mode=" + transitMode +
+                "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
+            );
+
+            const result = (agent != null)
+                ? await fetch(
+                    "https://maps.googleapis.com/maps/api/directions/json?" +
+                    "origin=" + origin + 
+                    "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
+                    "&arrival_time=" + arrivalTime / 1000 +
+                    "&mode=" + transitMode +
+                    "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
+                    {agent: agent}
+                )
+
+                : await fetch(
+                    "https://maps.googleapis.com/maps/api/directions/json?" +
+                    "origin=" + origin + 
+                    "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
+                    "&arrival_time=" + arrivalTime / 1000 +
+                    "&mode=" + transitMode +
+                    "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
+                )
+
+            return await result.json()
 
         } catch (e) {
             console.log(e);

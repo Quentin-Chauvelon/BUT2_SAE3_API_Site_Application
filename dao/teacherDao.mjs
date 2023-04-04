@@ -7,7 +7,6 @@ import fs from 'node:fs'
 let prisma = new PrismaClient()
 
 import {Teacher} from '../model/teacher.mjs'
-import { scheduleDao } from './scheduleDao.mjs'
 
 
 // let prisma = new PrismaClient()
@@ -33,7 +32,7 @@ export const teacherDao = {
     
     populate : async (fileName) => {
         try {
-            await scheduleDao.deleteAll();
+            await teacherDao.deleteAll();
             
             await new Promise((resolve, reject) => {
                 fs.createReadStream(fileName)

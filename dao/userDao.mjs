@@ -93,6 +93,26 @@ export const userDao = {
         }
     },
 
+    delete : async (login) => {
+        try {
+            const user = await prisma.user.delete({
+                where: {
+                    login: login
+                }
+            })
+
+            if (user == null) {
+                return null;
+            }
+
+            delete user.password
+            return user
+
+        } catch(e){
+            return Promise.reject(e)
+        }
+    },
+
     update : async (user) => {
         try {
             let userFound = await prisma.user.update({
