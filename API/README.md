@@ -59,6 +59,7 @@ Pour une description plus détaillé de l'API vous pouvez utilisez la documentat
 
 Les tests ont été mis en oeuvre en utilisant chai.
 Pour exécuter les tests, placez vous dans le dossier `/API` et exécuter la commande `npm test`.
+Un retour terminal sera effectué avec les résultats associés et le coverage.
 
 ## Conclusion
 
