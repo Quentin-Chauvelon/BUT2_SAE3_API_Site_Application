@@ -1,4 +1,4 @@
-import {useLoaderData, useSubmit, Form, useFetcher, redirect, useLocation} from "react-router-dom";
+import {useLoaderData, useSubmit, Form, useFetcher, redirect} from "react-router-dom";
 import {token, formatDateToString, setNextCours, formatStringToDate,baseUrl} from "../main.jsx"
 import '../assets/css/root.css'
 
@@ -7,12 +7,15 @@ import '../assets/css/root.css'
 export async function action({ request, params }) {
     const formData = await request.formData();
 
+    // Récupère l'id de l'emploi du temps favori de l'utilisateur, s'il en a un
     const scheduleId = formData.get("favorite");
 
+    // Si le token est vide et que l'utilisateur a essayé de mettre un emploi du temps en favori, on le renvoie vers la page d'accueil
     if (token == "") {
         return redirect("/login");
     }
 
+    // Modifie l'edt favori de l'utilisateur
     await fetch(baseUrl+"/user/favoriteSchedule", {
         method: 'PUT',
         headers: {
@@ -37,7 +40,9 @@ export async function loader({ request }) {
     const date = (dateParam && dateParam != "") ? new Date(parseInt(dateParam)) : new Date();
 
     let favoriteScheduleString = "";
+    // Si l'utilisateur est connecté
     if (token != "") {
+        // On récupère son emploi du temps favori pour l'afficher automatiquement
         const favoriteScheduleResponse = await fetch(baseUrl+"/user/favoriteSchedule/".concat(token))
         const favoriteSchedule = await favoriteScheduleResponse.json()
         
@@ -50,6 +55,7 @@ export async function loader({ request }) {
         }
     }
     
+    // On récupère tous les groupes
     let schedules = []
     try {
         const schedulesResponse = await fetch(baseUrl+'/groups')
@@ -58,10 +64,12 @@ export async function loader({ request }) {
         schedules = []
     }
     
+    // S'il y a eu une erreur, on définit les groupes comme un tableau vide
     if (schedules.message != null) {
         schedules = [];
     }
     
+    // On récupère les cours de la semaine pour l'id donné
     let schedule = []
     try {
         scheduleId = (scheduleId != "") ? scheduleId : "0"
@@ -71,6 +79,7 @@ export async function loader({ request }) {
         schedule = []
     }
     
+    // S'il y a eu une erreur, on définit les cours comme un tableau vide
     if (schedule.message != null) {
         schedule = [];
     }
@@ -84,11 +93,9 @@ export default function Home() {
     const submit = useSubmit();
     const fetcher = useFetcher();
     const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-    const location = useLocation()
 
-    console.log(location.pathname);
 
-    const now = new Date(2023, 2, 30, 10);
+    const now = new Date();
     let foundNextCours = false;
 
     let decalageHeure = 2;

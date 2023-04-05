@@ -1,13 +1,15 @@
+/* Import des composants vite */
 import { Outlet,Link } from "react-router-dom";
 
 import "./../assets/css/navbar.css"
 
+/* Création et export du composant NavBar */
 
 export default function Navbar(){
     return (
         <>
         <div className="Sc navBar">
-                <Link to={"/app/home"}>
+                <Link to={"/app/home"}> 
                 <div>
                     <img src="../src/assets/img/homeIcon.png"/>
                     <p>Accueil</p>
@@ -33,9 +35,6 @@ export default function Navbar(){
                 </Link>
         </div>
         <Outlet/>
-        {/* <div className="homeFooter">
-            <img src="../src/assets/img/univ.png"/>
-        </div> */}
         </>
     )
 }

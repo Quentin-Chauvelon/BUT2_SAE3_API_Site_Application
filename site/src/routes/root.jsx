@@ -1,12 +1,11 @@
-import {Outlet, redirect, useLocation, useSubmit} from "react-router-dom"
+/* Import des composants vite et de leurs méthodes*/
 
+import {Outlet, useLocation, useSubmit} from "react-router-dom"
 
-export async function loader({ request }) {
-    return null
-}
-
+/* Création et export du composant Root */
 
 export default function Root() {
+    // Redirection en cas de mauvaise url
     const submit = useSubmit()
     const location = useLocation();
     if (location.pathname == "/") {

@@ -10,7 +10,7 @@ import {
 
 /* Import des différents composants et de leurs fonctions */
 
-import Root, {loader as rootLoader} from "./routes/root";
+import Root from "./routes/root";
 import Register, {action as registerAction} from "./routes/register"
 import Login, {action as loginAction} from "./routes/login"
 import Home, {loader as homeLoader, action as homeAction} from "./routes/home";
@@ -26,17 +26,17 @@ import "./assets/css/home.css"
 
 /* Début du code */
 
-let token = "";                     // Création d'un token vide
+let token = "";                     // Token global
 function setToken(tokenToSet) {     
   token = tokenToSet
 }
 export {token, setToken}            // Export du token et de la fonction pour le set
 
-let nextCours = {}                  // Création
+let nextCours = {}
 function setNextCours(cours) {
   nextCours = cours
 }
-export {nextCours, setNextCours}    // Export du nextCours et de la fonction pour le set
+export {nextCours, setNextCours}
 
 
 export const baseUrl = "http://172.26.82.56:443" // Initialisation de l'ip de l'API
@@ -74,7 +74,6 @@ const router = createBrowserRouter([
     {
       path: "/",
       element: <Root />,
-      loader: rootLoader,
       children: [
         {
           path: "login",
