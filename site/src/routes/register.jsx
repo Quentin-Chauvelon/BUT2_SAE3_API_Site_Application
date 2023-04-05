@@ -1,10 +1,17 @@
+/* Import des composants vite et de leurs méthodes
+   et de la fonction setToken et de la variable baseUrl
+*/
 import {Link, redirect, Form, useActionData} from "react-router-dom"
 import {setToken,baseUrl} from "../main.jsx"
 
+/* Définition de la function action*/
 
 export async function action({ request, params }) {
+    /* Récupération des données du Form */
     const formData = await request.formData();
     
+    /* Requête sur l'api pour vérifier l'authenticiter du login et la validiter du password,
+       et renvoie un token si la création de compte est correct*/
     const response = await fetch(baseUrl+'/user/register', {
         method: 'POST',
         headers: {
@@ -17,9 +24,12 @@ export async function action({ request, params }) {
         })
     });
     const json = await response.json();
-    
+
+    // Présence d'un attribut token // Connection validé
     if (json.token) {
+        // re-Définission du token
         setToken(json.token);
+        // Redirection au home
         return redirect("/app/home");
     }
     
@@ -27,10 +37,13 @@ export async function action({ request, params }) {
     return error
 } 
 
+/* Création et export du composant Register */
 
 export default function Register() {
+    // Recupération error
     const error = useActionData();
 
+    /* Affichage du composant */
     return (
         <>
             <div className="homeEnregistrer">
