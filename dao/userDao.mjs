@@ -11,6 +11,7 @@ export const userDao = {
         try {
             const users = await prisma.user.findMany({})
 
+            // renvoie l'objet sans le mot de passe
             users.forEach(user => {
                 delete user.password;
             });
@@ -18,7 +19,6 @@ export const userDao = {
             return users
 
         } catch(e){
-            console.log(e);
             return Promise.reject(e)
         }
     },
@@ -80,7 +80,6 @@ export const userDao = {
             return userFound;
 
         } catch(e){
-            console.log(e);
             return Promise.reject(e)
         }
     },

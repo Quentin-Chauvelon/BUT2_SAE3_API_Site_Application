@@ -28,10 +28,6 @@ export const scheduleDao = {
                 return null
             }
 
-            // for (const index of schedule[0].classes.keys()) {
-            //     schedule[0].classes[index] = new Cours(schedule[0].classes[index])
-            // }
-
             schedules.forEach(schedule => {
                 schedule.classes = schedule.classes.map((cours) => {
                     return new Cours(cours)
@@ -61,9 +57,6 @@ export const scheduleDao = {
                 return null
             }
 
-            // for (const index of schedule.classes.keys()) {
-            //     schedule.classes[index] = new Cours(schedule.classes[index])
-            // }
             schedule.classes = schedule.classes.map((cours) => {
                 return new Cours(cours)
             })
@@ -119,11 +112,14 @@ export const scheduleDao = {
     
     save : async(id, scheduleType) => {
         try {
+            // On fetch l'ics pour récupérer l'ensemble des cours
             let classes = await fetch(baseURL + scheduleType.getUrl(id) + ".ics")
             .then(ics => ics.text());
             
+            // On transforme cet ics (texte) en JSON
             classes = await toJSON.default(classes).events;
 
+            // On transforme chaque cours en un objet Cours pour pouvoir les manipuler plus facilement (notamment pour les dates)
             classes = classes.map((cours) => {
                 const room = cours.location.substring(2);
                 return new Cours(cours, room)
@@ -156,7 +152,6 @@ export const scheduleDao = {
             return await scheduleDao.find(id)
             
         } catch(e){
-            console.log(e);
             return Promise.reject(e)
         }
     },

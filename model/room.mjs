@@ -4,7 +4,6 @@ class Room {
     computerRoom
 
     constructor(obj) {
-        // obj.location = obj.location.replace("J-", "");
         Object.assign(this, obj)
     }
 

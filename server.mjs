@@ -16,25 +16,11 @@ import {controller} from "./controller/controller.mjs";
 
 import {ScheduleType} from "./model/scheduleType.mjs"
 
-// TODO: joi, swagger, chai, secure routes (schedule/day/fgdfqgfg3184fsgd...)
-// TODO séparer schedule et schedules parce que là c'est affreux
-// TODO populate ligne ~354, j'ai viré le status 200 du swagger car maintenant ça peut être un joiRoomsTab ou un objet de la forme {id : number, name : string} (voir model schedules)
-// token header, authorization bering?
-// remplacer schedules par groups
-// remplacer post par put
-// augmenter quotas directions api pour l'éval
-// remplir la bd avec tous les profs, salles et schedules
-// re-swagger bien toutes les routes + secure + joi (object + notes...)
-// feedback and errors pour le site (choisir un edt au lieu d'un edt vide, mauvais login ou mdp, login déjà pris...)
-// remove useless commented code + comment code + remove prints
-// sort
-
 // Partie JOI - Définitions des objets joi
 const joiCours = Joi.object({
     id : Joi.number().integer().description("L'id d'une salle doit être unique"),
     start : Joi.date().description("Date de début du cours"),
     end : Joi.date().description("Date de début du cours"),
-    // .format('YYYYMMDDTHHmmSSSSS').utc()
     summary : Joi.string().allow(null, '').required().description("Corps du cours (quel cours, etc)"),
     location : Joi.string().allow(null, '').required().description("identifiant de la salle ( EX-XX )"),
     roomId :  Joi.number().integer().required().description("L'id d'une salle"),
@@ -311,7 +297,6 @@ const routes =[
                 }
                 
             } catch (e) {
-                console.log(e);
                 return h.response(e).code(400)
             }
         }
@@ -381,7 +366,6 @@ const routes =[
                 }
                 
             } catch (e) {
-                console.log(e);
                 return h.response(e).code(400)
             }
         }
@@ -495,7 +479,6 @@ const routes =[
                 }
 
             } catch (e) {
-                console.log(e);
                 return h.response({message: 'error'}).code(400)
             }
         }
@@ -763,7 +746,6 @@ const routes =[
                 }
 
             } catch (e) {
-                console.log(e);
                 return h.response(e).code(400)
             }
         }
@@ -844,7 +826,6 @@ const routes =[
                 }
 
             } catch (e) {
-                console.log(e);
                 return h.response(e).code(400)
             }
         }
@@ -882,7 +863,6 @@ const routes =[
                 return h.response(data).code(200)
 
             } catch (e) {
-                console.log(e);
                 return h.response(e).code(400)
             }
         }

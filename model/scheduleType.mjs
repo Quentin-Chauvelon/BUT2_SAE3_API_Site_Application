@@ -1,12 +1,8 @@
+// Une énumération permettant de déterminer facilement l'URL de l'emploi du temps en fonction du type (groupe, professeur, salle)
 class ScheduleType {
     static Schedule = new ScheduleType()
     static Teacher = new ScheduleType()
     static Room = new ScheduleType()
-
-    // constructor(id) {
-    //     this.id = id
-    //     this.Schedule = []
-    // }
 
     getUrl(id) {
         if (this == ScheduleType.Teacher) {

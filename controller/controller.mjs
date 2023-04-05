@@ -30,6 +30,8 @@ else {
 let lastUpdate = null;
 const PRIVATE_KEY = "OnDevraitTrouverMieux"
 
+// Les emplois du temps étant mis à jour tous les jours aux alentours de minuit,
+// si la dernière requête n'a pas été réalisé aujourd'hui, on vide la base de données.
 const clearDatabaseIfNotUpdatedToday = async () => {
     const today = new Date();
     
@@ -40,13 +42,14 @@ const clearDatabaseIfNotUpdatedToday = async () => {
         lastUpdate.getDate() != today.getDate()
     ) {
         try {
-            // await roomDao.deleteAll();
             await scheduleDao.deleteAll();
             lastUpdate = new Date()
         } catch (e) {}
     }
 }
 
+
+// Permet de vérifier que le token est toujours valide
 const verifyToken = (token) => {
     if (!token) {
       return {message: "A token is required for authentification"};
@@ -63,30 +66,30 @@ const verifyToken = (token) => {
 export const controller = {
     findGroups : async() => {
         try {
-
-            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            // Si l'utilisateur n'a pas fait de requêtes aujourd'hui, on vide la base de données
             clearDatabaseIfNotUpdatedToday()
 
             return await groupDao.findAll();
             
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
 
     findByDay : async(id, date, scheduleType) => {
         try {
-
-            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            // Si l'utilisateur n'a pas fait de requêtes aujourd'hui, on vide la base de données
             clearDatabaseIfNotUpdatedToday()
 
+            // On vérifie que l'id correspond bien à l'id d'un groupe ou d'un professeur
             const teacher = await teacherDao.find(id);
             const group = await groupDao.find(id);
             if (teacher == null && group == null) {
                 return null;
             }
 
+            // Si l'edt n'est pas dans la base de données (s'il n'a pas déjà été récupéré dans la journée)
+            // alors on fetch l'ics pour récupérer l'edt et on l'ajoute à la base de données pour ne pas avoir à fetch à nouveau
             let schedule = await scheduleDao.find(id);
             if (schedule == null) {
                 schedule = await scheduleDao.save(id, scheduleType)
@@ -99,7 +102,6 @@ export const controller = {
             return await scheduleDao.findByDay(schedule, date)
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -107,14 +109,17 @@ export const controller = {
     findByTime : async(id, time, scheduleType) => {
         try {
 
-            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            // Si l'utilisateur n'a pas fait de requêtes aujourd'hui, on vide la base de données
             clearDatabaseIfNotUpdatedToday()
 
+            // On vérifie que l'id correspond bien à l'id d'une salle
             const room = await roomDao.find(id);
             if (room == null) {
                 return null;
             }
 
+            // Si l'edt n'est pas dans la base de données (s'il n'a pas déjà été récupéré dans la journée)
+            // alors on fetch l'ics pour récupérer l'edt et on l'ajoute à la base de données pour ne pas avoir à fetch à nouveau
             let schedule = await scheduleDao.find(room.id);
             if (schedule == null) {
                 schedule = await scheduleDao.save(room.id, scheduleType)
@@ -134,12 +139,14 @@ export const controller = {
     findByWeek : async(id, date, scheduleType) => {
         try {
 
-            // if the user has not made any queries today, erase the database to refetch the data (because it updates everyday at midnight)
+            // Si l'utilisateur n'a pas fait de requêtes aujourd'hui, on vide la base de données
             clearDatabaseIfNotUpdatedToday()
 
-            const week= []; 
+            const week= [];
+            // On fixe la date au début de la semaine
             date.setDate((date.getDate() - date.getDay() ));
 
+            // On crée les dates de tous les jours correspondant à la semaine du jour donnée en paramètre
             for (let i = 0; i < 7; i++) {
                 week.push(
                     new Date(date)
@@ -165,14 +172,12 @@ export const controller = {
             return schedules
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
 
     populate : async(fileName) => {
         try {
-            let file = "";
             switch (fileName) {
                 case "groups":
                     return await groupDao.populate("./data/groups.csv")
@@ -188,7 +193,6 @@ export const controller = {
             }
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -219,6 +223,7 @@ export const controller = {
 
     findRoom : async (id, time) => {
         try {
+            // On vérifie que l'id est un id valide de salle
             const room = await roomDao.find(id);
             if (room == null) {
                 return null;
@@ -240,11 +245,10 @@ export const controller = {
 
             for (const room of rooms) {
 
-                // filter computer rooms only if needed
+                // on filtre les salles informatiques uniquement si nécessaire
                 if (computerRoomsOnly == false || room.computerRoom) {
                     const roomSchedule = await controller.findByTime(room.id, time, scheduleType);
 
-                    // if the room is free, add it to the table of free rooms
                     if (roomSchedule.length == 0) {
                         freeRooms.push(room);
                     }
@@ -265,6 +269,7 @@ export const controller = {
                 return null
             }
 
+            // on crée un token permettant à l'utilisateur de rejouer ce token quand il veut réaliser une action en lien avec son compte
             const token = jwt.sign(
                 { login: user.login },
                 PRIVATE_KEY,
@@ -275,7 +280,7 @@ export const controller = {
 
             const userToAdd = new User({
                 login: user.login,
-                password: user.password,
+                password: bcrypt.hashSync(user.password, 8),
                 favoriteSchedule: 0,
                 favoriteAddress: "",
                 favoriteTransitMode: "transit",
@@ -287,7 +292,6 @@ export const controller = {
 
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -295,10 +299,11 @@ export const controller = {
     login : async (user) => {
         try {
             const userFound = await userDao.find(user.login)
-            if (!userFound) {
+            if (!userFound || !bcrypt.compareSync(user.password, userFound.password)) {
                 return {message: "not found"}
             }
 
+            // on crée un token permettant à l'utilisateur de rejouer ce token quand il veut réaliser une action en lien avec son compte
             const token = jwt.sign(
                 { login: user.login },
                 PRIVATE_KEY,
@@ -313,7 +318,6 @@ export const controller = {
             return {token: userUpdated.token}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -325,8 +329,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(user.token)
-            // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -334,16 +338,14 @@ export const controller = {
             return await userDao.delete(user.login);
 
         } catch(e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
 
-    deleteAllUsers : async(token) => {
+    deleteAllUsers : async() => {
         try {
             return await userDao.deleteAll();
         } catch(e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -356,8 +358,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(user.token)
-            // if the token is invalid (a valid token is an dictionary with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -367,7 +369,6 @@ export const controller = {
             return {favoriteSchedule: userUpdated.favoriteSchedule}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -379,8 +380,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(token)
-            // if the token is invalid (a valid token is a dictionary with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -388,7 +389,6 @@ export const controller = {
             return {favoriteSchedule: user.favoriteSchedule}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -400,8 +400,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(user.token)
-            // if the token is invalid (a valid token is an object with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -411,7 +411,6 @@ export const controller = {
             return {favoriteAddress: userUpdated.favoriteAddress}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -423,8 +422,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(token)
-            // if the token is invalid (a valid token is a object with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -432,7 +431,6 @@ export const controller = {
             return {favoriteAddress: user.favoriteAddress}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -444,8 +442,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(user.token)
-            // if the token is invalid (a valid token is an object with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -455,7 +453,6 @@ export const controller = {
             return {favoriteTransitMode: userUpdated.favoriteTransitMode}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
@@ -467,8 +464,8 @@ export const controller = {
                 return {message: "not found"}
             }
 
+            // on vérifie que le token soit valide (non expiré)
             const validToken = verifyToken(token)
-            // if the token is invalid (a valid token is a object with 3 keys : login, iat, exp)
             if (!validToken.login) {
                 return {message: validToken}
             }
@@ -476,22 +473,13 @@ export const controller = {
             return {favoriteTransitMode: user.favoriteTransitMode}
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },
 
     directions : async (origin, arrivalTime, transitMode) => {
         try {
-            console.log(
-                "https://maps.googleapis.com/maps/api/directions/json?" +
-                "origin=" + origin + 
-                "&destination=place_id:ChIJpy2TCz7wBUgRo4Ly_iTXbto" + 
-                "&arrival_time=" + arrivalTime / 1000 +
-                "&mode=" + transitMode +
-                "&key=AIzaSyDoM4U5lz87DBlZL2KQ8tmtUQBopQKr09Y",
-            );
-
+            // on fetch l'API google maps (en utilisant un agent sinon on est bloqué par le proxy)
             const result = (agent != null)
                 ? await fetch(
                     "https://maps.googleapis.com/maps/api/directions/json?" +
@@ -515,7 +503,6 @@ export const controller = {
             return await result.json()
 
         } catch (e) {
-            console.log(e);
             return Promise.reject({message : "error"})
         }
     },

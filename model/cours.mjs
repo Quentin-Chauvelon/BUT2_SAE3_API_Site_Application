@@ -22,16 +22,14 @@ class Cours {
     location
     roomId
 
-    constructor(obj, room) {
+    constructor(obj) {
         let cours = {
             id: undefined,
             start: (obj.dtstart) ? formatStringToDate(obj.dtstart.value) : new Date(obj.start),
             end: (obj.dtend) ? formatStringToDate(obj.dtend.value) : new Date(obj.end),
             summary: obj.summary,
-            // location: (room) ? new Room(room) : DEFAULT_ROOM,
             location: obj.location,
             roomId: 0
-            // roomId: (room) ? room.id : DEFAULT_ROOM.id,
         };
 
         Object.assign(this, cours)
