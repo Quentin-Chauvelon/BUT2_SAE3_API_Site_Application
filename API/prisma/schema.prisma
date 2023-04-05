@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+//datasource db {
+//  provider = "postgresql"
+//  url      = env("DATABASE_URL")
+//}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Teacher {
+  id   Int    @id
+  name String
+}
+
+model Room {
+  id           Int     @id
+  name         String
+  computerRoom Boolean
+  // Cours        Cours[]
+}
+
+model Cours {
+  id         Int       @id @default(autoincrement())
+  start      DateTime
+  end        DateTime
+  summary    String
+  location   String
+  // location   Room      @relation(fields: [roomId], references: [id])
+  roomId     Int
+  // Schedule   Schedule? @relation(fields: [scheduleId], references: [id])
+  // scheduleId String?
+  Schedule   Schedule[]
+}
+
+model User {
+  login      String   @id
+  password   String
+  favoriteSchedule Int
+  favoriteAddress String
+  favoriteTransitMode String
+  token      String
+}
+
+model Schedule {
+  id             Int       @id
+  classes        Cours[]
+  type           String
+}
+
+model Group {
+  id   Int @id
+  name String
+}
+
+// model ScheduleType {
+//   id       Int        @id @default(autoincrement())
+//   Schedule Schedule[]
+// }
