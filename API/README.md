@@ -26,7 +26,7 @@ L'API RESTful est maintenant accessible à l'adresse choisie. Vous avez un retou
 Une fois l'application déployée, si vous voulez l'essayer vous pouvez faire des requêtes http. Cependant vous pouvez vous amuser à déployer notre application web *ScheduleTrack Nantes* et vous servir de l'API dans de réelle condition. <a href="https://gitlab.univ-nantes.fr/pub/but/but2/sae4-real-01/eq_init_01_01_angot-mael_blourde-nolan_calcagni-amedeo_chauvelon-quentin_osselin-arthur/-/tree/main/API">Lien GitLab</a>
 
 
- Technologies utilisés
+### Technologies utilisés
 
 > Partie serveur HTTP : Hapi <br/>
 > Partie base de données : MySQL <br/>
