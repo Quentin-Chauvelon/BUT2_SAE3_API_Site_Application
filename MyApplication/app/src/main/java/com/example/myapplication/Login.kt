@@ -17,7 +17,7 @@ class Login : AppCompatActivity() {
         setContentView(binding.root)
 
         val queue = Volley.newRequestQueue(this)
-        val loginURL = "http://172.26.82.56:443/schedules"
+        val loginURL = "http://172.26.82.56:443/groups"
 
         binding.inviter.setOnClickListener {
              startActivity(Intent(this,Accueil::class.java))
