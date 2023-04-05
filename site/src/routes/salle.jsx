@@ -1,7 +1,6 @@
 import {Form, useFetcher, useActionData} from "react-router-dom";
-import {formatDateToString, formatStringToDate} from "../main.jsx"
+import {formatDateToString, formatStringToDate,baseUrl} from "../main.jsx"
 import "./../assets/css/salle.css"
-
 
 
 export async function action({ request, params }) {
@@ -14,9 +13,8 @@ export async function action({ request, params }) {
     const dateParam = formData.get("roomsDate")
     const date = (dateParam && dateParam != "") ? new Date(formatStringToDate(dateParam)) : new Date();
     
-    const roomsResponse = await fetch("http://172.26.82.56:443/rooms/".concat(computerRoomsOnly, "/", formatDateToString(date)));
+    const roomsResponse = await fetch(baseUrl+"/rooms/".concat(computerRoomsOnly, "/", formatDateToString(date)));
     const rooms = await roomsResponse.json()
-    
     return {rooms};
 }
 
@@ -78,7 +76,7 @@ export default function Salle() {
                                         room.computerRoom=<img src="../src/assets/img/devoirIcon.png"/>
                                     } 
                                     return <div className="card2" key={i=i+1}><br/>{room.name}<br/><br/>{(room.computerRoom)}</div>})}</div>
-                                : <p className="Sc">{"Il n'y a aucune salle de libre :("}</p>
+                                : <p id="Vide" className="Sc">{"Il n'y a aucune salle de libre :("}</p>
                             : null
                     }
                     {

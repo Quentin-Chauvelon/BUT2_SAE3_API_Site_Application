@@ -178,6 +178,7 @@ a{
 /* CARD */
 
 .card {
+    padding: 10px;
     width: 250px;
     height: 330px;
     background: white;

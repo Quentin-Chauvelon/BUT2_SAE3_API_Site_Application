@@ -31,6 +31,8 @@ function setNextCours(cours) {
 export {nextCours, setNextCours}
 
 
+export const baseUrl = "http://172.26.82.56:443"
+
 function formatDateToString(date) {
   const month = date.getMonth() + 1;
   const day = date.getDate();

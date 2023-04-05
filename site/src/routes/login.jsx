@@ -1,12 +1,12 @@
 
 import {Link, redirect, useActionData, Form} from "react-router-dom"
-import {setToken} from "../main.jsx"
+import {setToken,baseUrl} from "../main.jsx"
 
 
 export async function action({ request, params }) {
     const formData = await request.formData();
 
-    const response = await fetch('http://172.26.82.56:443/user/login', {
+    const response = await fetch(baseUrl+'/user/login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

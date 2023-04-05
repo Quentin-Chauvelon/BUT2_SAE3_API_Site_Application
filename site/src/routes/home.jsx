@@ -1,5 +1,5 @@
-import {useLoaderData, useSubmit, Form, useFetcher, redirect} from "react-router-dom";
-import {token, formatDateToString, setNextCours, formatStringToDate} from "../main.jsx"
+import {useLoaderData, useSubmit, Form, useFetcher, redirect, useLocation} from "react-router-dom";
+import {token, formatDateToString, setNextCours, formatStringToDate,baseUrl} from "../main.jsx"
 import '../assets/css/root.css'
 
 
@@ -13,8 +13,8 @@ export async function action({ request, params }) {
         return redirect("/login");
     }
 
-    await fetch("http://172.26.82.56:443/user/favoriteSchedule", {
-        method: 'POST',
+    await fetch(baseUrl+"/user/favoriteSchedule", {
+        method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ export async function loader({ request }) {
 
     let favoriteScheduleString = "";
     if (token != "") {
-        const favoriteScheduleResponse = await fetch("http://172.26.82.56:443/user/favoriteSchedule/".concat(token))
+        const favoriteScheduleResponse = await fetch(baseUrl+"/user/favoriteSchedule/".concat(token))
         const favoriteSchedule = await favoriteScheduleResponse.json()
         
         if (favoriteSchedule.favoriteSchedule) {
@@ -52,7 +52,7 @@ export async function loader({ request }) {
     
     let schedules = []
     try {
-        const schedulesResponse = await fetch('http://172.26.82.56:443/schedules')
+        const schedulesResponse = await fetch(baseUrl+'/groups')
         schedules = await schedulesResponse.json();
     } catch(e) {
         schedules = []
@@ -65,7 +65,7 @@ export async function loader({ request }) {
     let schedule = []
     try {
         scheduleId = (scheduleId != "") ? scheduleId : "0"
-        const scheduleResponse = await fetch('http://172.26.82.56:443/schedule/week/'.concat(scheduleId, "/", formatDateToString(date)))
+        const scheduleResponse = await fetch(baseUrl+'/schedule/week/'.concat(scheduleId, "/", formatDateToString(date)))
         schedule = await scheduleResponse.json();
     } catch(e) {
         schedule = []
@@ -84,6 +84,9 @@ export default function Home() {
     const submit = useSubmit();
     const fetcher = useFetcher();
     const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+    const location = useLocation()
+
+    console.log(location.pathname);
 
     const now = new Date(2023, 2, 30, 10);
     let foundNextCours = false;

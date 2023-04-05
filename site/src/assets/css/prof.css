@@ -13,7 +13,7 @@
     margin-top: 40px;
 }
 
-.rechercheProf input#birthday {
+.rechercheProf input#date {
     width: 300px;
     height: 90px;
     border-radius: 30px;
@@ -41,7 +41,23 @@
     flex-wrap: wrap;
     gap: 30px;
     justify-content: center;
-    margin-top: 35px;
-
+    margin: 35px;
     font-size: 0.8rem;
 }
+
+.rechercheProf form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.now {
+    background-color: rgb(241, 223, 199);
+  }
+
+.datalist-input {
+    background-color: #000000;
+}  

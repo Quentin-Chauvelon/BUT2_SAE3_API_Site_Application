@@ -24,6 +24,10 @@
     text-decoration:underline;
 }
 
+.rechercheSalle p#Vide {
+  text-decoration: none;
+}
+
 .barreRecherche form {
     display: flex;
     flex-direction: row;
@@ -37,7 +41,6 @@
 .barreRecherche img {
     width: 5%;
 }
-
 
 /* TOGGLE */ 
 
@@ -126,8 +129,4 @@
   margin-top: 35px;
 
   font-size: 0.8rem;
-}
-
-.now {
-  background-color: rgb(241, 223, 199);
 }

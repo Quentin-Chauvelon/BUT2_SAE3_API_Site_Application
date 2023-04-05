@@ -1,5 +1,5 @@
 import {Form, useLoaderData, useSubmit} from "react-router-dom"
-import {token, nextCours, setNextCours} from "../main.jsx"
+import {token, nextCours, setNextCours,baseUrl} from "../main.jsx"
 import '../assets/css/directions.css'
 // import GoogleMapReact from 'google-map-react';
 // console.log(GoogleMapReact);
@@ -44,14 +44,14 @@ export async function loader({ request }) {
       selectedTransitMode = "transit";
 
       if (token != "") {
-         const favoriteAddressResponse = await fetch("http://172.26.82.56:443/user/favoriteAddress/".concat(token))
+         const favoriteAddressResponse = await fetch(baseUrl+"/user/favoriteAddress/".concat(token))
          const favoriteAddressJson = await favoriteAddressResponse.json()
          
          if (favoriteAddressJson.favoriteAddress) {
                loaderFavoriteAddress = favoriteAddressJson.favoriteAddress;
          }
 
-         const selectedTransitModeResponse = await fetch("http://172.26.82.56:443/user/favoriteTransitMode/".concat(token))
+         const selectedTransitModeResponse = await fetch(baseUrl+"/user/favoriteTransitMode/".concat(token))
          const selectedTransitModeJson = await selectedTransitModeResponse.json()
          
          if (selectedTransitModeJson.favoriteTransitMode) {
@@ -60,8 +60,8 @@ export async function loader({ request }) {
       }
    } else {
       if (token != "" && loaderFavoriteAddress != "" && selectedTransitMode != "") {
-         await fetch("http://172.26.82.56:443/user/favoriteAddress", {
-               method: 'POST',
+         await fetch(baseUrl+"/user/favoriteAddress", {
+               method: 'PUT',
                headers: {
                'Accept': 'application/json',
                'Content-Type': 'application/json'
@@ -72,8 +72,8 @@ export async function loader({ request }) {
                })
          });
 
-         await fetch("http://172.26.82.56:443/user/favoriteTransitMode", {
-               method: 'POST',
+         await fetch(baseUrl+"/user/favoriteTransitMode", {
+               method: 'PUT',
                headers: {
                'Accept': 'application/json',
                'Content-Type': 'application/json'
@@ -94,11 +94,11 @@ export async function loader({ request }) {
       //     cours.start.setTime(cours.start.getTime() - 5 * 60 * 1000);
       // }
 
-      console.log("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode);
-      const responseJson = await fetch("http://172.26.82.56:443/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode)
+      //console.log(baseUrl+"/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode);
+      const responseJson = await fetch(baseUrl+"/directions/" + loaderFavoriteAddress + "/" + cours.start.getTime() + "/" + selectedTransitMode)
       response = await responseJson.json()
 
-      console.log(response);
+      //console.log(response);
    }
 
    return {loaderFavoriteAddress, selectedTransitMode, cours, response}
@@ -112,7 +112,7 @@ export default function Directions() {
     let coursStart = "";
     let coursEnd = "";
 
-    console.log(response);
+    //console.log(response);
 
     let path = undefined;
     if (response && response.routes && response.routes[0] && response.routes[0].overview_polyline) {
@@ -148,10 +148,15 @@ export default function Directions() {
         (cours.start)
         ? <div className="directions">
             <div className="directions_details">
-                <Form method="post">
+                <Form >
                     <div className="origin_container">
                         <p>Départ : </p>
-                        <input type="text" name="departure" id="departure" placeholder={favoriteAddress}/>
+                        <input type="text" name="departure" id="departure" placeholder={favoriteAddress} onKeyUp={e => {
+                            if (e.keyCode == 13 || e.key == "Enter") {
+                                setNextCours(cours);
+                                e.preventDefault();
+                            }
+                        }} />
                     </div>
                     
                     <div className="arrival_time">
@@ -355,7 +360,7 @@ export default function Directions() {
                                     
                                     response.routes[0].legs[0].steps.map((step, i) => {
                                         return (
-                                            <div key={i} className="step_not_transit_details">
+                                            <div key={step.html_instructions + i} className="step_not_transit_details">
                                                     <div className="step_direction_container">
                                                         <div className="step_direction_icon_container">
                                                             <img className="step_direction_icon" src={"../src/assets/img/Directions_Icons/" + ((step.maneuver && step.maneuver != "keep-left" && step.maneuver != "keep-right") ? step.maneuver : "straight") + ".png"} alt="" />
