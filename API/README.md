@@ -38,7 +38,8 @@ Une fois l'application déployée, si vous voulez l'essayer vous pouvez faire de
 
 Pour mener à bien ce projet d'API RESTful nous avons été obligés d'utiliser des sources de données tiers. Nous avons donc utilisé l'EDT Celcat et à partir du fichier ICS qu'il propose. Ainsi que sur l'API de la Tan pour pouvoir générer un itinéraire d'un point A à l'IUT de Nantes site Joffre et l'API de Google Maps pour pouvoir génerer l'itinéraire sur la carte.
 
-### Fonctionnalités principales de l'APIRESTful:
+
+### Fonctionnalités principales de l'APIRESTful:
 
 - Créer un utilisateur et renvoyer un token
 - Se connecter et renvoyer un token
