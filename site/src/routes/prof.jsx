@@ -25,7 +25,7 @@ export async function loader({request}) {
         let professeurId = 0
         let professeur = -1
 
-        // Si il y a un professeur dans l'url
+        // S'il y a un professeur dans l'url
         if (url.searchParams.get("prof")!=null) {
             // Recherche du professeur dans professeur
             professeurs.map( async (prof)=>{
@@ -69,7 +69,7 @@ export default function Prof() {
     let alreadySearched = false 
     let i = 0
 
-    // re-Définision des variables
+    // re-Définition des variables
     if (professeur!=-1) {
         alreadySearched=true
         rooms = professeur

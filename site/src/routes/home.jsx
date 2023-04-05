@@ -112,6 +112,7 @@ export default function Home() {
             <div className="selectSchedule">
                 <h2>Choisissez l'emploi du temps que vous souhaitez voir : </h2>
             
+                {/* Form permettant de choisir l'emploi du temps à afficher */}
                 <Form id="scheduleId" role="search">
                     <select 
                     name="scheduleId"
@@ -135,11 +136,13 @@ export default function Home() {
             (scheduleId != 0)
                 ? <>
                     <div className="changeWeek">
+
+                        {/* Forms qui permettent de changer de semaine (afficher la semaine précédente ou suivante (tout en gardant le même id d'edt)) */}
                         <Form id="previousWeek" role="search">
                             <div
                                 name="previousWeek"
                                 id="previousWeek"
-                                onClick={(event) => {
+                                onClick={() => {
                                     let formData = new FormData();
                                     formData.append("scheduleId", scheduleId);
                                     formData.append("date", date.setDate(date.getDate() - 7));
@@ -152,7 +155,7 @@ export default function Home() {
                             <div
                                 name="nextWeek"
                                 id="nextWeek"
-                                onClick={(event) => {
+                                onClick={() => {
                                     let formData = new FormData();
                                     formData.append("scheduleId", scheduleId);
                                     formData.append("date", date.setDate(date.getDate() + 7));
@@ -164,44 +167,7 @@ export default function Home() {
 
                     <table>
                         <thead>
-                            {/* <tr>
-                                <th colSpan="60"></th>
-
-                                <th colSpan="12">
-                                    <Form id="previousWeek" role="search">
-                                        <div
-                                            name="previousWeek"
-                                            id="previousWeek"
-                                            onClick={(event) => {
-                                                let formData = new FormData();
-                                                formData.append("scheduleId", scheduleId);
-                                                formData.append("date", date.setDate(date.getDate() - 7));
-                                                submit(formData);
-                                            }}
-                                        >{"<<<"}</div>
-                                    </Form>
-                                </th>
-
-                                <th colSpan="21"></th>
-
-                                <th colSpan="12">
-                                <Form id="nextWeek" role="search">
-                                        <div
-                                            name="nextWeek"
-                                            id="nextWeek"
-                                            onClick={(event) => {
-                                                let formData = new FormData();
-                                                formData.append("scheduleId", scheduleId);
-                                                formData.append("date", date.setDate(date.getDate() + 7));
-                                                submit(formData);
-                                            }}
-                                        >{">>>"}</div>
-                                    </Form>
-                                </th>
-
-                                <th colSpan="50"></th>
-                            </tr> */}
-
+                            {/* Créer un tableau de 145 colonnes de large (25 colonnes pour l'affichage des jours à gauche) puis 1 colonne pour 5 minutes de cours */}
                             <tr>
                             {
                                 Array.from({ length: 145 }).map((_, i) => {
@@ -219,21 +185,12 @@ export default function Home() {
                                 </div>
                             </th>
                             
+                            {/* Créer les heures de 8h-9h à 17h-18h */}
                             {
                                 Array.from({ length: 10 }).map((_, i) => {
                                     return <th key={i} colSpan="12">{(i + 8).toString().concat(":00 - ", i + 9, ":00")}</th>
                                 })
                             }
-                            {/* <th colSpan="12">08:00 - 09:00</th>
-                            <th colSpan="12">09:00 - 10:00</th>
-                            <th colSpan="12">10:00 - 11:00</th>
-                            <th colSpan="12">11:00 - 12:00</th>
-                            <th colSpan="12">12:00 - 13:00</th>
-                            <th colSpan="12">13:00 - 14:00</th>
-                            <th colSpan="12">14:00 - 15:00</th>
-                            <th colSpan="12">15:00 - 16:00</th>
-                            <th colSpan="12">16:00 - 17:00</th>
-                        <th colSpan="12">17:00 - 18:00</th> */}
                             </tr>
                         </thead>
                 
@@ -245,6 +202,7 @@ export default function Home() {
                             }
                             
                             return (
+                                // Affichage du jour et de la date
                                 <tr key={j}>
                                 <th colSpan="25">{weekdays[j].concat((schedule[j][0] && schedule[j][0].start)
                                     ? "\n" + new Date(Date.parse(schedule[j][0].start)).getDate() + "/" + (new Date(Date.parse(schedule[j][0].start)).getMonth() + 1) + "/" + new Date(Date.parse(schedule[j][0].start)).getFullYear()
@@ -252,12 +210,15 @@ export default function Home() {
                                 }</th>
 
                                 {
+                                    // Pour chaque cours
                                     schedule[j].map((cours, i) => {
                                         const start = new Date(Date.parse(cours.start))
                                         const end = new Date(Date.parse(cours.end))
                                         start.setTime(start.getTime() - decalageHeure * 60 * 60 * 1000)
                                         end.setTime(end.getTime() - decalageHeure * 60 * 60 * 1000)
 
+                                        // Si le cours est le prochain cours à avoir lieu (par rapport à l'heure actuelle), on le sauvegarde
+                                        // Il sera utilisé comme heure de référence pour l'itinéraire
                                         if (!foundNextCours && now < start) {
                                             foundNextCours = true
 
@@ -270,30 +231,9 @@ export default function Home() {
                                         
                                         const previousCours = (i > 0) ? schedule[j][i - 1] : null
                                         
-                                        // if (previousCours == null) {
-                                            
-                                        //     return <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
-                                        //     <div className={
-                                        //         "cours"
-                                        //         .concat(cours.summary.includes("TD") ? " td" : "")
-                                        //         .concat(cours.summary.includes("TP") ? " tp" : "")
-                                        //         .concat(cours.summary.includes("DS") ? " ds" : "")
-                                        //         .concat(cours.summary.includes("Cours") ? " amphi" : "")
-                                        //         .concat(cours.summary.includes("Reunion") ? " reunion" : "")
-                                        //     }>
-                                            
-                                        //     <p>{
-                                        //         ((start.getHours() < 10) ? "0" + start.getHours() : start.getHours()) + ":" +
-                                        //         ((start.getMinutes() < 10) ? start.getMinutes() + "0" : start.getMinutes()) + " - " +
-                                        //         ((end.getHours() < 10) ? "0" + end.getHours() : end.getHours()) + ":" +
-                                        //         ((end.getMinutes() < 10) ? end.getMinutes() + "0" : end.getMinutes())
-                                        //     }</p>
-                                        //     <p>{cours.summary.replaceAll('\\', '\n')}</p>
-                                        //     <p>{cours.location}</p>
-                                        //     </div>
-                                        //     </td>
-                                        // }
-                                        
+                                        // On détermine le temps passé depuis le dernier cours (ou depuis 8h si c'est le premier cours de la journée)
+                                        // ce qui permet de laisser des espaces dans l'affichage de l'edt pour les pauses, midi...
+                                        // ou de laisser un trou si le premier n'est pas à 8h par exemple
                                         let previousCoursEnd
                                         if (previousCours != null) {
                                             previousCoursEnd = new Date(Date.parse(previousCours.end))
@@ -310,6 +250,7 @@ export default function Home() {
                                             (start - previousCoursEnd) > 0 ? <td colSpan={(start - previousCoursEnd) / 60 / 1000 / 5} key={i + j + previousCoursEnd}></td> : null,
                                             (end - start)
                                                 ? <td colSpan={(end - start) / 60 / 1000 / 5} key={i + j + start}>
+                                                    {/* Les className de la div suivante permettent de colorer la case en fonction du type de cours (td -> bleu, tp -> rose, ds -> marron...) */}
                                                     <div className={
                                                         "cours"
                                                         .concat(cours.summary.includes("TD") ? " td" : "")
@@ -317,7 +258,9 @@ export default function Home() {
                                                         .concat(cours.summary.includes("DS") ? " ds" : "")
                                                         .concat(cours.summary.includes("Cours") ? " amphi" : "")
                                                         .concat(cours.summary.includes("Reunion") ? " reunion" : "")
-                                                    } onClick={event => {
+                                                    }
+                                                    // Si on clique sur un cours, cela permet de calculer l'itinéraire et l'heure de départ pour arriver à ce cours
+                                                    onClick={event => {
                                                         const coursCopy = {...cours}
                                                         coursCopy.start = formatStringToDate(coursCopy.start)
                                                         coursCopy.end = formatStringToDate(coursCopy.end)

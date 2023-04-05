@@ -4,13 +4,13 @@
 import {Link, redirect, Form, useActionData} from "react-router-dom"
 import {setToken,baseUrl} from "../main.jsx"
 
-/* Définition de la function action*/
+/* Définition de la fonction action*/
 
 export async function action({ request, params }) {
     /* Récupération des données du Form */
     const formData = await request.formData();
     
-    /* Requête sur l'api pour vérifier l'authenticiter du login et la validiter du password,
+    /* Requête sur l'api pour vérifier l'authenticité du login et la validité du password,
        et renvoie un token si la création de compte est correct*/
     const response = await fetch(baseUrl+'/user/register', {
         method: 'POST',
@@ -25,9 +25,9 @@ export async function action({ request, params }) {
     });
     const json = await response.json();
 
-    // Présence d'un attribut token // Connection validé
+    // Présence d'un attribut token // Connexion validé
     if (json.token) {
-        // re-Définission du token
+        // re-Définition du token
         setToken(json.token);
         // Redirection au home
         return redirect("/app/home");

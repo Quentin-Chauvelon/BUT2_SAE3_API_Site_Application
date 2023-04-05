@@ -41,7 +41,7 @@ export {nextCours, setNextCours}
 
 export const baseUrl = "http://172.26.82.56:443" // Initialisation de l'ip de l'API
 
-function formatDateToString(date) {             // Fonction qui convertie une date format Date en date format String
+function formatDateToString(date) {             // Fonction qui convertit une date format Date en date format String
   const month = date.getMonth() + 1;         
   const day = date.getDate();
   const hours = date.getHours();
@@ -58,7 +58,7 @@ function formatDateToString(date) {             // Fonction qui convertie une da
 }
 export {formatDateToString}                   // Export de la fonction formatDateToString
 
-function formatStringToDate(stringDate) {    // Fonction qu iconvertie une date format String en date from Date
+function formatStringToDate(stringDate) {    // Fonction qui convertit une date format String en date format Date
   const [date, time] = stringDate.split("T")
   const [year, month, day] = date.split("-")
   const [hour, minute] = time.split(":")
