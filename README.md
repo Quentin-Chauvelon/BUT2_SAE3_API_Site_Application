@@ -2,17 +2,19 @@
 
 MM. ANGOT, BLOURDE, CALCAGNI, CHAUVELON et OSSELIN sont heureux de vous présenter *ScheduleTrack Nantes*.
 
+Présentation *ScheduleTrack Nantes* : 
+
+>Dans le cadre de la SAE-S4, nous voulons créer une application qui permettrait de consulter son emploi du temps, mais aussi de voir où un professeur de l’IUT de Nantes se trouve ainsi que de trouver les salles libres à un moment donné. Nous souhaitons aussi pouvoir synchroniser l’emploi du temps avec l’api de la TAN afin de savoir comment me rendre à l’IUT en fonction de l’heure à laquelle commencent les cours.
+
 Pour ce projet nous avons eux trois projets informatique à rendre : 
 
 En cliquant sur la matière qu'il vous intérèse vous serez rediriger vers le bon dossier.
 
-### <a href="">Architecture logiciel</a>
+### <a href="https://gitlab.univ-nantes.fr/pub/but/but2/sae4-real-01/eq_init_01_01_angot-mael_blourde-nolan_calcagni-amedeo_chauvelon-quentin_osselin-arthur/-/tree/main/API">Architecture logiciel</a>
 
 Sujet : Créer plusieurs micro-services communicants, qui seront facilement déployables sur les machines de l'IUT. Chaque micro-service devra être documenté et fourni avec des jeux de tests.
 
-
-
-### <a href="">Application Web</a>
+### <a href="https://gitlab.univ-nantes.fr/pub/but/but2/sae4-real-01/eq_init_01_01_angot-mael_blourde-nolan_calcagni-amedeo_chauvelon-quentin_osselin-arthur/-/tree/main/Application%20Web">Application Web</a>
 
 Sujet : Développer une application one page sur vos microservices, la richesse des
 fonctionnalités, l’ergonomie, l’utilisation de la mémoire et du CPU seront pris en compte. 
