@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant&family=Cormorant+SC&display=swap');
+
+/*GLOBAL*/
+
+html { 
+    font-size: 35px;
+    min-height:100%;
+    background-image: url(../img/map.png); 
+    background-repeat: no-repeat;
+    background-size: cover;    
+}
+
+.Infant {
+    font-family: 'Cormorant Infant, serif';
+}
+
+.Sc{
+    font-family: 'Cormorant SC', serif;
+}
+
+.grand {
+    font-size: 40px;
+    line-height: 40%;
+}
+
+.petit {
+    font-size: 18px;
+}
+
+p{
+    margin-top: 30px;
+    margin-bottom: 0;
+}
+
+a{
+    color:rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+.a{
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.br{
+    margin-top: 14px;
+}
+/*HOME HEADER*/
+
+
+.headerP{
+    font-size: 35px;
+    color: #6e0505;
+}
+
+.homeHeader{
+    margin-top: 55px;
+    text-align: center;
+}
+
+/*HOME CONNEXTION ET S'ENREGISTRER*/
+
+.titre{
+    font-size: 75px;
+    text-align: center;
+}
+
+.homeConnexion {
+    display : flex;
+    text-align: center;
+    justify-content: center;
+    color: rgb(255, 255, 255);
+    height: 100%;
+}
+
+.barre-v{
+    border-left: 3px solid #ffffff;
+    height: 325px;
+}
+
+.barre-h{
+    width: 850px;
+    height: 2px;
+    border-top: 2px solid #000000;
+    margin : auto;
+    margin-bottom: 20px;
+}
+
+.barre-h1 {
+    width: 200px;
+    height: 2px;
+    border-top: 2px solid #ffffff;
+    margin : auto;
+}
+
+.barre-h2{
+    width: 180px;
+    height: 2px;
+    border-top: 2px solid #ffffff;
+    margin : auto;
+}
+
+.barre-h3{
+    width: 250px;
+    height: 1px;
+    border-top: 3px solid #ffffff;
+    margin : auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.bodyButton {
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    background: #FFFFFF;
+    margin-top: 30px;
+    font-size: 25px;
+}
+
+.bodyButton:hover {
+    cursor: pointer;
+}
+
+.visiteur {
+    width: 25%;
+}
+
+.visiteur p {
+    margin-bottom: 23px;
+    margin-left: 5px;
+}
+
+.connexion {
+    width: 25%;
+}
+
+.bodyInput{
+    width: 280px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-sizing: border-box;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    padding-left: 10px;
+}
+
+.homeEnregistrer{
+    color: #FFFFFF;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.registerForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/*HOME FOOTER*/
+
+.homeFooter{
+    margin-top: 100px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.homeFooter img{
+    width: 10%;
+}
+
+/* CARD */
+
+.card {
+    padding: 10px;
+    width: 250px;
+    height: 330px;
+    background: white;
+    border-radius: 10px;
+    transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: inset 0 -3em 3em rgba(0,0,0,0.1),
+                0 0  0 2px rgb(190, 190, 190),
+                0.3em 0.3em 1em rgba(0,0,0,0.3);
+}
+
+.card2 {
+    width: 190px;
+    height: 254px;
+    background: white;
+    border-radius: 10px;
+    transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: inset 0 -3em 3em rgba(0,0,0,0.1),
+    0 0  0 2px rgb(190, 190, 190),
+    0.3em 0.3em 1em rgba(0,0,0,0.3);
+   }
+
+.card2 img {
+    min-width: 50%;
+    margin: auto;
+}
+  
+.error {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
+    color: red;
+}
+
+
+/* MEDIA */ 
+
+@media (max-width: 1400px) {
+    .homeConnexion{
+        flex-direction: column;
+        align-items: center;    
+    }
+    .barre-v{
+        display: none;
+    }
+    .barre-h3{
+        display: block;
+    }
+    .visiteur{
+        width: 50%;
+    }
+    .connexion{
+        width: 50% ;
+    }
+}

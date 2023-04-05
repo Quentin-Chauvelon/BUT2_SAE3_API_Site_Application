@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant&family=Cormorant+SC&display=swap');
+
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+.directions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+}
+
+.directions p {
+    margin: 0;
+}
+
+.directions_details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    width: 90%;
+    margin-top: 50px;
+    
+    font-family: 'Cormorant SC', serif;
+    font-size: 40px;
+    text-align: center;
+}
+
+.directions_details form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.origin_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.origin_container input {
+    width: 400px;
+    height: 50px;
+    
+    padding-left: 20px;
+    border-radius: 30px;
+
+    font-family: 'Cormorant SC', serif;
+    font-size: 30px;
+}
+
+.search {
+    width: 300px;
+    height: 70px;
+
+    background-color: white;
+    border-radius: 30px;
+
+    font-family: 'Cormorant SC', serif;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.search .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: black;
+}
+
+
+.directions_container {
+    display: flex;
+    justify-content: space-between;
+    
+    width: 90%;
+    margin: 60px 0 100px 0;
+}
+
+.directions_steps {
+    width: min-content;
+    height: min-content;
+    margin-right: 100px;
+
+    background-color: white;
+    border-radius: 10px;
+}
+
+.map_container {
+    background-color: white;
+    width: 100%;
+    height: min-content;
+    border-radius: 10px;
+    aspect-ratio: 1.7;
+}
+
+.transit_mode {
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid black;
+}
+
+.transit_mode form {
+    display: flex;
+}
+
+.transit_mode div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.transit_mode div img {
+    margin: 0 30px;
+}
+
+.transit_mode_selected {
+    border-bottom: 5px solid #4b4b4b;
+}
+
+.transit_mode img {
+    width: 50px;
+    cursor: pointer;
+    /* height: 50px; */
+}
+
+.steps_container {
+    margin-left: 12px;
+    margin-bottom: 20px;
+
+    color: #4b4b4b;
+    font-family: sans-serif, serif
+}
+
+.duration {
+    font-size: 20px;
+    font-weight: 900;
+    text-align: center;
+
+    margin: 0 15px 20px 0 !important;
+}
+
+.departure_details {
+    display: flex;
+    align-items: center;
+}
+
+.departure_time {
+    width: 70px;
+    margin-left: 15px;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.stop_icon {
+    border: 5px solid #AAA;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    margin-right: 17px;
+}
+
+.departure_position {
+    font-size: 17px;
+    font-weight: 900;
+    max-width: calc(100% - 114px);
+}
+
+.step_details {
+    display: flex;
+    align-items: center;
+}
+
+.icon_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 70px;
+    /* margin-left: 15px; */
+}
+
+.icon_container img {
+    width: 30px;
+}
+
+.stop_line {
+    width: 4px;
+    height: 100px;
+    margin-left: 4px;
+    margin-right: 25px;
+}
+
+.stop_line.dotted {
+    border-right: 5px dotted #AAA;
+}
+
+.transit_details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    font-size: 17px;
+}
+
+.step_distance, .step_time {
+    font-weight: 500;
+}
+
+.line_name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 40px;
+    height: 25px;
+
+    border-radius: 8px;
+}
+
+.invalid_cours {
+    margin: 5%;
+    
+    text-align: center;
+    font-family: 'Cormorant SC', serif;
+    font-size: 40px;
+    color: white;
+}
+
+
+.step_not_transit_details {
+    margin: 12px 0 0 -12px;
+    padding: 0 15px;
+    border-bottom: 2px solid #AAA;
+    font-size: 17px;
+    font-family: sans-serif, serif;
+}
+
+.step_direction_container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.step_direction_icon_container {
+    width: 30px;
+}
+
+.step_direction_icon {
+    width: 30px;
+    height: 30px;
+}
+
+.step_direction {
+    font-weight: 900;
+}
+
+.step_distance_time {
+    font-weight: 500;
+    margin: 8px 0 5px 0 !important;
+}
+
+.time_address {
+    width: 100%;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.time_address.start {
+    margin: 0 0 20px -12px;
+    padding: 0 0 10px 12px;
+    border-bottom: 2px solid #4b4b4b
+}
+
+.time_address.end {
+    margin-top: 10px;
+}
+

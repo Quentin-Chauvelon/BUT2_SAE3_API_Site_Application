@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant&family=Cormorant+SC&display=swap');
+
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+.home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* gap: 50px; */
+
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.selectSchedule {
+    font-family: 'Cormorant SC', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.selectSchedule select {
+    font-family: 'Cormorant SC', serif;
+    width: 450px;
+    height: 50px;
+    border-radius: 30px;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: #FEFEFE;
+    text-align: center;
+}
+
+.selectSchedule select option {
+    font-family: 'Cormorant SC', serif;
+    font-weight: bold;
+}
+
+.selectSchedule h2 {
+    font-size: 35px;
+    color: white;
+    text-decoration: underline;
+}
+
+.changeWeek {
+    margin-top: 50px;
+    width: calc(90% - 2px);
+    background-color: rgba(230,230,230);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Cormorant SC', serif;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+    border: 1px solid black;
+    border-bottom: none;
+}
+
+.changeWeek form:first-child {
+    margin-right: 100px;
+}
+
+.changeWeek form:last-child {
+    margin-left: 100px;
+}
+
+table {
+    font-family: 'Cormorant SC', serif;
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 90%;
+    height: 100%;
+    background-color: rgba(230,230,230);
+}
+
+table thead tr th {
+    border: 1px solid black;
+}
+
+table thead tr:first-child th {
+    border: none;
+}
+
+table thead tr:first-child div {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+}
+
+table tbody > tr {
+    border: 1px solid black;
+}
+
+table tbody tr th:first-child {
+    border: 1px solid black;
+}
+
+.star {
+    width: 50px;
+    height: 50px;
+    margin: 3px;
+}
+
+table .cours {
+    color: black;
+    height: 100%;
+    text-align: center;
+    /* padding: 10px; */
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: white;
+}
+
+.cours.td {
+    background-color: #8FC1FD;
+}
+
+.cours.tp {
+    background-color: #FF9EFF;
+}
+
+.cours.ds {
+    background-color: #BF7F7F;
+}
+
+.cours.amphi {
+    background-color: #FF7F7F;
+}
+
+.cours.reunion {
+    background-color: #BFFFFF;
+}
+
+table tbody div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 10px;
+}
+
+table div p {
+    margin: 0 10px;
+}
+
+table div p:first-child {
+    margin-top: 10px;
+}
+
+table div p:last-child {
+    margin-bottom: 10px;
+}
+
+table th {
+    font-size: 25px;
+    font-weight: bold;
+}

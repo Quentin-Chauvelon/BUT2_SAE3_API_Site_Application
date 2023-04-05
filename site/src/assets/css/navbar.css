@@ -1,0 +1,40 @@
+/*navBar*/
+
+.navBar {
+    margin-top: 75px;
+    width: 88%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-left: 6%;
+    margin-right: 6%;
+}
+
+.navBar div {
+    margin-bottom: 30px;
+    display: flex;
+    max-width: 360px;
+    max-height: 110px;
+    background-color: #FEFEFE;
+    box-shadow: 0px 00px 25px 2px #000000;
+    border-radius: 10px;
+    transition: 0.25s ease-in-out;
+}
+
+.navBar div:hover {
+        box-shadow: 0px 00px 25px 2px #2c0000;
+        color: #5c0808;
+        cursor: pointer;
+    }
+
+.navBar div p {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.navBar div img {
+    width: 25%;
+    padding: 1%;
+    margin-right: 5%;
+}
+

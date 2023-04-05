@@ -1,0 +1,63 @@
+/* RechercheProf */
+
+.rechercheProf {
+    text-align: center;
+}
+
+.rechercheProf input {
+    width: 700px;
+    height: 90px;
+    border-radius: 30px;
+    padding-left: 1%;
+    font-size: 40px;
+    margin-top: 40px;
+}
+
+.rechercheProf input#date {
+    width: 300px;
+    height: 90px;
+    border-radius: 30px;
+    font-size: 40px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.rechercheProf input:focus {
+    box-shadow: 0px 0px 20px 1px #000000;
+}
+
+.rechercheProf p {
+    color : #FFFFFF;
+    text-decoration: underline;
+}
+
+.rechercheProf p#Vide {
+    text-decoration: none;
+}
+
+.profEdt {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    margin: 35px;
+    font-size: 0.8rem;
+}
+
+.rechercheProf form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.now {
+    background-color: rgb(241, 223, 199);
+  }
+
+.datalist-input {
+    background-color: #000000;
+}  
