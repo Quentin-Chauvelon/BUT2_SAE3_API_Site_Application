@@ -1,3 +1,5 @@
+/* Import Utile pour l'application */
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
@@ -5,6 +7,8 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+
+/* Import des différents composants et de leurs fonctions */
 
 import Root, {loader as rootLoader} from "./routes/root";
 import Register, {action as registerAction} from "./routes/register"
@@ -15,26 +19,30 @@ import Salle, {action as salleAction} from './routes/salle';
 import Prof , {loader as profLoader} from './routes/prof';
 import Directions, {loader as directionsLoader} from "./routes/directions";
 
+/* Import des différents css utiles*/
+
 import './assets/css/root.css'
 import "./assets/css/home.css"
 
-let token = "";
-function setToken(tokenToSet) {
+/* Début du code */
+
+let token = "";                     // Création d'un token vide
+function setToken(tokenToSet) {     
   token = tokenToSet
 }
-export {token, setToken}
+export {token, setToken}            // Export du token et de la fonction pour le set
 
-let nextCours = {}
+let nextCours = {}                  // Création
 function setNextCours(cours) {
   nextCours = cours
 }
-export {nextCours, setNextCours}
+export {nextCours, setNextCours}    // Export du nextCours et de la fonction pour le set
 
 
-export const baseUrl = "http://172.26.82.56:443"
+export const baseUrl = "http://172.26.82.56:443" // Initialisation de l'ip de l'API
 
-function formatDateToString(date) {
-  const month = date.getMonth() + 1;
+function formatDateToString(date) {             // Fonction qui convertie une date format Date en date format String
+  const month = date.getMonth() + 1;         
   const day = date.getDate();
   const hours = date.getHours();
   const minutes = date.getMinutes();
@@ -48,17 +56,19 @@ function formatDateToString(date) {
       "00000Z"
   )  
 }
-export {formatDateToString}
+export {formatDateToString}                   // Export de la fonction formatDateToString
 
-function formatStringToDate(stringDate) {
+function formatStringToDate(stringDate) {    // Fonction qu iconvertie une date format String en date from Date
   const [date, time] = stringDate.split("T")
   const [year, month, day] = date.split("-")
   const [hour, minute] = time.split(":")
   
   return new Date(year, month - 1, day, hour, minute, 0)
 }
-export {formatStringToDate}
+export {formatStringToDate}               // Export de la fonction formatStringToDate
 
+
+/* Création du routeur */
 
 const router = createBrowserRouter([
     {
@@ -87,12 +97,6 @@ const router = createBrowserRouter([
           element:<Home/>,
           action: homeAction,
           loader: homeLoader,
-          // children: [
-          //   {
-          //     path: "cours",
-          //     element: <Cours/>
-          //   }
-          // ]
         },
         {
           path: "salle",
