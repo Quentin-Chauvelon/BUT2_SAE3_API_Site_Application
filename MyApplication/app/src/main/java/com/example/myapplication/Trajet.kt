@@ -16,24 +16,22 @@ class Trajet : AppCompatActivity() {
         setContentView(binding.root)
 
         //bar du haut
-        binding.includedLayout.logoAccueil.setOnClickListener{
-            startActivity(Intent(this,Accueil::class.java))
-        }
-        binding.includedLayout.favorisBtnAccueil.setOnClickListener{
+
+        binding.logo.setOnClickListener{
             startActivity(Intent(this,Accueil::class.java))
         }
 
         //Bar du Bas
-        binding.includedLayout.roomBtnAccueil.setOnClickListener{
+        binding.roomBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Salles::class.java))
         }
-        binding.includedLayout.locationBtnAccueil.setOnClickListener{
+        binding.locationBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Trajet::class.java))
         }
-        binding.includedLayout.teacherBtnAccueil.setOnClickListener{
+        binding.teacherBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Profs::class.java))
         }
-        binding.includedLayout.homeBtnAccueil.setOnClickListener{
+        binding.homeBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Accueil::class.java))
         }
 

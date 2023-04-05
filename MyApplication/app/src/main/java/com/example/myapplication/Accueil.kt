@@ -15,10 +15,7 @@ class Accueil : AppCompatActivity() {
         setContentView(binding.root)
 
         //bar du haut
-        binding.logoAccueil.setOnClickListener{
-            startActivity(Intent(this,Accueil::class.java))
-        }
-        binding.favorisBtnAccueil.setOnClickListener{
+        binding.logo.setOnClickListener{
             startActivity(Intent(this,Accueil::class.java))
         }
         //Bar du Bas
