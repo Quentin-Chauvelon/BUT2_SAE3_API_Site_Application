@@ -11,7 +11,7 @@ Ce guide explique comment déployer et utiliser l'API RESTful *ScheduleTrack Nan
 > Node.js version 18.15 <br/>
 > Npm version 9.5.0 <br/>
 
-# Etapes de déploiement
+## Etapes de déploiement
 
 1. Télécharger ou clonez le code source de l'API depuis le dépôt <a href="">Gitlab</a>
 2. Ouvrez un terminal et accédez au répertoire racine de l'application. 
