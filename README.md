@@ -4,7 +4,7 @@ MM. ANGOT, BLOURDE, CALCAGNI, CHAUVELON et OSSELIN sont heureux de vous présent
 
 Présentation *ScheduleTrack Nantes* : 
 
-Dans le cadre de la SAE-S4, nous voulons créer une application qui permettrait de consulter son emploi du temps, mais aussi de voir où un professeur de l’IUT de Nantes se trouve ainsi que de trouver les salles libres à un moment donné. Nous souhaitons aussi pouvoir synchroniser l’emploi du temps avec l'API de la TAN afin de savoir comment me rendre à l’IUT en fonction de l’heure à laquelle commencent les cours.
+Dans le cadre de la SAE-S4, nous voulons créer une application qui permettrait de consulter son emploi du temps, mais aussi de voir où un professeur de l’IUT de Nantes se trouve ainsi que de trouver les salles libres à un moment donné. Nous souhaitons aussi pouvoir synchroniser l’emploi du temps avec l'API de la Google Maps afin de savoir comment me rendre à l’IUT en fonction de l’heure à laquelle commencent les cours.
 
 Pour ce projet nous avons eu trois projets informatiques à rendre : 
 
