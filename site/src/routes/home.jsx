@@ -94,10 +94,12 @@ export default function Home() {
     const fetcher = useFetcher();
     const weekdays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-
+    // On récupère la date actuelle afin de pouvoir déterminer le prochain cours (par rapport à l'heure actuelle)
     const now = new Date();
     let foundNextCours = false;
 
+    // Quand on récupère l'ics, certains semaines ont un décalage d'1h, certaines de 2h,
+    // C'est pourquoi, parfois, il faut enlever 2h au cours pour afficher la bonne heure et parfois 3h
     let decalageHeure = 2;
     schedule.forEach(coursDay => {
         if (coursDay.length > 0 && coursDay[0].start.substring(11,16) == "10:00") {

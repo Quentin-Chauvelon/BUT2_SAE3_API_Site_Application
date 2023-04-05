@@ -1,11 +1,17 @@
-
+/* Import des composants vite et de leurs méthodes
+   et de la fonction setToken et de la variable baseUrl
+*/
 import {Link, redirect, useActionData, Form} from "react-router-dom"
 import {setToken,baseUrl} from "../main.jsx"
 
+/* Définition de la function action*/
 
 export async function action({ request, params }) {
+    /* Récupération des données du Form */
     const formData = await request.formData();
 
+    /* Requête sur l'api pour vérifier le login et password,
+       et renvoie un token si la connection est correct*/
     const response = await fetch(baseUrl+'/user/login', {
         method: 'POST',
         headers: {
@@ -20,22 +26,25 @@ export async function action({ request, params }) {
     
     const json = await response.json();
     
+    // Présence d'un attribut token // Connection validé
     if (json.token) {
+        // re-Définission du token
         setToken(json.token);
+        // Redirection au home
         return redirect("/app/home");
     }
 
     const error = true;
     return error
-    // return updateContact(params.contactId, {
-    //   favorite: formData.get("favorite") === "true",
-    // });
 } 
 
+/* Création et export du composant Login */
 
 export default function Login() {
+    // Recupération error
     const error = useActionData();
 
+    /* Affichage du composant */
     return (
         <>
             <div className="homeConnexion">

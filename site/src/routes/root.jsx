@@ -16,7 +16,7 @@ export default function Root() {
         <>
             <div  className="Infant homeHeader grand">
                 <p>MM. ANGOT,</p>
-                <p>BLOURDE , CAMCAGNI</p>
+                <p>BLOURDE , CALCAGNI</p>
                 <p>CHAUVELON & OSSELIN</p>
                 <p className="Sc headerP">Sont Heureux de vous présenter</p>
             </div>

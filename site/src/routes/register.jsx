@@ -22,15 +22,9 @@ export async function action({ request, params }) {
         setToken(json.token);
         return redirect("/app/home");
     }
-        
-    // const response = await fetch("http://172.26.82.56:443/user/login")
-    // console.log(await response.json());
     
     const error = true;
     return error
-    // return updateContact(params.contactId, {
-    //   favorite: formData.get("favorite") === "true",
-    // });
 } 
 
 
