@@ -51,3 +51,5 @@ Pour utiliser l'application, il vous suffit de naviguer grâce à la navbar (Acc
 ---
 
 Ce guide vous permettra de déployer et d'utiliser l'application *ScheduleTrack Nantes* sur votre ordinateur local ou sur un serveur distant. Si vous avez des questions ou des problèmes, n'hésitez pas à nous contacter pour obtenir de l'aide.
+
+Si vous voulez voir le rendu final de notre application web, cliquez ici : http://172.26.82.56.

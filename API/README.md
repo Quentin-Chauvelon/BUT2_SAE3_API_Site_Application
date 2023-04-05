@@ -33,7 +33,11 @@ Une fois l'application déployée, si vous voulez l'essayer vous pouvez faire de
 > Partie Documentation : Swagger <br/>
 > Partie Tests : Chai <br/>
 
-Fonctionnalités principales de l'APIRESTful:
+### Open data et API tiers utilisés
+
+Pour mener à bien ce projet d'API RESTful nous avons été obligés d'utiliser des sources de données tiers. Nous avons donc utilisé l'EDT Celcat et à partir du fichier ICS qu'il propose. Ainsi que sur l'API de la Tan pour pouvoir générer un itinéraire d'un point A à l'IUT de Nantes site Joffre et l'API de Google Maps pour pouvoir génerer l'itinéraire sur la carte.
+
+### Fonctionnalités principales de l'APIRESTful:
 
 - Créer un utilisateur et renvoyer un token
 - Se connecter et renvoyer un token
@@ -57,3 +61,5 @@ Pour exécuter les tests, placez vous dans le dossier `/API` et exécuter la com
 ## Conclusion
 
 Ce guide vous permettra de déployer et d'utiliser l'API RESTful *ScheduleTrack  Nantes* sur votre ordinateur local ou sur un serveur distant. Si vous avez des questions ou des problèmes, n'hésitez pas à nous contacter pour obtenir de l'aide.
+
+Pour voir le rendu final de notre API RESTful, cliquez ici : http://172.26.82.56:443/documentation.
