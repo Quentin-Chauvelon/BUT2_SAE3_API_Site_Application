@@ -6,7 +6,7 @@
 
 Ce guide explique comment déployer et utiliser l'application web *ScheduleTrack Nantes* sur votre ordinateur en local ou sur un serveur distant.
 
-Cette application permet de consulter son emploi du temps, mais aussi de localiser un professeur de l'IUT de Nantes et de trouver les salles libres à un moment donné. Nous souhaitons également permettre la synchronisation de l'emploi du temps avec l'API de la TAN pour savoir comment se rendre à l'IUT en fonction de l'heure de début des cours.
+Cette application permet de consulter son emploi du temps, mais aussi de localiser un professeur de l'IUT de Nantes et de trouver les salles libres à un moment donné. Nous souhaitons également permettre la synchronisation de l'emploi du temps avec l'API Google Maps pour savoir comment se rendre à l'IUT en fonction de l'heure de début des cours.
 
 ## Déploiement
 
