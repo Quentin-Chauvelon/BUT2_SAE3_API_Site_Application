@@ -34,8 +34,7 @@ class Login : AppCompatActivity() {
 
                     val token: JSONObject = response as JSONObject
 
-                    val sharedPref = this.getPreferences(MODE_PRIVATE)
-
+                    val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes",MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString(
                             "token",
