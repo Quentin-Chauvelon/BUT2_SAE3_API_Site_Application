@@ -14,8 +14,10 @@ Cette application permet de consulter son emploi du temps, mais aussi de localis
 
 ### Prérequis
 
->  <br/>
->  <br/>
+>  Android Gradle Plugin Version 7.2.0<br/>
+> Gradle Version 7.3.3 <br/>
+> SDK 32 | MIN SDK 21 <br/>
+>  Java 1.8
 
 *En cas de non conformités des prérequis l'application peut avoir des problèmes de compilation.* 
 
