@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">ScheduleTrack</string>
     <string name="s_enregistrer">S\'enregistrer</string>
-    <string name="juste_pour_voir">Juste pour voir</string>
     <string name="se_connecter">Se Connecter</string>
-    <string name="password">Password</string>
-    <string name="login">Login</string>
+    <string name="password">Mot de passe</string>
+    <string name="login">Identifiant</string>
     <string name="schedule_track">Schedule Track</string>
     <string name="sans_compte">sans compte</string>
     <string name="logo_de_l_universit">logo de l\'université</string>

@@ -60,18 +60,6 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="190dp"
-            android:text="@string/juste_pour_voir"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seConnecter"
-            app:layout_constraintVertical_bias="1.0" />
-
         <Button
             android:id="@+id/seConnecter"
             android:layout_width="wrap_content"

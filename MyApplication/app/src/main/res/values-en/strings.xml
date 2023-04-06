@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ScheduleTrack</string>
-    <string name="s_enregistrer">S\'enregistrer</string>
-    <string name="juste_pour_voir">Juste pour voir</string>
-    <string name="se_connecter">Se Connecter</string>
+    <string name="s_enregistrer">Register</string>
+    <string name="se_connecter">Login</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="schedule_track">Schedule Track</string>
-    <string name="sans_compte">sans compte</string>
-    <string name="logo_de_l_universit">logo de l\'université</string>
-    <string name="qui_olivier_boutin">Qui ? (Olivier BOUTIN…)</string>
+    <string name="sans_compte">No Account</string>
+    <string name="logo_de_l_universit">University Icon</string>
+    <string name="qui_olivier_boutin">Who ? (Olivier BOUTIN…)</string>
     <string name="todo">TODO</string>
     <string name="button">Button</string>
-    <string name="afficher_uniquement_les_salles_informatiques">Afficher uniquement les salles informatiques</string>
-    <string name="rechercher">Rechercher</string>
-    <string name="arriv_e">Arrivée à :</string>
-    <string name="adresse_de_d_part">Adresse de départ</string>
+    <string name="afficher_uniquement_les_salles_informatiques">Display only computer rooms</string>
+    <string name="rechercher">Search</string>
+    <string name="arriv_e">Arrived at :</string>
+    <string name="adresse_de_d_part">Start Adress</string>
 </resources>
