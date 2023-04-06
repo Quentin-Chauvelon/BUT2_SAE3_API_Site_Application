@@ -3,10 +3,12 @@ package com.example.myapplication
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.myapplication.databinding.ActivityLoginBinding
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
 
 class Login : AppCompatActivity() {
@@ -22,23 +24,25 @@ class Login : AppCompatActivity() {
             startActivity(Intent(this, Accueil::class.java))
         }
         binding.seConnecter.setOnClickListener {
+            val login = binding.login.text.toString()
             queue.add(object : JsonObjectRequest(
                 Method.POST,
                 "http://172.26.82.56:443/user/login",
-                JSONObject().put("login", binding.login.text.toString())
+                JSONObject().put("login", login)
                     .put("password", binding.motDePasse.text.toString()),
                 { response ->
-                    val login: JSONObject = response as JSONObject
-                    login.getString("token")
+                    val tocken: JSONObject = response as JSONObject
+                    tocken.getString("token")
                     val sharedPref = this.getPreferences(MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString(
                             getString(com.example.myapplication.R.string.app_name),
-                            login.getString("token")
+                            tocken.getString("token")
                         )
                         apply()
                     }
-                    println(login)
+                    println(tocken)
+                    Toast.makeText(this, "Bienvenus $login", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, Accueil::class.java))
                 },
                 { error ->
@@ -47,7 +51,20 @@ class Login : AppCompatActivity() {
                 }
             ) {})
         }
+        val enregistrement = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                result ->
+            if (result.resultCode == RESULT_OK) {
+                Toast.makeText(this, "Merci de t'être inscrit ${result.data}", Toast.LENGTH_SHORT).show()
+                Snackbar.make(
+                    binding.root,
+                    "Connecte toi avec ton nouveau compte",
+                    Snackbar.LENGTH_INDEFINITE
+                ).show()
+            }
+        }
+        binding.sEnregistrer.setOnClickListener {
+            enregistrement.launch(Intent(this, Sign::class.java))
+          }
 
-        startActivity(Intent(this@Login, Accueil::class.java))
     }
 }
