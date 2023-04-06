@@ -3,7 +3,10 @@ package com.example.myapplication
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.content.res.Resources.Theme
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -68,6 +71,16 @@ class Accueil : AppCompatActivity() {
                     val tableRow = TableRow(this)
 
                     val scheduleItem = layoutInflater.inflate(R.layout.schedule_item, tableRow, false)
+
+                    if (summary.contains("TP")) {
+                        scheduleItem.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF9EFF"))
+                    } else if (summary.contains("DS")) {
+                        scheduleItem.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#BF7F7F"))
+                    } else if (summary.contains("Amphi")) {
+                        scheduleItem.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF7F7F"))
+                    } else if (summary.contains("Reunion")) {
+                        scheduleItem.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#BFFFFF"))
+                    }
 
                     scheduleItem.findViewById<TextView>(R.id.schedule_item_time).text = "$coursStart - $coursEnd"
                     scheduleItem.findViewById<TextView>(R.id.schedule_item_summary).text = summary
