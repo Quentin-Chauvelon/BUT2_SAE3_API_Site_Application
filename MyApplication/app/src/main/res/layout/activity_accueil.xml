@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -24,24 +25,13 @@
             >
 
             <ImageView
-                android:id="@+id/logo_accueil"
+                android:id="@+id/logo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/logo" />
-
-
-            <ImageButton
-                android:id="@+id/favoris_btn_accueil"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:background="#00000000"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/favoris_icon" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -74,7 +64,7 @@
                 android:adjustViewBounds="true"
                 android:background="#00FFFFFF"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/home_icon" />
+                app:srcCompat="@drawable/home_icon_black" />
 
             <ImageButton
                 android:id="@+id/teacher_btn_accueil"
