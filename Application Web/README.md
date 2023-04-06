@@ -22,9 +22,9 @@ Cette application permet de consulter son emploi du temps, mais aussi de localis
 ### Étapes de déploiement
 
 1. Téléchargez ou clonez le code source de l'application depuis le dépôt <a href="https://gitlab.univ-nantes.fr/pub/but/but2/sae4-real-01/eq_init_01_01_angot-mael_blourde-nolan_calcagni-amedeo_chauvelon-quentin_osselin-arthur/-/tree/main/Application%20Web">GitLab</a>.
-2. Ouvrez un terminal et accédez au répertoire racine de l'application.
+2. Ouvrez un terminal et accédez au répertoire racine de l'application web.
 3. Exécutez la commande `npm install`  pour installer toutes les dépendances nécessaires.
-4. Configurez le fichier `vite.config.js` présent dans la racine du projet en remplaçant `host` par votre `host` et de même pour le `port` (ex: host:localhost port:3000 | host:172.26.82.56 port:80), ensuite changer la variable `base` en concatenant l'host choisit et le port choisit (ex: ` server: {<br/>host: "localhost",<br/>port: 3000<br/>},<br/>base: "http://localhost:3000"<br/>})`).
+4. Configurez le fichier `vite.config.js` présent dans la racine du projet en remplaçant `host` par votre `host` et de même pour le `port` (ex: host:localhost port:3000 | host:172.26.82.56 port:80), ensuite changer la variable `base` en concatenant l'host choisit et le port choisit (ex: ` server: {`<br/>`host: "localhost",`<br/>`port: 3000`<br/>`},`<br/>`base: "http://localhost:3000"`<br/>`})`).
 5. Exécutez la commande `npm run dev` pour démarrer l'application.
 
 L'application est maintenant accessible à l'adresse choisie.
