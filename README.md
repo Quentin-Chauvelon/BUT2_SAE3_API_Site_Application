@@ -2,13 +2,13 @@
 
 MM. ANGOT, BLOURDE, CALCAGNI, CHAUVELON et OSSELIN sont heureux de vous présenter *ScheduleTrack Nantes*.
 
-Présentation *ScheduleTrack Nantes* : 
+Présentation de *ScheduleTrack Nantes* : 
 
 Dans le cadre de la SAE-S4, nous voulons créer une application qui permettrait de consulter son emploi du temps, mais aussi de voir où un professeur de l’IUT de Nantes se trouve ainsi que de trouver les salles libres à un moment donné. Nous souhaitons aussi pouvoir synchroniser l’emploi du temps avec l'API Google Maps afin de savoir comment me rendre à l’IUT en fonction de l’heure à laquelle commencent les cours.
 
 Pour ce projet nous avons eu trois projets informatiques à rendre : 
 
-En cliquant sur la matière qu'il vous intérese vous serez rediriger vers le bon dossier.
+En cliquant sur la matière qui vous intéresse vous serez redirigé vers le bon dossier.
 
 ### <a href="https://gitlab.univ-nantes.fr/pub/but/but2/sae4-real-01/eq_init_01_01_angot-mael_blourde-nolan_calcagni-amedeo_chauvelon-quentin_osselin-arthur/-/tree/main/API">Architecture logiciel</a>
 ---
