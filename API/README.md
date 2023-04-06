@@ -29,7 +29,7 @@ Une fois l'application déployée, si vous voulez l'essayer vous pouvez faire de
 ### Technologies utilisés
 
 > Partie serveur HTTP : Hapi <br/>
-> Partie base de données : MySQL <br/>
+> Partie base de données : Sqlite <br/>
 > Partie ORM : Prisma <br/>
 > Partie Documentation : Swagger <br/>
 > Partie Tests : Chai <br/>
