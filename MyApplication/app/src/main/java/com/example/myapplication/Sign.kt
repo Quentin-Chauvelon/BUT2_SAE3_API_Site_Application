@@ -30,13 +30,13 @@ class Sign : AppCompatActivity() {
                 JSONObject().put("login", login)
                     .put("password", binding.motDePasse.text.toString()),
                 { response ->
-                    Toast.makeText(this, "Bienvenus $login", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Bienvenue $login", Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK, intent.putExtra("Login",login))
                     finish()
                 },
                 { error ->
                     println(error.networkResponse)
-                    Snackbar.make(binding.root, "Erreur, il se peut qu'un compte avec les donners donner existe déja", Snackbar.LENGTH_INDEFINITE)
+                    Snackbar.make(binding.root, "Erreur, il se peut qu'un compte avec les données données existent déjà", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Quitter"){
                             setResult(RESULT_CANCELED)
                             finish()

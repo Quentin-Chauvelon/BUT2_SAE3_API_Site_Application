@@ -58,7 +58,7 @@ class Login : AppCompatActivity() {
         val enregistrement = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 result ->
             if (result.resultCode == RESULT_OK) {
-                Toast.makeText(this, "Merci de t'être inscrit ${result.data}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Merci de t'être inscrit ${result.data?.extras?.get("Login")}", Toast.LENGTH_SHORT).show()
                 Snackbar.make(
                     binding.root,
                     "Connecte toi avec ton nouveau compte",
