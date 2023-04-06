@@ -37,7 +37,7 @@ Si vous n'avez pas accès à notre API il falloir la déployer de votre côté e
 
 Dans le cas inverse vous pouvez directement aller à **Utilisation**.
 
-Après avoir déployé l'API, il vous faut changer la classe `BaseURL` dans `app/src/main/java/com/example/myapplication/BaseURL.kt`. Vous devez modifier les deux variables `url` et `port` par ce que vous avez mis dans l'API (ex: port="http://localhost" port="443").
+Après avoir déployé l'API, il vous faut changer la classe `BaseURL` dans `app/src/main/java/com/example/myapplication/BaseURL.kt`. Vous devez modifier les deux variables `url` et `port` par ce que vous avez mis dans l'API (ex: url="http://localhost" port="443").
 
 Maintenant, les deux applications vont pouvoir communiquer entre elles.
 
