@@ -26,9 +26,6 @@ class Profs : AppCompatActivity() {
         binding.locationBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Trajet::class.java))
         }
-        binding.teacherBtnAccueil.setOnClickListener{
-            startActivity(Intent(this,Profs::class.java))
-        }
         binding.homeBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Accueil::class.java))
         }

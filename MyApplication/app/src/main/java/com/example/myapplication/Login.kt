@@ -31,26 +31,30 @@ class Login : AppCompatActivity() {
                 JSONObject().put("login", login)
                     .put("password", binding.motDePasse.text.toString()),
                 { response ->
-                    val tocken: JSONObject = response as JSONObject
-                    tocken.getString("token")
+
+                    val token: JSONObject = response as JSONObject
+
                     val sharedPref = this.getPreferences(MODE_PRIVATE)
+
                     with(sharedPref.edit()) {
                         putString(
-                            getString(com.example.myapplication.R.string.app_name),
-                            tocken.getString("token")
+                            "token",
+                            token["token"] as String
                         )
                         apply()
                     }
-                    println(tocken)
-                    Toast.makeText(this, "Bienvenus $login", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(this, "Bienvenue $login", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, Accueil::class.java))
                 },
+
                 { error ->
                     println(error)
                     Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show()
                 }
             ) {})
         }
+
         val enregistrement = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 result ->
             if (result.resultCode == RESULT_OK) {
@@ -62,6 +66,7 @@ class Login : AppCompatActivity() {
                 ).show()
             }
         }
+
         binding.sEnregistrer.setOnClickListener {
             enregistrement.launch(Intent(this, Sign::class.java))
           }

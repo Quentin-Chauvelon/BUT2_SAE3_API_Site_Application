@@ -21,8 +21,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            >
+            android:layout_margin="10dp">
 
             <ImageView
                 android:id="@+id/logo"
@@ -38,22 +37,38 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <Spinner
-        android:id="@+id/edt_groupe"
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:paddingLeft="10dp"
-        android:paddingTop="5dp"
-        android:paddingRight="15dp"
-        android:paddingBottom="5dp"
-        android:spinnerMode="dropdown"
-        android:text="Emploi du temps ..."
-        android:textColor="#FFFFFF"
-        android:textSize="17dp"
+        android:background="@drawable/right_rounded"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        <Spinner
+            android:id="@+id/edt_groupe"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/white"
+            android:dropDownWidth="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+
+            android:paddingRight="15dp"
+            android:paddingBottom="5dp"
+            android:spinnerMode="dropdown"
+            android:text="Emploi du temps ..."
+            android:textColor="#FFFFFF"
+            android:textSize="17dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    </FrameLayout>
+
 <!--    <TextView-->
 <!--        android:id="@+id/edt_groupe"-->
 <!--        android:layout_width="wrap_content"-->
@@ -70,21 +85,21 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/toolbar" />-->
 
-    <TextView
-        android:id="@+id/day_view_semaine"
+    <Button
+        android:id="@+id/day_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/left_rounded"
         android:layout_marginTop="20dp"
+        android:background="@drawable/left_rounded"
         android:paddingLeft="15dp"
-        android:paddingTop="5dp"
+        android:paddingTop="8dp"
         android:paddingRight="15dp"
-        android:paddingBottom="5dp"
-        android:text="Semaine 14"
+        android:paddingBottom="8dp"
+        android:text=""
         android:textColor="#FFFFFF"
         android:textSize="17dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edt_groupe" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 <!--    <androidx.gridlayout.widget.GridLayout-->
 <!--        android:id="@+id/day_view_grid"-->
@@ -368,15 +383,16 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
+        android:paddingTop="20dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/day_view_semaine"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
         app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
@@ -388,10 +404,6 @@
                 android:id="@+id/schedule_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
                 android:orientation="vertical"
                 android:shrinkColumns="*">
 
@@ -430,6 +442,19 @@
             </TableLayout>
         </LinearLayout>
     </ScrollView>
+
+    <ImageButton
+        android:id="@+id/favorite_star"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:adjustViewBounds="true"
+        android:cropToPadding="true"
+        android:background="@drawable/favoris_icon"
+        android:scaleType="fitStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toolbar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

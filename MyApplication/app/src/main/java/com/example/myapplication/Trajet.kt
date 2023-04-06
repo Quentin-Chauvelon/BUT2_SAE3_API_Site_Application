@@ -22,11 +22,8 @@ class Trajet : AppCompatActivity() {
         }
 
         //Bar du Bas
-        binding.roomBtnAccueil.setOnClickListener{
-            startActivity(Intent(this,Salles::class.java))
-        }
-        binding.locationBtnAccueil.setOnClickListener{
-            startActivity(Intent(this,Trajet::class.java))
+        binding.roomBtnAccueil.setOnClickListener {
+            startActivity(Intent(this, Salles::class.java))
         }
         binding.teacherBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Profs::class.java))
