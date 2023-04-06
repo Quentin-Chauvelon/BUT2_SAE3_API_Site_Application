@@ -32,11 +32,12 @@ class Salles : AppCompatActivity() {
     private lateinit var sallesListView : ListView
 
 
-
+    // Permet de transformer une date sous la forme dd/MM/yyyy
     fun formatDateToString() : String {
         return SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(date.time)
     }
 
+    // Permet de transformer une heure sous la forme hh/mm
     fun formatTimeToString() : String {
         return SimpleDateFormat("hh:mm", Locale.FRANCE).format(date.time)
     }

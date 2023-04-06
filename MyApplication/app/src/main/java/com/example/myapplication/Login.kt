@@ -20,9 +20,12 @@ class Login : AppCompatActivity() {
 
         val queue = Volley.newRequestQueue(this)
 
+        // Si l'utilisateur appuie sur le bouton entrer sans compte, il le renvoie directement sur la page d'accueil
         binding.inviter.setOnClickListener {
             startActivity(Intent(this, Accueil::class.java))
         }
+
+        // Quand on appuie sur le bouton se connecter, on fait un post sur la route pour se connecter
         binding.seConnecter.setOnClickListener {
             val login = binding.login.text.toString()
             queue.add(object : JsonObjectRequest(
@@ -34,6 +37,7 @@ class Login : AppCompatActivity() {
 
                     val token: JSONObject = response as JSONObject
 
+                    // On stocke le token que l'on récupère (permet d'être rejoué sur les routes nécessitant d'être connecté)
                     val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes",MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString(
@@ -54,6 +58,8 @@ class Login : AppCompatActivity() {
             ) {})
         }
 
+
+        // Quand on récupère le résultat de l'activité, on affiche une Snackbar pour indiquer à l'utilisateur de se connecter
         val enregistrement = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 result ->
             if (result.resultCode == RESULT_OK) {
@@ -66,6 +72,8 @@ class Login : AppCompatActivity() {
             }
         }
 
+        // Quand on appuie sur enregister, on lance une nouvelle activité pour permettre de s'enregistrer,
+        // puis lorsque l'on récupère le résultat, on indique à l'utilisateur de se connecter
         binding.sEnregistrer.setOnClickListener {
             enregistrement.launch(Intent(this, Sign::class.java))
           }

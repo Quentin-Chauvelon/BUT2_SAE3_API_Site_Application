@@ -34,6 +34,7 @@ class Profs : AppCompatActivity() {
     private lateinit var dayPicker : Button
 
 
+    // Récupère et affiche tous les cours d'un prof donné
     fun ProfCours() {
         val getTeacherSchedule = JsonArrayRequest(
             Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/teacher/${profId}/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T000000000Z", null,
@@ -51,26 +52,31 @@ class Profs : AppCompatActivity() {
                     val summary : String = cours["summary"] as String
                     val location : String = cours["location"] as String
 
+                    // On récupère l'heure et les minutes du début du cours
                     val startTime = start.split("T")
                     val startHour = startTime[1].substring(0,2).toInt()
                     val startMinute = startTime[1].substring(3,5).toInt()
 
+                    // On récupère l'heure et les minutes de la fin du cours
                     val endTime = end.split("T")
                     val endHour = endTime[1].substring(0,2).toInt()
                     val endMinute = endTime[1].substring(3,5).toInt()
 
+                    // On ajoute un 0 si les heures ou minutes sont inférieures à 10
                     val coursStart = "${if (startHour < 10) "0" else ""}$startHour:${if (startMinute < 10) "0" else ""}$startMinute"
                     val coursEnd = "${if (endHour < 10) "0" else ""}$endHour:${if (endMinute < 10) "0" else ""}$endMinute"
 
+                    // On crée le cours et on l'ajoute à la mutableList contenant tous les cours
                     val coursDay = Cours("$coursStart - $coursEnd", summary, location)
                     coursProfDay.cours.add(coursDay)
 
-                    if (now > coursStart && now < coursEnd) {
-//                        coursFound = true
-                        profCours.findViewById<TextView>(R.id.schedule_item_summary).text = ""
-                    }
+//                    if (now > coursStart && now < coursEnd) {
+////                        coursFound = true
+//                        profCours.findViewById<TextView>(R.id.schedule_item_summary).text = ""
+//                    }
                 }
 
+                // On démarre une nouvelle activité affichant tous les cours
                 val intent = Intent(this@Profs, CoursProfs::class.java)
                 intent.putExtra("cours", coursProfDay)
                 startActivity(intent)
@@ -91,6 +97,7 @@ class Profs : AppCompatActivity() {
     }
 
 
+    // Permet de transformer une date sous la forme dd/MM/yyyy
     fun formatDateToString() : String {
         return SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(date.time)
     }
@@ -101,13 +108,13 @@ class Profs : AppCompatActivity() {
         setContentView(R.layout.activity_profs)
         binding = ActivityProfsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //bar du haut
+        //barre du haut
 
         binding.logo.setOnClickListener{
             startActivity(Intent(this,Accueil::class.java))
         }
 
-        //Bar du Bas
+        //Barre du Bas
         binding.roomBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Salles::class.java))
         }
@@ -129,7 +136,8 @@ class Profs : AppCompatActivity() {
         val teacherAdapter = ProfAdapter(this, teachers)
         profListView.adapter = teacherAdapter
 
-        val getFavoriteSchedule = JsonArrayRequest(
+        // On récupère tous les profs pour les afficher dans la list view
+        val getTeachers = JsonArrayRequest(
             Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/teachers", null,
             { response ->
                 println(response)
@@ -149,9 +157,10 @@ class Profs : AppCompatActivity() {
             }
         )
 
-        queue.add(getFavoriteSchedule)
+        queue.add(getTeachers)
 
 
+        // A chaque fois que l'on écrit dans le EditText, on modifie filtre la listview pour n'afficher que les profs correspondant à ce qui a été écrit
         profEditText.doOnTextChanged { text, _, _, _ ->
             println(text)
             teacherAdapter.filter.filter(text)
@@ -159,6 +168,7 @@ class Profs : AppCompatActivity() {
         }
 
 
+        // Quand on appuie sur la date (en haut à droite), une boîte de dialogue s'ouvre pour pouvoir choisir le jour pour lequel afficher l'edt
         dayPicker = findViewById<Button?>(R.id.prof_day_picker)
         dayPicker.setOnClickListener {
             DatePickerDialog(
@@ -178,6 +188,7 @@ class Profs : AppCompatActivity() {
         dayPicker.text = formatDateToString()
 
 
+        // Quand on clique sur un prof, on récupère et affiche ses cours
         profListView.setOnItemClickListener { parent, view, position, l ->
             val item = parent?.getItemAtPosition(position)
 
