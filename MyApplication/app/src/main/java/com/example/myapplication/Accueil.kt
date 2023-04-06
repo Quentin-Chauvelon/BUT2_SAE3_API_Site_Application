@@ -68,14 +68,17 @@ class Accueil : AppCompatActivity() {
                     val summary : String = cours["summary"] as String
                     val location : String = cours["location"] as String
 
+                    // On récupère l'heure et les minutes du début du cours
                     val startTime = start.split("T")
                     val startHour = startTime[1].substring(0,2).toInt()
                     val startMinute = startTime[1].substring(3,5).toInt()
 
+                    // On récupère l'heure et les minutes de la fin du cours
                     val endTime = end.split("T")
                     val endHour = endTime[1].substring(0,2).toInt()
                     val endMinute = endTime[1].substring(3,5).toInt()
 
+                    // On ajoute un 0 si les heures ou minutes sont inférieures à 10
                     val coursStart = "${if (startHour < 10) "0" else ""}$startHour:${if (startMinute < 10) "0" else ""}$startMinute"
                     val coursEnd = "${if (endHour < 10) "0" else ""}$endHour:${if (endMinute < 10) "0" else ""}$endMinute"
 
@@ -83,6 +86,7 @@ class Accueil : AppCompatActivity() {
 
                     val scheduleItem = layoutInflater.inflate(R.layout.schedule_item, tableRow, false)
 
+                    // Changement de la couleur du cours en fonction du type de cours
                     if (summary.contains("TP")) {
                         scheduleItem.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF9EFF"))
                     } else if (summary.contains("DS")) {
@@ -97,21 +101,11 @@ class Accueil : AppCompatActivity() {
                     scheduleItem.findViewById<TextView>(R.id.schedule_item_summary).text = summary
                     scheduleItem.findViewById<TextView>(R.id.schedule_item_location).text = location
 
+                    // On ajoute le cours comme ligne du tableau
                     tableRow.addView(scheduleItem)
                     scheduleTableLayout.addView(tableRow)
 
-//                    tableRow.setOnClickListener {
-//                        println()
-//                        val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes",MODE_PRIVATE)
-//                        with(sharedPref.edit()) {
-//                            putInt(
-//                                "arrivee",
-//                                0
-//                            )
-//                            apply()
-//                        }
-//                    }
-
+                    // On rajoute un text view entre chaque ligne pour créer un espace
                     val space = TableRow(this)
                     val textView = TextView(this)
 
@@ -128,6 +122,7 @@ class Accueil : AppCompatActivity() {
     }
 
 
+    // Permet de transformer une date sous la forme dd/MM/yyyy
     fun formatDateToString() : String {
         return SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(date.time)
     }
@@ -144,11 +139,11 @@ class Accueil : AppCompatActivity() {
 
         scheduleTableLayout = findViewById<TableLayout>(R.id.schedule_table)
 
-        //bar du haut
+        //barre du haut
         binding.logo.setOnClickListener{
             startActivity(Intent(this,Accueil::class.java))
         }
-        //Bar du Bas
+        //Barre du Bas
         binding.roomBtnAccueil.setOnClickListener{
             startActivity(Intent(this,Salles::class.java))
         }
@@ -163,10 +158,13 @@ class Accueil : AppCompatActivity() {
         val groups = mutableListOf<Groupe>(Groupe(0, getString(R.string.choisir_edt)))
         spinner = findViewById<Spinner>(R.id.edt_groupe)
 
+
+        // On récupère tous les groupes (de TP)
         val getDaySchedule = JsonArrayRequest(
             Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/groups", null,
             { response ->
 
+                // On ajoute chaque groupe à l'adapter pour les afficher dans le spinner
                 for (i in 0 until response.length()) {
                     val group: JSONObject = response[i] as JSONObject
 
@@ -178,6 +176,7 @@ class Accueil : AppCompatActivity() {
                 val groupAdapter = GroupeAdapter(this, groups)
                 spinner.adapter = groupAdapter
 
+                // A chaque clic sur un des groupes, on affiche l'emploi du temps correspondant
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
 
@@ -205,6 +204,7 @@ class Accueil : AppCompatActivity() {
         queue.add(getDaySchedule)
 
 
+        // Quand on appuie sur la date (en haut à droite), une boîte de dialogue s'ouvre pour pouvoir choisir le jour pour lequel afficher l'edt
         dayPicker = findViewById<Button?>(R.id.day_picker)
         dayPicker.setOnClickListener {
             DatePickerDialog(
@@ -220,10 +220,11 @@ class Accueil : AppCompatActivity() {
                 date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH)).show()
         }
 
-        // Mettre à jour la date une première fois pour afficher la date du jour
+        // Mettre à jour la date une première fois pour afficher la date du jour actuel
         dayPicker.text = formatDateToString()
 
 
+        // Quand on clique, sur l'étoile en haut à droite, on met l'emploi du temps en favori (si l'utilisateur est connecté avec un compte)
         favoriteStar = findViewById(R.id.favorite_star)
         favoriteStar.setOnClickListener {
             println("$scheduleId, $token")
@@ -251,6 +252,7 @@ class Accueil : AppCompatActivity() {
         }
 
 
+        // On récupère le token de la connexion, pour pouvoir afficher l'edt favori de l'utilisateur par défaut
         val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes", MODE_PRIVATE)
         val tokenSharedPref = sharedPref.getString("token", "")
         if (tokenSharedPref != null && tokenSharedPref != "") {
