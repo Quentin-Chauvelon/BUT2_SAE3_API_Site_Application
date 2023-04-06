@@ -78,7 +78,7 @@ class Profs : AppCompatActivity() {
 //                if (!coursFound) {
 //                    profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FAFAFA"))
 //                    profCours.findViewById<TextView>(R.id.schedule_item_time).text = ""
-                    profCours.findViewById<TextView>(R.id.schedule_item_summary).text = "Ce professeur n'a pas cours pour le moment"
+//                    profCours.findViewById<TextView>(R.id.schedule_item_summary).text = "Ce professeur n'a pas cours pour le moment"
 //                    profCours.findViewById<TextView>(R.id.schedule_item_location).text = ""
 //                }
             },

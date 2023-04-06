@@ -52,25 +52,27 @@ class Trajet : AppCompatActivity() {
                 if (response["status"] != null && response["status"] == "OK") {
                     stepsList.clear()
 
-                    if (transitMode != "transit") {
-                        val routes = response["routes"] as JSONArray?
-                        if (routes != null && routes.length() > 0) {
-                            val route0 = routes[0] as JSONObject
 
-                            val legs = route0["legs"] as JSONArray?
-                            if (legs != null && legs.length() > 0) {
-                                val leg0 = legs[0] as JSONObject
+                    val routes = response["routes"] as JSONArray?
+                    if (routes != null && routes.length() > 0) {
+                        val route0 = routes[0] as JSONObject
 
-                                val duration = leg0["duration"] as JSONObject?
-                                if (duration != null) {
-                                    dureeTrajet.text = "Duree : ${duration["text"] as String}"
+                        val legs = route0["legs"] as JSONArray?
+                        if (legs != null && legs.length() > 0) {
+                            val leg0 = legs[0] as JSONObject
 
-                                    val timeDepart = Date(heureArrivee.time.minus(duration["value"] as Int * 1000))
-                                    heureDepart.text = "Départ à : ${timeDepart.hours}:${timeDepart.minutes}"
-                                }
+                            val duration = leg0["duration"] as JSONObject?
+                            if (duration != null) {
+                                dureeTrajet.text = "Duree : ${duration["text"] as String}"
 
-                                val steps = leg0["steps"] as JSONArray?
-                                if (steps != null) {
+                                val timeDepart = Date(heureArrivee.time.minus(duration["value"] as Int * 1000))
+                                heureDepart.text = "Départ à : ${timeDepart.hours}:${timeDepart.minutes}"
+                            }
+
+                            val steps = leg0["steps"] as JSONArray?
+                            if (steps != null) {
+
+                                if (transitMode != "transit") {
                                     for (i in 0 until steps.length()) {
                                         val step = steps[i] as JSONObject
 
@@ -86,8 +88,28 @@ class Trajet : AppCompatActivity() {
                                         stepsList.add(Step(description, duration, distance))
                                     }
 
-                                    stepsAdapter.notifyDataSetChanged()
+                                } else {
+                                    for (i in 0 until steps.length()) {
+                                        val step = steps[i] as JSONObject
+
+                                        var lineName = ""
+
+                                        val travelMode = step["travel_mode"] as String
+                                        if (travelMode == "TRANSIT") {
+                                            val transitDetails = step["transit_details"] as JSONObject
+                                            val line = transitDetails["line"] as JSONObject
+                                            lineName = line["short_name"] as String
+                                        }
+
+                                        val duration = (step["duration"] as JSONObject)["text"] as String
+                                        val distance = (step["distance"] as JSONObject)["text"] as String
+                                        val description = "${(step["html_instructions"] as String)} ${if (lineName != "") "(Ligne $lineName)" else ""}"
+
+                                        stepsList.add(Step(description, duration, distance))
+                                    }
                                 }
+
+                                stepsAdapter.notifyDataSetChanged()
                             }
                         }
                     }
@@ -183,7 +205,7 @@ class Trajet : AppCompatActivity() {
 
                             if (!foundNextCours && now.time < date.time) {
                                 foundNextCours = true
-                                arrivee.text = "Arrivée à : ${date.hours}:${date.minutes}"
+                                arrivee.text = "${getString(R.string.arriv_e)} : ${if (date.hours < 10) "0" else ""}${date.hours}:${if (date.minutes < 10) "0" else ""}${date.minutes}"
                                 heureArrivee = date
                             }
                         }
