@@ -30,7 +30,7 @@ Cette application permet de consulter son emploi du temps, mais aussi de localis
 
 ### Étapes de déploiement des micro-services
 
-Par défault notre application mobile utilise notre APIRESTful, celle-ci est déployer sur une machine virtuelle de l'IUT de Nantes et est accesible que depuis les machines de l'IUT ou en activant le VPN de l'IUT (Ivanti). Url APIRESTful : http://172.26.82.56/documentation.
+Par défault notre application mobile utilise notre APIRESTful, celle-ci est déployer sur une machine virtuelle de l'IUT de Nantes et est accesible que depuis les machines de l'IUT ou en activant le VPN de l'IUT (Ivanti). Url APIRESTful : http://172.26.82.56:443/documentation.
 
 Si vous n'avez pas accès à notre API il falloir la déployer de votre côté en local ou sur une machine distant. Nous avons déja fais un *Guide de déploiement pour notre API*. <a href="https://gitlab.univ-nantes.fr/pub/but/but2/sae4-real-01/eq_init_01_01_angot-mael_blourde-nolan_calcagni-amedeo_chauvelon-quentin_osselin-arthur/-/tree/main/API">Lien GitLab Guide</a>
 
