@@ -48,5 +48,6 @@ class Login : AppCompatActivity() {
             ) {})
         }
 
+        startActivity(Intent(this@Login, Accueil::class.java))
     }
 }

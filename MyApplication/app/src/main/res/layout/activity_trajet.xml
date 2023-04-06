@@ -95,7 +95,7 @@
                 android:adjustViewBounds="true"
                 android:background="#00FFFFFF"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/location_icon_black" />
+                app:srcCompat="@drawable/location_icon" />
 
         </LinearLayout>
 
