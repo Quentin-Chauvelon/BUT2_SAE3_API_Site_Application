@@ -28,13 +28,17 @@
         <activity
             android:name=".Profs"
             android:exported="false"
-            android:noHistory="true"/>
+            android:noHistory="false"/>
         <activity
             android:name=".Trajet"
             android:exported="false"
             android:noHistory="true"/>
         <activity
             android:name=".Accueil"
+            android:exported="false"
+            android:noHistory="true"/>
+        <activity
+            android:name=".CoursProfs"
             android:exported="false"
             android:noHistory="true"/>
         <activity

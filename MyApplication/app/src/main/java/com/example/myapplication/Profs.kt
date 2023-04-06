@@ -36,12 +36,13 @@ class Profs : AppCompatActivity() {
 
     fun ProfCours() {
         val getTeacherSchedule = JsonArrayRequest(
-            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/teacher/${profId}", null,
+            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/teacher/${profId}/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T000000000Z", null,
             { response ->
                 println(response)
 
                 val now = SimpleDateFormat("hh:mm", Locale.FRANCE).format(Calendar.getInstance().time)
-                var coursFound = false
+//                var coursFound = false
+                val coursProfDay = CoursProfDay(mutableListOf())
 
                 for (i in 0 until response.length()) {
                     val cours: JSONObject = response[i] as JSONObject
@@ -61,33 +62,25 @@ class Profs : AppCompatActivity() {
                     val coursStart = "${if (startHour < 10) "0" else ""}$startHour:${if (startMinute < 10) "0" else ""}$startMinute"
                     val coursEnd = "${if (endHour < 10) "0" else ""}$endHour:${if (endMinute < 10) "0" else ""}$endMinute"
 
+                    val coursDay = Cours("$coursStart - $coursEnd", summary, location)
+                    coursProfDay.cours.add(coursDay)
+
                     if (now > coursStart && now < coursEnd) {
-                        coursFound = true
-
-                        if (summary.contains("TP")) {
-                            profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF9EFF"))
-                        } else if (summary.contains("DS")) {
-                            profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#BF7F7F"))
-                        } else if (summary.contains("Amphi")) {
-                            profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF7F7F"))
-                        } else if (summary.contains("Reunion")) {
-                            profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#BFFFFF"))
-                        } else {
-                            profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#8FC1FD"))
-                        }
-
-                        profCours.findViewById<TextView>(R.id.schedule_item_time).text = "$coursStart - $coursEnd"
-                        profCours.findViewById<TextView>(R.id.schedule_item_summary).text = summary
-                        profCours.findViewById<TextView>(R.id.schedule_item_location).text = location
+//                        coursFound = true
+                        profCours.findViewById<TextView>(R.id.schedule_item_summary).text = ""
                     }
                 }
 
-                if (!coursFound) {
-                    profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FAFAFA"))
-                    profCours.findViewById<TextView>(R.id.schedule_item_time).text = ""
+                val intent = Intent(this@Profs, CoursProfs::class.java)
+                intent.putExtra("cours", coursProfDay)
+                startActivity(intent)
+
+//                if (!coursFound) {
+//                    profCours.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FAFAFA"))
+//                    profCours.findViewById<TextView>(R.id.schedule_item_time).text = ""
                     profCours.findViewById<TextView>(R.id.schedule_item_summary).text = "Ce professeur n'a pas cours pour le moment"
-                    profCours.findViewById<TextView>(R.id.schedule_item_location).text = ""
-                }
+//                    profCours.findViewById<TextView>(R.id.schedule_item_location).text = ""
+//                }
             },
             { error ->
                 println(error)

@@ -160,7 +160,7 @@ class Accueil : AppCompatActivity() {
         }
 
 
-        val groups = mutableListOf<Groupe>(Groupe(0, "Choisissez un groupe"))
+        val groups = mutableListOf<Groupe>(Groupe(0, getString(R.string.choisir_edt)))
         spinner = findViewById<Spinner>(R.id.edt_groupe)
 
         val getDaySchedule = JsonArrayRequest(
@@ -262,7 +262,7 @@ class Accueil : AppCompatActivity() {
                     println(response)
 
                     val favoriteScheduleJson : JSONObject = response as JSONObject
-                    if (favoriteScheduleJson["favoriteSchedule"] != null && favoriteScheduleJson["favoriteSchedule"] != 0) {
+                    if (favoriteScheduleJson["favoriteSchedule"] != 0) {
                         val favoriteSchedule = favoriteScheduleJson["favoriteSchedule"] as Int
 
                         scheduleId = favoriteSchedule

@@ -14,4 +14,5 @@
     <string name="rechercher">Rechercher</string>
     <string name="arriv_e">Arrivée à :</string>
     <string name="adresse_de_d_part">Adresse de départ</string>
+    <string name="choisir_edt">Choisissez un groupe</string>
 </resources>
