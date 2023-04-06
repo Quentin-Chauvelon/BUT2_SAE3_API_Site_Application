@@ -27,6 +27,19 @@ Cette application permet de consulter son emploi du temps, mais aussi de localis
 4. Configurez le fichier `vite.config.js` présent dans la racine du projet en remplaçant `host` par votre `host` et de même pour le `port` (ex: host:localhost port:3000 | host:172.26.82.56 port:80), ensuite changer la variable `base` en concatenant l'host choisit et le port choisit ( ex:<br/> ` server: {`<br/>`host: "localhost",`<br/>`port: 3000`<br/>`},`<br/>`base: "http://localhost:3000"`<br/>`})`<br/>).
 5. Exécutez la commande `npm run dev` pour démarrer l'application.
 
+```javascript
+export default defineConfig({
+  plugins: [react({
+    exclude: "*"
+  })],
+  server: {
+    host: "localhost",
+    port: 3000
+  },
+  base: "http://localhost:3000"
+})
+```
+
 L'application est maintenant accessible à l'adresse choisie.
 
 ## Utilisation
