@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">ScheduleTrack</string>
+    <string name="app_name">ScheduleTrack</string>
     <string name="s_enregistrer">S\'enregistrer</string>
     <string name="juste_pour_voir">Juste pour voir</string>
     <string name="se_connecter">Se Connecter</string>
@@ -8,7 +9,7 @@
     <string name="schedule_track">Schedule Track</string>
     <string name="sans_compte">sans compte</string>
     <string name="logo_de_l_universit">logo de l\'université</string>
-    <string name="qui_olivier_boutin">Qui ? (Olivier BOUTIN...)</string>
+    <string name="qui_olivier_boutin">Qui ? (Olivier BOUTIN…)</string>
     <string name="todo">TODO</string>
     <string name="button">Button</string>
     <string name="afficher_uniquement_les_salles_informatiques">Afficher uniquement les salles informatiques</string>

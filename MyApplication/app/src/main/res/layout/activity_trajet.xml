@@ -17,7 +17,7 @@
         android:backgroundTint="@color/black"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="Rechercher"
+        android:text="@string/rechercher"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +60,7 @@
         android:layout_height="50dp"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
-        android:hint="Adresse de départ"
+        android:hint="@string/adresse_de_d_part"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
@@ -133,7 +133,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:text="Arrivée à :"
+        android:text="@string/arriv_e"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trajet_adresse" />
