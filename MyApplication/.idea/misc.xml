@@ -24,6 +24,7 @@
         <entry key="app/src/main/res/layout/salle_room.xml" value="0.1" />
         <entry key="app/src/main/res/layout/schedule_item.xml" value="0.3515625" />
         <entry key="app/src/main/res/layout/spinner_white_text.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/step_not_transit.xml" value="0.33" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3165" />
       </map>
     </option>

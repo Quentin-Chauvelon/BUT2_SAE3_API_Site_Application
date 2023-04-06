@@ -7,9 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import androidx.core.widget.doOnTextChanged
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.myapplication.databinding.ActivityAccueilBinding
 import com.example.myapplication.databinding.ActivitySallesBinding
@@ -22,8 +25,10 @@ import java.util.*
 class Trajet : AppCompatActivity() {
     private lateinit var binding:ActivityTrajetBinding
     private lateinit var queue : RequestQueue
-    private var heureArrivee = ""
-    private var transitMode = ""
+    private lateinit var heureArrivee : Date
+    private var transitMode = "transit"
+    private var stepsList = mutableListOf<Step>()
+    private lateinit var stepsAdapter : StepAdapter
 
     private lateinit var adresse : EditText
     private lateinit var arrivee : TextView
@@ -32,16 +37,61 @@ class Trajet : AppCompatActivity() {
     private lateinit var walking : ImageButton
     private lateinit var driving : ImageButton
     private lateinit var trajetRechercher : Button
+    private lateinit var heureDepart : TextView
+    private lateinit var dureeTrajet : TextView
+    private lateinit var stepsListView : RecyclerView
 
 
     fun RechercherTrajet() {
-        println("${BaseURL.url}:${BaseURL.port}/directions/${adresse.text}/${arrivee.text}/$transitMode")
-        val getTeacherSchedule = JsonArrayRequest(
-            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/directions/${adresse.text}/${arrivee.text}/$transitMode", null,
+        println("${BaseURL.url}:${BaseURL.port}/directions/${adresse.text}/${heureArrivee.time}/$transitMode")
+        val getTeacherSchedule = JsonObjectRequest(
+            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/directions/${adresse.text}/${heureArrivee.time}/$transitMode", null,
             { response ->
                 println(response)
 
+                if (response["status"] != null && response["status"] == "OK") {
+                    stepsList.clear()
 
+                    if (transitMode != "transit") {
+                        val routes = response["routes"] as JSONArray?
+                        if (routes != null && routes.length() > 0) {
+                            val route0 = routes[0] as JSONObject
+
+                            val legs = route0["legs"] as JSONArray?
+                            if (legs != null && legs.length() > 0) {
+                                val leg0 = legs[0] as JSONObject
+
+                                val duration = leg0["duration"] as JSONObject?
+                                if (duration != null) {
+                                    dureeTrajet.text = "Duree : ${duration["text"] as String}"
+
+                                    val timeDepart = Date(heureArrivee.time.minus(duration["value"] as Int * 1000))
+                                    heureDepart.text = "Départ à : ${timeDepart.hours}:${timeDepart.minutes}"
+                                }
+
+                                val steps = leg0["steps"] as JSONArray?
+                                if (steps != null) {
+                                    for (i in 0 until steps.length()) {
+                                        val step = steps[i] as JSONObject
+
+                                        val duration = (step["duration"] as JSONObject)["text"] as String
+                                        val distance = (step["distance"] as JSONObject)["text"] as String
+                                        val description = (step["html_instructions"] as String)
+                                            .replace("<b>", "")
+                                            .replace("</b>", "")
+                                            .replace("<div style=\\\"font-size:0.9em\\\">", "")
+                                            .replace("</div>", "")
+                                            .replace("/<wbr/>", "")
+
+                                        stepsList.add(Step(description, duration, distance))
+                                    }
+
+                                    stepsAdapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    }
+                }
             },
             { error ->
                 println(error)
@@ -85,6 +135,16 @@ class Trajet : AppCompatActivity() {
         walking = findViewById(R.id.walking)
         driving = findViewById(R.id.driving)
         trajetRechercher = findViewById(R.id.trajet_rechercher)
+        heureDepart = findViewById(R.id.heure_depart)
+        dureeTrajet = findViewById(R.id.duree_trajet)
+        stepsListView = findViewById(R.id.steps_list_view)
+
+        val recyclerView = findViewById<RecyclerView>(R.id.steps_list_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        stepsAdapter = StepAdapter(stepsList)
+        recyclerView.adapter = stepsAdapter
+//        stepsAdapter = StepAdapter(this, stepsList)
+//        stepsListView.adapter = stepsAdapter
 
         val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes",MODE_PRIVATE)
         val coursArrivee = sharedPref.getInt("arrivee", 0)
@@ -123,8 +183,8 @@ class Trajet : AppCompatActivity() {
 
                             if (!foundNextCours && now.time < date.time) {
                                 foundNextCours = true
-                                arrivee.text = date.toString()
-                                heureArrivee = date.time.toString()
+                                arrivee.text = "Arrivée à : ${date.hours}:${date.minutes}"
+                                heureArrivee = date
                             }
                         }
                     }
