@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="s_enregistrer">S\'enregistrer</string>
+    <string name="se_connecter">Se Connecter</string>
+    <string name="password">Mot de passe</string>
+    <string name="login">Identifiant</string>
+    <string name="schedule_track">Schedule Track</string>
+    <string name="sans_compte">sans compte</string>
+    <string name="logo_de_l_universit">logo de l\'université</string>
+    <string name="qui_olivier_boutin">Qui ? (Olivier BOUTIN...)</string>
+    <string name="todo">TODO</string>
+    <string name="button">Button</string>
+    <string name="afficher_uniquement_les_salles_informatiques">Afficher uniquement les salles informatiques</string>
+    <string name="rechercher">Rechercher</string>
+    <string name="arriv_e">Arrivée à :</string>
+    <string name="adresse_de_d_part">Adresse de départ</string>
+    <string name="choisir_edt">Choisissez un groupe</string>
+</resources>
