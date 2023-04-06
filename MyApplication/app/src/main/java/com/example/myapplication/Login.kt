@@ -27,7 +27,7 @@ class Login : AppCompatActivity() {
             val login = binding.login.text.toString()
             queue.add(object : JsonObjectRequest(
                 Method.POST,
-                "http://172.26.82.56:443/user/login",
+                "${BaseURL.url}:${BaseURL.port}/user/login",
                 JSONObject().put("login", login)
                     .put("password", binding.motDePasse.text.toString()),
                 { response ->

@@ -36,7 +36,7 @@ class Profs : AppCompatActivity() {
 
     fun ProfCours() {
         val getTeacherSchedule = JsonArrayRequest(
-            Request.Method.GET, "http://172.26.82.56:443/teacher/${profId}", null,
+            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/teacher/${profId}", null,
             { response ->
                 println(response)
 
@@ -61,7 +61,6 @@ class Profs : AppCompatActivity() {
                     val coursStart = "${if (startHour < 10) "0" else ""}$startHour:${if (startMinute < 10) "0" else ""}$startMinute"
                     val coursEnd = "${if (endHour < 10) "0" else ""}$endHour:${if (endMinute < 10) "0" else ""}$endMinute"
 
-                    println("$now $coursStart $coursEnd")
                     if (now > coursStart && now < coursEnd) {
                         coursFound = true
 
@@ -138,7 +137,7 @@ class Profs : AppCompatActivity() {
         profListView.adapter = teacherAdapter
 
         val getFavoriteSchedule = JsonArrayRequest(
-            Request.Method.GET, "http://172.26.82.56:443/teachers", null,
+            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/teachers", null,
             { response ->
                 println(response)
 

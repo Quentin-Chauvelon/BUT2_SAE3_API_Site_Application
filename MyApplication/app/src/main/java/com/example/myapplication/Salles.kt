@@ -32,6 +32,7 @@ class Salles : AppCompatActivity() {
     private lateinit var sallesListView : ListView
 
 
+
     fun formatDateToString() : String {
         return SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(date.time)
     }
@@ -113,9 +114,9 @@ class Salles : AppCompatActivity() {
         }
 
         searchButton.setOnClickListener {
-            println("http://172.26.82.56:443/rooms/${if (computersOnly) "true" else "false"}/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T${SimpleDateFormat("hhmm", Locale.FRANCE).format(date.time)}00000Z")
+            println("${BaseURL.url}:${BaseURL.port}/rooms/${if (computersOnly) "true" else "false"}/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T${SimpleDateFormat("hhmm", Locale.FRANCE).format(date.time)}00000Z")
             val getFreeRooms = JsonArrayRequest(
-                Request.Method.GET, "http://172.26.82.56:443/rooms/${if (computersOnly) "true" else "false"}/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T${SimpleDateFormat("hhmm", Locale.FRANCE).format(date.time)}00000Z", null,
+                Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/rooms/${if (computersOnly) "true" else "false"}/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T${SimpleDateFormat("hhmm", Locale.FRANCE).format(date.time)}00000Z", null,
                 { response ->
                     println(response)
                     roomAdapter.clear()

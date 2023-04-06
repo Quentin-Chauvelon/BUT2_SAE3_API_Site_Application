@@ -20,6 +20,8 @@ import com.android.volley.toolbox.Volley
 import com.example.myapplication.databinding.ActivityAccueilBinding
 import org.json.JSONObject
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -37,12 +39,21 @@ class Accueil : AppCompatActivity() {
     private lateinit var favoriteStar : ImageButton
 
     fun LoadSchedule() {
+        val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes",MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString(
+                "scheduleId",
+                scheduleId.toString()
+            )
+            apply()
+        }
+
         scheduleTableLayout.removeAllViews()
 
-        println("http://172.26.82.56:443/schedule/day/$scheduleId/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T000000000Z")
         val getDaySchedule = JsonArrayRequest(
-            Request.Method.GET, "http://172.26.82.56:443/schedule/day/$scheduleId/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T000000000Z", null,
+            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/schedule/day/$scheduleId/${SimpleDateFormat("yyyyMMdd", Locale.FRANCE).format(date.time)}T000000000Z", null,
             { response ->
+                println(response)
 
                 if (scheduleId == favoriteScheduleId) {
                     favoriteStar.setBackgroundResource(R.drawable.favoris_icon_black)
@@ -88,6 +99,18 @@ class Accueil : AppCompatActivity() {
 
                     tableRow.addView(scheduleItem)
                     scheduleTableLayout.addView(tableRow)
+
+//                    tableRow.setOnClickListener {
+//                        println()
+//                        val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes",MODE_PRIVATE)
+//                        with(sharedPref.edit()) {
+//                            putInt(
+//                                "arrivee",
+//                                0
+//                            )
+//                            apply()
+//                        }
+//                    }
 
                     val space = TableRow(this)
                     val textView = TextView(this)
@@ -141,7 +164,7 @@ class Accueil : AppCompatActivity() {
         spinner = findViewById<Spinner>(R.id.edt_groupe)
 
         val getDaySchedule = JsonArrayRequest(
-            Request.Method.GET, "http://172.26.82.56:443/groups", null,
+            Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/groups", null,
             { response ->
 
                 for (i in 0 until response.length()) {
@@ -182,34 +205,6 @@ class Accueil : AppCompatActivity() {
         queue.add(getDaySchedule)
 
 
-        val sharedPref = this.getPreferences(MODE_PRIVATE)
-        val tokenSharedPref = sharedPref.getString("token", "")
-        println("fjdksfjslqfjkldmfjlsd $token")
-        if (tokenSharedPref != null && tokenSharedPref != "") {
-            token = tokenSharedPref
-
-            val getFavoriteSchedule = JsonArrayRequest(
-                Request.Method.GET, "http://172.26.82.56:443/favoriteSchedule/$tokenSharedPref", null,
-                { response ->
-                    println(response)
-
-                    val favoriteScheduleJson : JSONObject = response as JSONObject
-                    if (favoriteScheduleJson["favoriteSchedule"] != null && favoriteScheduleJson["favoriteSchedule"] != 0) {
-                        val favoriteSchedule = favoriteScheduleJson["favoriteSchedule"] as Int
-                        Log.i("fjsdkmfj", favoriteScheduleJson["favoriteSchedule"] as String)
-
-                        scheduleId = favoriteSchedule
-                        LoadSchedule()
-                    }
-                },
-                { error ->
-                    println(error)
-                }
-            )
-
-            queue.add(getFavoriteSchedule)
-        }
-
         dayPicker = findViewById<Button?>(R.id.day_picker)
         dayPicker.setOnClickListener {
             DatePickerDialog(
@@ -231,9 +226,11 @@ class Accueil : AppCompatActivity() {
 
         favoriteStar = findViewById(R.id.favorite_star)
         favoriteStar.setOnClickListener {
+            println("$scheduleId, $token")
+
             queue.add(object : JsonObjectRequest(
-                Method.POST,
-                "http://172.26.82.56:443/user/favoriteSchedule",
+                Method.PUT,
+                "${BaseURL.url}:${BaseURL.port}/user/favoriteSchedule",
                 JSONObject()
                     .put("token", token)
                     .put("favoriteSchedule", scheduleId),
@@ -254,28 +251,31 @@ class Accueil : AppCompatActivity() {
         }
 
 
+        val sharedPref = this.getSharedPreferences("ScheduleTrack Nantes", MODE_PRIVATE)
+        val tokenSharedPref = sharedPref.getString("token", "")
+        if (tokenSharedPref != null && tokenSharedPref != "") {
+            token = tokenSharedPref
 
-//        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-//            println("test")
-//            val item = p0?.getItemAtPosition(p2)
-//            val itemGroupe = item as Groupe
-//
-//            println(itemGroupe.id)
-//        }
-//
-//        override fun onNothingSelected(p0: AdapterView<*>?) {
-//            println("test 2")
-//        }
-//        }
+            val getFavoriteSchedule = JsonObjectRequest(
+                Request.Method.GET, "${BaseURL.url}:${BaseURL.port}/user/favoriteSchedule/$tokenSharedPref", null,
+                { response ->
+                    println(response)
 
-//        spinner.setOnItemClickListener { parent, _, position, _ ->
-//            val item = parent.getItemAtPosition(position)
-//            val itemGroupe = item as Groupe
-//
-//            groupAdapter.notifyDataSetChanged()
-//        }
+                    val favoriteScheduleJson : JSONObject = response as JSONObject
+                    if (favoriteScheduleJson["favoriteSchedule"] != null && favoriteScheduleJson["favoriteSchedule"] != 0) {
+                        val favoriteSchedule = favoriteScheduleJson["favoriteSchedule"] as Int
 
-//        val queue = Volley.newRequestQueue(this)
+                        scheduleId = favoriteSchedule
+                        favoriteScheduleId = favoriteSchedule
+                        LoadSchedule()
+                    }
+                },
+                { error ->
+                    println(error)
+                }
+            )
+
+            queue.add(getFavoriteSchedule)
+        }
     }
 }

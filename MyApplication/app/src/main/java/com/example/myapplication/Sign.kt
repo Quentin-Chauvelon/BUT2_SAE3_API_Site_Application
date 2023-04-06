@@ -26,7 +26,7 @@ class Sign : AppCompatActivity() {
             val login = binding.login.text.toString()
             Volley.newRequestQueue(this).add(object : JsonObjectRequest(
                 Method.POST,
-                "http://172.26.82.56:443/user/register",
+                "${BaseURL.url}:${BaseURL.port}/user/register",
                 JSONObject().put("login", login)
                     .put("password", binding.motDePasse.text.toString()),
                 { response ->
