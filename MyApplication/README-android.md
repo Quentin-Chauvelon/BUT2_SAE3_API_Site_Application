@@ -19,8 +19,8 @@ Cette application permet de consulter son emploi du temps, mais aussi de localis
 > SDK 32 | MIN SDK 21 <br/>
 >  Java 1.8
 
-*En cas de non conformité des prérequis l'application peut avoir des problèmes de compilation.* 
-*Nous utilisons le Pixel 4 API 32 à pour l'émulation*
+*En cas de non conformité des prérequis l'application peut avoir des problèmes de compilation.* <br/>
+*Info : Nous utilisons le Pixel 4 API 32 à pour l'émulation*
 
 ### Étapes de déploiement de l'application mobile
 
