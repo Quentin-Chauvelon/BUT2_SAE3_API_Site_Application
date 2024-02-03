@@ -5,7 +5,7 @@
 [![Npm](https://github.com/aleen42/badges/raw/docs/src/npm.svg)](https://nodejs.org/en/)
 [![NodeJs](https://github.com/aleen42/badges/raw/docs/src/node.svg)](https://www.npmjs.com/)
 
-ScheduleTrack Nantes est un projet de fin de semestre réalisé par groupe de 5 en fin de 2ème année de BUT. Pour ce projet, nous devions mettre en place une API RESTful (avec plusieurs micro-services communicants), une application web et une application mobile sur le thème que nous souhaitions. Nous avons décidé de réaliser ce projet autour des emplois du temps en proposant différents services qui peuvent être pratiques à un étudiant, notamment :
+ScheduleTrack Nantes est un projet de fin de semestre réalisé par groupe de 5 pendant 2 semaines en fin de 2ème année de BUT. Pour ce projet, nous devions mettre en place une API RESTful (avec plusieurs micro-services communicants), une application web et une application mobile sur le thème que nous souhaitions. Nous avons décidé de réaliser ce projet autour des emplois du temps en proposant différents services qui peuvent être pratiques à un étudiant, notamment :
 - Affichage de l'emploi du temps
 - Recherche de salles libres
 - Recherche de disponibilité d'un professeur
