@@ -5,7 +5,7 @@
 [![Npm](https://github.com/aleen42/badges/raw/docs/src/npm.svg)](https://nodejs.org/en/)
 [![NodeJs](https://github.com/aleen42/badges/raw/docs/src/node.svg)](https://www.npmjs.com/)
 
-ScheduleTrack Nantes is our end of term project we worked on it as a group of 4 for 2 weeks during my second year of BUT in Computer Science. For this project, we had to develop a RESTful API (using multiple microservices), a web application and a mobile aplication. We decided to make this project about schedules by offering multiple services for students, in particular:
+ScheduleTrack Nantes is my end of term project I worked on it in group of 4 for 2 weeks during my second year of BUT in Computer Science. For this project, we had to develop a RESTful API (using multiple microservices), a web application and a mobile aplication. We decided to make this project about schedules by offering multiple services for students, in particular:
 - Schedules display
 - Find empty rooms
 - Find a teacher's availability
